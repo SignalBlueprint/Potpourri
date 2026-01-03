@@ -16,6 +16,7 @@ import {
   AdminInquiriesTable,
   AdminInquiriesTableSkeleton,
   AdminProductForm,
+  DeleteConfirmModal,
   PackageIcon,
   TagIcon,
   InboxIcon,
@@ -124,6 +125,10 @@ function AdminPage() {
   const [isProductFormOpen, setIsProductFormOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null)
 
+  // Delete confirmation modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [productToDelete, setProductToDelete] = useState<AdminProduct | null>(null)
+
   // Simulate loading state for demo purposes
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000)
@@ -154,6 +159,24 @@ function AdminPage() {
       stock: parseInt(formData.stock, 10),
       id: editingProduct?.id || `new_${Date.now()}`,
     })
+  }
+
+  // Delete confirmation handlers
+  const handleDeleteClick = (product: AdminProduct) => {
+    setProductToDelete(product)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false)
+    setProductToDelete(null)
+  }
+
+  const handleConfirmDelete = () => {
+    if (productToDelete) {
+      // Mock delete - in real app, this would call an API
+      console.log('Deleted product:', productToDelete)
+    }
   }
 
   // Show login form if not authenticated
@@ -245,7 +268,7 @@ function AdminPage() {
         ) : (
           <AdminProductsTable
             onEdit={handleEditProduct}
-            onDelete={(product) => console.log('Delete product:', product)}
+            onDelete={handleDeleteClick}
             onAddProduct={handleAddProduct}
           />
         )}
@@ -273,6 +296,14 @@ function AdminPage() {
         onClose={handleCloseProductForm}
         onSave={handleSaveProduct}
         product={editingProduct}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        itemName={productToDelete?.name || ''}
       />
     </Container>
   )
