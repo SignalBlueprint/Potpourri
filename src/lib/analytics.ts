@@ -16,6 +16,7 @@ type EventName =
   | 'contact_submit'
   | 'admin_login'
   | 'admin_logout'
+  | 'newsletter_subscribe'
 
 interface EventProperties {
   [key: string]: string | number | boolean | undefined

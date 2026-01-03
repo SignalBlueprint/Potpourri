@@ -22,6 +22,7 @@ export { DeleteConfirmModal } from './DeleteConfirmModal'
 export { AdminCategoriesPanel, defaultCategories } from './AdminCategoriesPanel'
 export type { Category } from './AdminCategoriesPanel'
 export { InquiryDetailModal } from './InquiryDetailModal'
+export { NewsletterForm } from './NewsletterForm'
 
 // =============================================================================
 // Container - Consistent page wrapper with max-width and padding
