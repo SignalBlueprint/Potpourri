@@ -144,7 +144,7 @@ export function HeroSection() {
       </div>
 
       {/* Floating decorative icons */}
-      <div className="pointer-events-none absolute inset-0 -z-5 hidden lg:block">
+      <div className="pointer-events-none absolute inset-0 -z-5 hidden lg:block" aria-hidden="true">
         <GiftBoxIcon className="absolute left-[8%] top-[15%] h-16 w-16 animate-float opacity-60" />
         <VaseIcon className="absolute right-[10%] top-[20%] h-14 w-12 animate-float-delayed opacity-50" />
         <CandleIcon className="absolute bottom-[20%] left-[12%] h-16 w-8 animate-float-slow opacity-50" />
@@ -170,6 +170,7 @@ export function HeroSection() {
               className="absolute -bottom-2 left-0 h-3 w-full text-brand-accent/40"
               viewBox="0 0 200 12"
               preserveAspectRatio="none"
+              aria-hidden="true"
             >
               <path
                 d="M0 8 Q50 0 100 8 T200 8"
@@ -206,6 +207,7 @@ export function HeroSection() {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   strokeWidth={2}
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -230,12 +232,13 @@ export function HeroSection() {
               className="h-5 w-5 text-brand-accent"
               fill="currentColor"
               viewBox="0 0 20 20"
+              aria-hidden="true"
             >
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
             <span>Locally sourced</span>
           </div>
-          <div className="h-4 w-px bg-neutral-300" />
+          <div className="h-4 w-px bg-neutral-300" aria-hidden="true" />
           <div className="flex items-center gap-2">
             <svg
               className="h-5 w-5 text-brand-accent"
@@ -243,6 +246,7 @@ export function HeroSection() {
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={2}
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -252,7 +256,7 @@ export function HeroSection() {
             </svg>
             <span>Curated with care</span>
           </div>
-          <div className="hidden h-4 w-px bg-neutral-300 sm:block" />
+          <div className="hidden h-4 w-px bg-neutral-300 sm:block" aria-hidden="true" />
           <div className="hidden items-center gap-2 sm:flex">
             <svg
               className="h-5 w-5 text-brand-accent"
@@ -260,6 +264,7 @@ export function HeroSection() {
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={2}
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"

@@ -78,7 +78,7 @@
 | POT-035 | Add inquiry status management | P1 | DONE | - | Admin | `src/ui/AdminInquiriesTable.tsx`, `src/api/inquiries.ts` | Status dropdown (new/contacted/closed), persists to localStorage | Status dropdown in table, persists to localStorage |
 | POT-036 | Add admin inquiry detail modal | P1 | DONE | - | Admin | `src/ui/InquiryDetailModal.tsx`, `src/routes/admin.tsx` | Click row opens modal with full inquiry data | Full modal with status change and email reply |
 | POT-037 | Add trust badges to footer | P1 | DONE | - | Trust | `src/layout/AppShell.tsx` | Payment security, shipping, guarantee badges visible | 4 trust badges with icons in footer |
-| POT-038 | Add basic accessibility fixes | P1 | PARTIAL | - | A11y | Multiple files | Focus states visible, alt text present, no critical axe violations | Slice 1 DONE: focus-visible states added to AppShell.tsx, MobileNav.tsx, ProductCard.tsx. Remaining: alt text audit, axe violation scan |
+| POT-038 | Add basic accessibility fixes | P1 | PARTIAL | - | A11y | Multiple files | Focus states visible, alt text present, no critical axe violations | Slice 1 DONE: focus-visible states. Slice 2 DONE: alt text audit (all img tags have alt), decorative SVGs hidden (aria-hidden in HeroSection.tsx, item.tsx). Remaining: axe violation scan |
 | POT-039 | Add keyboard navigation for gallery | P1 | DONE | - | A11y | `src/ui/ProductGallery.tsx` | Arrow keys navigate, Escape closes zoom, focus ring visible | Power users + a11y |
 | POT-040 | Prepare catalogCore swap instructions | P1 | DONE | - | Docs | `src/catalogCore.tsx` | Clear comments: "delete lines X-Y, uncomment line Z" | Swap box at top of file, DELETE markers around stub code |
 | POT-041 | Secure admin password handling | P1 | DONE | - | Security | `src/hooks/useAuth.ts`, `src/lib/env.ts` | Password from env var, not hardcoded in source | Uses VITE_ADMIN_PASSWORD with fallback |
@@ -147,4 +147,4 @@
 
 ---
 
-*Last updated: 2026-01-03 (POT-038 partial - focus states added)*
+*Last updated: 2026-01-03 (POT-038 slice 2 - alt text audit + decorative SVG aria-hidden)*
