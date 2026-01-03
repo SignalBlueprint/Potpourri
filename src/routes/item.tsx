@@ -7,7 +7,9 @@ import { Breadcrumbs, BreadcrumbsSkeleton } from '../components/Breadcrumbs'
 import { ProductSchema } from '../components/ProductSchema'
 import { ProductGallery } from '../ui/ProductGallery'
 import { RelatedProducts, RelatedProductsSkeleton } from '../ui/RelatedProducts'
+import { RecentlyViewed } from '../ui/RecentlyViewed'
 import { InquiryModal } from '../ui/InquiryModal'
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
 import { mockProducts, categoryIcons, type Category } from '../data/mockProducts'
 import { clientConfig } from '../client.config'
 import { Skeleton, SkeletonImage, SkeletonCard } from '../components/Skeleton'
@@ -23,6 +25,7 @@ function ItemPage() {
   const { id } = itemRoute.useParams()
   const [isInquiryOpen, setIsInquiryOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const { addViewed } = useRecentlyViewed()
 
   // Find the product by ID
   const product = mockProducts.find((p) => p.id === id)
@@ -42,8 +45,9 @@ function ItemPage() {
   useEffect(() => {
     if (!isLoading && product) {
       trackProductView(product.id, product.name, product.category)
+      addViewed(product.id)
     }
-  }, [isLoading, product])
+  }, [isLoading, product, addViewed])
 
   // Show loading skeleton
   if (isLoading) {
@@ -287,6 +291,9 @@ function ItemPage() {
           currentProductId={product.id}
           category={product.category}
         />
+
+        {/* Recently Viewed */}
+        <RecentlyViewed excludeProductId={product.id} />
 
         {/* Bottom spacing */}
         <div className="pb-16" />
