@@ -165,6 +165,7 @@ interface AdminProductsTableProps {
   isLoading?: boolean
   onEdit?: (product: AdminProduct) => void
   onDelete?: (product: AdminProduct) => void
+  onAddProduct?: () => void
 }
 
 export function AdminProductsTable({
@@ -172,6 +173,7 @@ export function AdminProductsTable({
   isLoading = false,
   onEdit,
   onDelete,
+  onAddProduct,
 }: AdminProductsTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState('')
@@ -278,7 +280,7 @@ export function AdminProductsTable({
   }
 
   if (products.length === 0) {
-    return <AdminProductsTableEmpty />
+    return <AdminProductsTableEmpty onAddProduct={onAddProduct} />
   }
 
   return (
@@ -368,7 +370,11 @@ export function AdminProductsTable({
 // Empty state
 // =============================================================================
 
-export function AdminProductsTableEmpty() {
+interface AdminProductsTableEmptyProps {
+  onAddProduct?: () => void
+}
+
+export function AdminProductsTableEmpty({ onAddProduct }: AdminProductsTableEmptyProps) {
   return (
     <div className="rounded-xl border-2 border-dashed border-neutral-300 bg-white px-6 py-16 text-center">
       <svg
@@ -388,7 +394,7 @@ export function AdminProductsTableEmpty() {
       <p className="mt-2 text-sm text-neutral-600">
         Get started by adding your first product to the catalog.
       </p>
-      <Button className="mt-6">Add Your First Product</Button>
+      <Button className="mt-6" onClick={onAddProduct}>Add Your First Product</Button>
     </div>
   )
 }

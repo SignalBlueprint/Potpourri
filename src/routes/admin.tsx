@@ -246,6 +246,7 @@ function AdminPage() {
           <AdminProductsTable
             onEdit={handleEditProduct}
             onDelete={(product) => console.log('Delete product:', product)}
+            onAddProduct={handleAddProduct}
           />
         )}
       </section>
