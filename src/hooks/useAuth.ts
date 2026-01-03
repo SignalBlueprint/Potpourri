@@ -6,8 +6,16 @@ import { useState, useCallback, useSyncExternalStore } from 'react'
 
 const AUTH_STORAGE_KEY = 'potpourri_admin_auth'
 
-// Simple admin password - in production, this would be an env var or API check
-const ADMIN_PASSWORD = 'admin123'
+// Admin password from environment variable with fallback for development
+// IMPORTANT: Set VITE_ADMIN_PASSWORD in production to override the default
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123'
+
+// Warn in development if using default password
+if (import.meta.env.DEV && !import.meta.env.VITE_ADMIN_PASSWORD) {
+  console.warn(
+    '[auth] Using default admin password. Set VITE_ADMIN_PASSWORD in production.'
+  )
+}
 
 // External store for sessionStorage sync
 function getAuthSnapshot(): boolean {

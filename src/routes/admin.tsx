@@ -19,12 +19,14 @@ import {
   DeleteConfirmModal,
   AdminCategoriesPanel,
   defaultCategories,
+  InquiryDetailModal,
   PackageIcon,
   TagIcon,
   InboxIcon,
   ShoppingCartIcon,
 } from '../ui'
-import type { AdminProduct, ProductFormData, Category } from '../ui'
+import type { AdminProduct, ProductFormData, Category, AdminInquiry } from '../ui'
+import { updateInquiryStatus, type InquiryStatus } from '../api/inquiries'
 
 // =============================================================================
 // Route guard: block access if enableAdmin is false
@@ -135,6 +137,10 @@ function AdminPage() {
   const [isCategoriesPanelOpen, setIsCategoriesPanelOpen] = useState(false)
   const [categories, setCategories] = useState<Category[]>(defaultCategories)
 
+  // Inquiry detail modal state
+  const [selectedInquiry, setSelectedInquiry] = useState<AdminInquiry | null>(null)
+  const [inquiryRefreshKey, setInquiryRefreshKey] = useState(0)
+
   // Simulate loading state for demo purposes
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000)
@@ -183,6 +189,25 @@ function AdminPage() {
       // Mock delete - in real app, this would call an API
       console.log('Deleted product:', productToDelete)
     }
+  }
+
+  // Inquiry detail handlers
+  const handleViewInquiry = (inquiry: AdminInquiry) => {
+    setSelectedInquiry(inquiry)
+  }
+
+  const handleCloseInquiryDetail = () => {
+    setSelectedInquiry(null)
+  }
+
+  const handleInquiryStatusChange = (inquiryId: string, status: InquiryStatus) => {
+    updateInquiryStatus(inquiryId, status)
+    // Update selected inquiry if it's the one being changed
+    if (selectedInquiry?.id === inquiryId) {
+      setSelectedInquiry({ ...selectedInquiry, status })
+    }
+    // Trigger a refresh of the inquiries table
+    setInquiryRefreshKey((prev) => prev + 1)
   }
 
   // Show login form if not authenticated
@@ -291,10 +316,19 @@ function AdminPage() {
           <AdminInquiriesTableSkeleton />
         ) : (
           <AdminInquiriesTable
-            onView={(inquiry) => console.log('View inquiry:', inquiry)}
+            key={inquiryRefreshKey}
+            onView={handleViewInquiry}
           />
         )}
       </section>
+
+      {/* Inquiry Detail Modal */}
+      <InquiryDetailModal
+        isOpen={selectedInquiry !== null}
+        onClose={handleCloseInquiryDetail}
+        inquiry={selectedInquiry}
+        onStatusChange={handleInquiryStatusChange}
+      />
 
       {/* Product Form Modal */}
       <AdminProductForm

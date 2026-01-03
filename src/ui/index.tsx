@@ -21,6 +21,7 @@ export type { ProductFormData } from './AdminProductForm'
 export { DeleteConfirmModal } from './DeleteConfirmModal'
 export { AdminCategoriesPanel, defaultCategories } from './AdminCategoriesPanel'
 export type { Category } from './AdminCategoriesPanel'
+export { InquiryDetailModal } from './InquiryDetailModal'
 
 // =============================================================================
 // Container - Consistent page wrapper with max-width and padding

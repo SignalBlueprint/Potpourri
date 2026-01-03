@@ -76,15 +76,60 @@ function saveInquiryLocally(data: InquiryPayload & { tenantId: string; timestamp
   }
 }
 
+export type InquiryStatus = 'new' | 'contacted' | 'closed'
+
+export interface StoredInquiry extends InquiryPayload {
+  id: string
+  tenantId: string
+  timestamp: string
+  status: InquiryStatus
+}
+
+const STORAGE_KEY = 'potpourri_inquiries'
+
 /**
  * Retrieve locally stored inquiries (for admin/debug purposes).
  */
-export function getLocalInquiries(): Array<InquiryPayload & { id: string; tenantId: string; timestamp: string }> {
-  const storageKey = 'potpourri_inquiries'
+export function getLocalInquiries(): StoredInquiry[] {
   try {
-    const data = localStorage.getItem(storageKey)
-    return data ? JSON.parse(data) : []
+    const data = localStorage.getItem(STORAGE_KEY)
+    const inquiries = data ? JSON.parse(data) : []
+    // Ensure all inquiries have a status (migration for old data)
+    return inquiries.map((inq: StoredInquiry) => ({
+      ...inq,
+      status: inq.status || 'new',
+    }))
   } catch {
     return []
+  }
+}
+
+/**
+ * Update the status of an inquiry.
+ */
+export function updateInquiryStatus(inquiryId: string, status: InquiryStatus): boolean {
+  try {
+    const inquiries = getLocalInquiries()
+    const updatedInquiries = inquiries.map((inq) =>
+      inq.id === inquiryId ? { ...inq, status } : inq
+    )
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedInquiries))
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Delete an inquiry by ID.
+ */
+export function deleteInquiry(inquiryId: string): boolean {
+  try {
+    const inquiries = getLocalInquiries()
+    const filteredInquiries = inquiries.filter((inq) => inq.id !== inquiryId)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredInquiries))
+    return true
+  } catch {
+    return false
   }
 }
