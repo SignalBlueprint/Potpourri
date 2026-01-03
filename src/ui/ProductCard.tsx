@@ -63,6 +63,18 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
                 Featured
               </Badge>
             )}
+            {product.stock === 'low_stock' && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 shadow-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                Low Stock
+              </span>
+            )}
+            {product.stock === 'out_of_stock' && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 shadow-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                Out of Stock
+              </span>
+            )}
           </div>
 
           {/* Quick action overlay on hover */}

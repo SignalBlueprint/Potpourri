@@ -146,6 +146,48 @@ export function Badge({ children, variant = 'default', className = '' }: BadgePr
 }
 
 // =============================================================================
+// InventoryBadge - Stock status indicator
+// =============================================================================
+import type { StockStatus } from '../data/mockProducts'
+
+interface InventoryBadgeProps {
+  stock: StockStatus
+  size?: 'sm' | 'md'
+  className?: string
+}
+
+const stockConfig: Record<StockStatus, { label: string; color: string; dotColor: string }> = {
+  in_stock: {
+    label: 'In Stock',
+    color: 'text-green-700',
+    dotColor: 'bg-green-500',
+  },
+  low_stock: {
+    label: 'Low Stock',
+    color: 'text-amber-700',
+    dotColor: 'bg-amber-500',
+  },
+  out_of_stock: {
+    label: 'Out of Stock',
+    color: 'text-red-700',
+    dotColor: 'bg-red-500',
+  },
+}
+
+export function InventoryBadge({ stock, size = 'md', className = '' }: InventoryBadgeProps) {
+  const config = stockConfig[stock]
+  const sizeClasses = size === 'sm' ? 'text-xs' : 'text-sm'
+  const dotSize = size === 'sm' ? 'h-1.5 w-1.5' : 'h-2 w-2'
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 font-medium ${config.color} ${sizeClasses} ${className}`}>
+      <span className={`${dotSize} rounded-full ${config.dotColor}`} />
+      {config.label}
+    </span>
+  )
+}
+
+// =============================================================================
 // Input - Form input with consistent styling
 // =============================================================================
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
