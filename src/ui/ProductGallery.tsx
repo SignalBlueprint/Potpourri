@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { categoryIcons, type Category } from '../data/mockProducts'
 
 // =============================================================================
 // ProductGallery - Image gallery with zoom, navigation, and thumbnails
+// Keyboard accessible: Arrow keys navigate, Enter/Space opens zoom, Escape closes
 // =============================================================================
 
 interface ProductGalleryProps {
@@ -15,6 +16,7 @@ export function ProductGallery({ images, productName, category }: ProductGallery
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
   const [failedImages, setFailedImages] = useState<Set<number>>(new Set())
+  const galleryRef = useRef<HTMLDivElement>(null)
 
   // Filter out null images and ensure we have at least one placeholder
   const validImages = images.filter((img): img is string => img !== null)
@@ -40,7 +42,37 @@ export function ProductGallery({ images, productName, category }: ProductGallery
     setSelectedIndex((prev) => (prev === validImages.length - 1 ? 0 : prev + 1))
   }, [validImages.length])
 
-  // Keyboard navigation for zoom modal
+  // Keyboard navigation for gallery when focused (not zoomed)
+  const handleGalleryKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (isZoomed) return // Let the zoom modal handler take over
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          if (hasMultipleImages) {
+            e.preventDefault()
+            goToPrevious()
+          }
+          break
+        case 'ArrowRight':
+          if (hasMultipleImages) {
+            e.preventDefault()
+            goToNext()
+          }
+          break
+        case 'Enter':
+        case ' ':
+          if (hasImages && !failedImages.has(selectedIndex)) {
+            e.preventDefault()
+            setIsZoomed(true)
+          }
+          break
+      }
+    },
+    [isZoomed, hasMultipleImages, hasImages, selectedIndex, failedImages, goToPrevious, goToNext]
+  )
+
+  // Keyboard navigation for zoom modal (global listener)
   useEffect(() => {
     if (!isZoomed) return
 
@@ -65,7 +97,14 @@ export function ProductGallery({ images, productName, category }: ProductGallery
 
   return (
     <>
-      <div className="space-y-4">
+      <div
+        ref={galleryRef}
+        className="space-y-4 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+        tabIndex={0}
+        role="region"
+        aria-label={`Image gallery for ${productName}. ${hasMultipleImages ? 'Use arrow keys to navigate images, Enter or Space to zoom.' : 'Press Enter or Space to zoom.'}`}
+        onKeyDown={handleGalleryKeyDown}
+      >
         {/* Main Image with zoom capability */}
         <div className="group relative aspect-square overflow-hidden rounded-xl bg-neutral-100">
           {hasImages && !selectedImageFailed ? (
@@ -111,7 +150,7 @@ export function ProductGallery({ images, productName, category }: ProductGallery
                   e.stopPropagation()
                   goToPrevious()
                 }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white hover:scale-110 group-hover:opacity-100"
+                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white hover:scale-110 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                 aria-label="Previous image"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,7 +162,7 @@ export function ProductGallery({ images, productName, category }: ProductGallery
                   e.stopPropagation()
                   goToNext()
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white hover:scale-110 group-hover:opacity-100"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white hover:scale-110 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                 aria-label="Next image"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -149,8 +188,9 @@ export function ProductGallery({ images, productName, category }: ProductGallery
                 key={index}
                 onClick={() => setSelectedIndex(index)}
                 className={`
-                  relative flex-shrink-0 overflow-hidden rounded-lg
+                  relative flex-shrink-0 overflow-hidden rounded-lg outline-none
                   transition-all duration-200 ease-out
+                  focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2
                   ${
                     selectedIndex === index
                       ? 'ring-2 ring-brand-primary ring-offset-2 scale-105'
@@ -188,7 +228,7 @@ export function ProductGallery({ images, productName, category }: ProductGallery
           {/* Close button */}
           <button
             onClick={() => setIsZoomed(false)}
-            className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+            className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/90 outline-none"
             aria-label="Close zoom"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -204,7 +244,7 @@ export function ProductGallery({ images, productName, category }: ProductGallery
                   e.stopPropagation()
                   goToPrevious()
                 }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white transition-all hover:bg-white/20 hover:scale-110"
+                className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white transition-all hover:bg-white/20 hover:scale-110 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/90 outline-none"
                 aria-label="Previous image"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -216,7 +256,7 @@ export function ProductGallery({ images, productName, category }: ProductGallery
                   e.stopPropagation()
                   goToNext()
                 }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white transition-all hover:bg-white/20 hover:scale-110"
+                className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white transition-all hover:bg-white/20 hover:scale-110 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/90 outline-none"
                 aria-label="Next image"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
