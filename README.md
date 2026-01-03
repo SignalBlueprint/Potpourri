@@ -28,17 +28,19 @@ A lightweight, white-label gift shop client that:
   - Auto-PR creation for `claude/**` branches
   - Catalog page with filtering and sorting
   - Product detail page with gallery and inquiry modal
-  - Admin dashboard with professional SaaS styling
+  - Admin dashboard with auth gate and professional SaaS styling
+  - Vercel deployment config
+  - SEO meta tags and Open Graph
+  - Contact page with map
+  - Footer with contact info
+  - Loading skeletons and error boundary
 
 - 🟡 Partial
   - Package integration seam exists (`src/catalogCore.tsx`) but uses stubs
-  - Inquiry modal exists but no backend/lead capture
-  - Admin has UI but limited functionality
+  - Inquiry modal captures leads (no backend persistence yet)
 
 - ❌ Missing/Broken
   - `@signal/catalog-core` package not yet available
-  - No deployment config (Vercel/Netlify)
-  - No auth gating on admin route
   - Checkout disabled (feature flag exists, no implementation)
 
 ## How to Run
@@ -128,8 +130,8 @@ npm run preview       # Preview production build locally
 | GIFT-011 | Add footer with contact info                 | 4        | DONE        | `src/layout/AppShell.tsx`                                | WHAT: Footer with hours, address, links / WHY: Standard UX / WHERE: Layout / DONE: Footer visible on all pages                                          | Branch: claude/cost-control-setup-YXOMC |
 | GIFT-012 | Add loading skeletons                        | 4        | DONE        | `src/components/Skeleton.tsx`, `src/routes/*`            | WHAT: Skeleton loaders during fetch / WHY: Perceived performance / WHERE: All data routes / DONE: Skeletons show during load                            | Branch: ai/gift/GIFT-012-loading-skeletons |
 | GIFT-013 | Add error boundary                           | 4        | DONE        | `src/components/ErrorBoundary.tsx`, `src/app.tsx`        | WHAT: Catch and display errors gracefully / WHY: UX on failures / WHERE: Root / DONE: Errors show friendly message                                      | Branch: claude/cost-control-setup-tAxxR |
-| GIFT-014 | Verify CI automerge flow                     | 5        | TODO        | `.github/workflows/automerge.yml`                        | WHAT: Test automerge with real PR / WHY: Confirm autopilot works / WHERE: CI / DONE: PR with label merges automatically                                 |          |
-| GIFT-015 | Add related products section                 | 5        | TODO        | `src/routes/item.tsx`, `src/components/RelatedProducts.tsx` | WHAT: Show similar items on detail page / WHY: Cross-sell / WHERE: Item page / DONE: Related items display below main product                           |          |
+| GIFT-014 | Verify CI automerge flow                     | 5        | READY       | `.github/workflows/automerge.yml`                        | WHAT: Test automerge with real PR / WHY: Confirm autopilot works / WHERE: CI / DONE: PR with label merges automatically                                 |          |
+| GIFT-015 | Add related products section                 | 5        | READY       | `src/routes/item.tsx`, `src/components/RelatedProducts.tsx` | WHAT: Show similar items on detail page / WHY: Cross-sell / WHERE: Item page / DONE: Related items display below main product                           |          |
 
 **Status Values**: `TODO` | `READY` | `IN_PROGRESS` | `DONE` | `BLOCKED`
 
