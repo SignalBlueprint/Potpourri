@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { type ReactNode } from 'react'
 import { clientConfig } from '../client.config'
 import { Container } from '../ui'
+import { MobileNav } from './MobileNav'
 
 // =============================================================================
 // AppShell - Main layout wrapper with header, content area, and footer
@@ -46,12 +47,15 @@ function Header({ searchSlot }: HeaderProps) {
           {/* Search Slot (optional) */}
           {searchSlot && <div className="hidden flex-1 justify-center md:flex">{searchSlot}</div>}
 
-          {/* Navigation */}
-          <nav className="flex items-center gap-1">
+          {/* Desktop Navigation */}
+          <nav className="hidden items-center gap-1 md:flex">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/catalog">Shop</NavLink>
             {clientConfig.features.enableAdmin && <NavLink to="/admin">Admin</NavLink>}
           </nav>
+
+          {/* Mobile Navigation */}
+          <MobileNav />
         </div>
       </Container>
     </header>
