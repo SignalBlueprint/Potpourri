@@ -94,7 +94,7 @@ src/
 | GIFT-002 | Swap stub catalog route to catalog-core CatalogPage       | S    | Pending |
 | GIFT-003 | Swap stub item route to catalog-core ItemPage             | S    | Pending |
 | GIFT-004 | Swap stub admin route to catalog-core AdminPage           | S    | Pending |
-| GIFT-005 | Apply brand colors from config to Tailwind theme          | S    | Pending |
+| GIFT-005 | Apply brand colors from config to Tailwind theme          | S    | DONE (PR #8, files: tailwind.config.js, src/styles.css) |
 | GIFT-006 | Add logo component using brand.logoUrl                    | S    | Pending |
 | GIFT-007 | Create inquiry/contact form component                     | M    | Pending |
 | GIFT-008 | Add basic meta tags and Open Graph for SEO                | S    | Pending |
