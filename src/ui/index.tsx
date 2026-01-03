@@ -18,6 +18,7 @@ export { AdminInquiriesTable, AdminInquiriesTableEmpty, AdminInquiriesTableSkele
 export type { AdminInquiry } from './AdminInquiriesTable'
 export { AdminProductForm } from './AdminProductForm'
 export type { ProductFormData } from './AdminProductForm'
+export { DeleteConfirmModal } from './DeleteConfirmModal'
 
 // =============================================================================
 // Container - Consistent page wrapper with max-width and padding
