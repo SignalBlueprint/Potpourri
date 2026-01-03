@@ -109,10 +109,8 @@ npm run preview       # Preview production build locally
 ## Known Issues
 
 1. **Package seam uses stubs** - Real `@signal/catalog-core` not yet published
-2. **No auth gating** - Admin route is publicly accessible
-3. **No deployment config** - Needs Vercel/Netlify setup
-4. **Checkout disabled** - Feature flag exists but no implementation
-5. **Inquiry form has no backend** - Modal exists but doesn't persist leads
+2. **No deployment config** - Needs Vercel/Netlify setup
+3. **Checkout disabled** - Feature flag exists but no implementation
 
 ## Task Queue (Autopilot)
 
@@ -123,7 +121,7 @@ npm run preview       # Preview production build locally
 | GIFT-003 | Polish catalog grid cards                    | 2        | DONE        | `src/routes/catalog.tsx`, `src/ui/ProductCard.tsx`         | WHAT: Improve card styling with hover effects / WHY: Visual polish increases conversions / WHERE: Catalog page / DONE: Cards have shadows, transitions  | Branch: claude/cost-control-setup-8LW3i |
 | GIFT-004 | Add category navigation component            | 2        | DONE        | `src/components/CategoryNav.tsx`, `src/routes/catalog.tsx` | WHAT: Sidebar or tabs for category filtering / WHY: Easier browsing / WHERE: Catalog page / DONE: Click category filters products                       | Branch: claude/cost-control-setup-BjjJY |
 | GIFT-005 | Polish product detail gallery                | 2        | DONE        | `src/routes/item.tsx`, `src/ui/ProductGallery.tsx`       | WHAT: Add zoom and thumbnail nav / WHY: Users want to inspect products / WHERE: Item page / DONE: Click thumbnail shows image, zoom works               | Branch: claude/cost-control-setup-8LW3i |
-| GIFT-006 | Add admin auth gate                          | 2        | TODO        | `src/routes/admin.tsx`, `src/hooks/useAuth.ts`           | WHAT: Simple password/flag check / WHY: Prevent public access / WHERE: Admin route / DONE: Unauthenticated users see login prompt                       |          |
+| GIFT-006 | Add admin auth gate                          | 2        | DONE        | `src/routes/admin.tsx`, `src/hooks/useAuth.ts`           | WHAT: Simple password/flag check / WHY: Prevent public access / WHERE: Admin route / DONE: Unauthenticated users see login prompt                       | Branch: claude/cost-control-setup-6D4uU |
 | GIFT-007 | Add Vercel deployment config                 | 3        | TODO        | `vercel.json`, `.env.example`                            | WHAT: Configure Vercel deployment / WHY: Enable production hosting / WHERE: Root / DONE: `vercel deploy` works                                          |          |
 | GIFT-008 | Prepare catalogCore for package swap         | 3        | TODO        | `src/catalogCore.tsx`                                    | WHAT: Add clear swap instructions and types / WHY: Smooth integration when package ready / WHERE: Package seam / DONE: Comments explain swap process    |          |
 | GIFT-009 | Add SEO meta tags and Open Graph             | 3        | TODO        | `index.html`, `src/components/SEO.tsx`                   | WHAT: Dynamic meta tags per page / WHY: Better sharing/search / WHERE: Head / DONE: Sharing shows correct title/image                                   |          |
