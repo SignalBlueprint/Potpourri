@@ -2,6 +2,9 @@ import { forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type R
 
 // Re-export admin components
 export { AdminStatCard, AdminStatCardSkeleton, PackageIcon, TagIcon, InboxIcon, ShoppingCartIcon } from './AdminStatCard'
+
+// Re-export search component
+export { SearchInput } from './SearchInput'
 export type { AdminStatCardProps } from './AdminStatCard'
 export { AdminProductsTable, AdminProductsTableEmpty, AdminProductsTableSkeleton, mockProducts } from './AdminProductsTable'
 export type { AdminProduct } from './AdminProductsTable'

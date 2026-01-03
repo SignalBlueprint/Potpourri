@@ -43,7 +43,7 @@ function CatalogPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search)
-    }, 150)
+    }, 300)
     return () => clearTimeout(timer)
   }, [search])
 
