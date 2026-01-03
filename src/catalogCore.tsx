@@ -45,12 +45,8 @@ import { createRoute, Link } from '@tanstack/react-router'
 function IndexPage({ config }: { config: ClientConfig }) {
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold text-gray-900">
-        Welcome to {config.brand.name}
-      </h1>
-      <p className="mt-4 text-gray-600">
-        Browse our curated collection of gifts
-      </p>
+      <h1 className="text-3xl font-bold text-gray-900">Welcome to {config.brand.name}</h1>
+      <p className="mt-4 text-gray-600">Browse our curated collection of gifts</p>
     </div>
   )
 }
@@ -142,10 +138,7 @@ export function CatalogApp({ clientConfig }: CatalogAppProps) {
               {clientConfig.brand.name}
             </Link>
             <div className="flex gap-6">
-              <Link
-                to="/"
-                className="text-gray-600 hover:text-gray-900 [&.active]:text-indigo-600"
-              >
+              <Link to="/" className="text-gray-600 hover:text-gray-900 [&.active]:text-indigo-600">
                 Home
               </Link>
               <Link
