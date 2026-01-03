@@ -1,12 +1,15 @@
 name: Auto-merge
 
 on:
-  pull_request:
-    types: [labeled, synchronize, opened, ready_for_review]
-  check_suite:
-    types: [completed]
+  # Trigger when CI workflow completes on a PR
   workflow_run:
     workflows: [CI]
+    types: [completed]
+  # Also trigger on label changes to catch manual label additions
+  pull_request:
+    types: [labeled]
+  # Trigger on check_suite for any additional status checks
+  check_suite:
     types: [completed]
 
 permissions:
@@ -16,13 +19,16 @@ permissions:
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'success' ||
-      github.event_name == 'pull_request' ||
-      github.event_name == 'check_suite'
+    # Run when CI succeeds or on PR label/check events
+    if: |
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'pull_request') ||
+      (github.event_name == 'check_suite' && github.event.check_suite.conclusion == 'success')
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Auto-merge PR
         uses: pascalgn/automerge-action@v0.16.4
         env:
@@ -32,7 +38,8 @@ jobs:
           MERGE_METHOD: squash
           MERGE_COMMIT_MESSAGE: pull-request-title
           MERGE_FORKS: false
-          MERGE_RETRIES: 6
-          MERGE_RETRY_SLEEP: 10000
+          MERGE_RETRIES: 10
+          MERGE_RETRY_SLEEP: 15000
           UPDATE_LABELS: ''
           UPDATE_METHOD: rebase
+          MERGE_DELETE_BRANCH: true
