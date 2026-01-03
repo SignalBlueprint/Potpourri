@@ -113,3 +113,4 @@ All PRs must pass before merge:
 - [ ] `npm run build` - Production build succeeds
 
 Auto-merge enabled: Add `automerge` label to PRs for automatic squash-merge after CI passes.
+automerge test 01/02/2026 17:45:54
