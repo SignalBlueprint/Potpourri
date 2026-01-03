@@ -1,9 +1,6 @@
 import { createRootRoute, createRouter, Link, Outlet } from '@tanstack/react-router'
-import { indexRoute } from './routes/index'
-import { catalogRoute } from './routes/catalog'
-import { itemRoute } from './routes/item'
-import { adminRoute } from './routes/admin'
 import { clientConfig } from './client.config'
+import { makeRouteTree } from './catalogCore'
 
 export const rootRoute = createRootRoute({
   component: RootLayout,
@@ -50,7 +47,9 @@ function RootLayout() {
   )
 }
 
-const routeTree = rootRoute.addChildren([indexRoute, catalogRoute, itemRoute, adminRoute])
+// Routes are provided by catalog-core (or fallback stub)
+const routes = makeRouteTree({ clientConfig, rootRoute })
+const routeTree = rootRoute.addChildren(routes)
 
 export const router = createRouter({ routeTree })
 
