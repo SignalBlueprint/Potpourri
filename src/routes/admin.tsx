@@ -17,12 +17,14 @@ import {
   AdminInquiriesTableSkeleton,
   AdminProductForm,
   DeleteConfirmModal,
+  AdminCategoriesPanel,
+  defaultCategories,
   PackageIcon,
   TagIcon,
   InboxIcon,
   ShoppingCartIcon,
 } from '../ui'
-import type { AdminProduct, ProductFormData } from '../ui'
+import type { AdminProduct, ProductFormData, Category } from '../ui'
 
 // =============================================================================
 // Route guard: block access if enableAdmin is false
@@ -129,6 +131,10 @@ function AdminPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [productToDelete, setProductToDelete] = useState<AdminProduct | null>(null)
 
+  // Categories panel state
+  const [isCategoriesPanelOpen, setIsCategoriesPanelOpen] = useState(false)
+  const [categories, setCategories] = useState<Category[]>(defaultCategories)
+
   // Simulate loading state for demo purposes
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000)
@@ -219,7 +225,7 @@ function AdminPage() {
               />
               <AdminStatCard
                 label="Categories"
-                value={5}
+                value={categories.length}
                 icon={<TagIcon />}
               />
               <AdminStatCard
@@ -251,7 +257,7 @@ function AdminPage() {
           <AdminQuickActions
             onAddProduct={handleAddProduct}
             onImportCSV={() => console.log('Import CSV clicked')}
-            onManageCategories={() => console.log('Manage categories clicked')}
+            onManageCategories={() => setIsCategoriesPanelOpen(true)}
           />
         )}
       </section>
@@ -296,6 +302,7 @@ function AdminPage() {
         onClose={handleCloseProductForm}
         onSave={handleSaveProduct}
         product={editingProduct}
+        categories={categories.map(c => c.name)}
       />
 
       {/* Delete Confirmation Modal */}
@@ -304,6 +311,14 @@ function AdminPage() {
         onClose={handleCloseDeleteModal}
         onConfirm={handleConfirmDelete}
         itemName={productToDelete?.name || ''}
+      />
+
+      {/* Categories Panel Modal */}
+      <AdminCategoriesPanel
+        isOpen={isCategoriesPanelOpen}
+        onClose={() => setIsCategoriesPanelOpen(false)}
+        categories={categories}
+        onCategoriesChange={setCategories}
       />
     </Container>
   )
