@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { rootRoute } from '../app'
 import { Container, PageHeader } from '../ui'
 import { SEO } from '../components/SEO'
+import { Breadcrumbs, BreadcrumbsSkeleton } from '../components/Breadcrumbs'
 import { FilterBar, FilterBarSkeleton } from '../ui/FilterBar'
 import { ProductCard, ProductCardSkeleton } from '../ui/ProductCard'
 import { CategoryNav, CategoryNavSkeleton } from '../components/CategoryNav'
@@ -69,6 +70,16 @@ function CatalogPage() {
         description="Browse our curated collection of unique gifts and home goods. Find the perfect present for any occasion."
       />
       <Container>
+        {isLoading ? (
+          <BreadcrumbsSkeleton />
+        ) : (
+          <Breadcrumbs
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Shop' },
+            ]}
+          />
+        )}
         <PageHeader
           title="Shop"
           subtitle="Browse our curated collection of unique gifts and home goods"

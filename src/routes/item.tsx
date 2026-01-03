@@ -3,6 +3,7 @@ import { createRoute, Link } from '@tanstack/react-router'
 import { rootRoute } from '../app'
 import { Card, Container, Button, Badge } from '../ui'
 import { SEO } from '../components/SEO'
+import { Breadcrumbs, BreadcrumbsSkeleton } from '../components/Breadcrumbs'
 import { ProductSchema } from '../components/ProductSchema'
 import { ProductGallery } from '../ui/ProductGallery'
 import { RelatedProducts, RelatedProductsSkeleton } from '../ui/RelatedProducts'
@@ -100,32 +101,14 @@ function ItemPage() {
         category={product.category}
       />
       <Container>
-        {/* Breadcrumb */}
-        <nav className="py-4" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-2 text-sm text-neutral-600">
-            <li>
-              <Link to="/" className="transition-colors hover:text-brand-primary">
-                Home
-              </Link>
-            </li>
-            <li className="text-neutral-400">/</li>
-            <li>
-              <Link to="/catalog" className="transition-colors hover:text-brand-primary">
-                Catalog
-              </Link>
-            </li>
-            <li className="text-neutral-400">/</li>
-            <li>
-              <span className="text-neutral-600">
-                {product.category}
-              </span>
-            </li>
-            <li className="text-neutral-400">/</li>
-            <li className="truncate text-neutral-900" aria-current="page">
-              {product.name}
-            </li>
-          </ol>
-        </nav>
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Shop', href: '/catalog' },
+            { label: product.category },
+            { label: product.name },
+          ]}
+        />
 
         {/* Product Detail */}
         <section className="pb-12">
@@ -317,16 +300,7 @@ function ItemPage() {
 function ItemDetailSkeleton() {
   return (
     <>
-      {/* Breadcrumb skeleton */}
-      <nav className="py-4" aria-label="Loading">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-12" />
-          <span className="text-neutral-400">/</span>
-          <Skeleton className="h-4 w-16" />
-          <span className="text-neutral-400">/</span>
-          <Skeleton className="h-4 w-24" />
-        </div>
-      </nav>
+      <BreadcrumbsSkeleton />
 
       {/* Product Detail skeleton */}
       <section className="pb-12">
