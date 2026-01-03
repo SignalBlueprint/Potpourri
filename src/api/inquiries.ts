@@ -91,7 +91,7 @@ export interface StoredInquiry extends InquiryPayload {
 export function getLocalInquiries(): StoredInquiry[] {
   const storageKey = 'potpourri_inquiries'
   try {
-    const data = localStorage.getItem(STORAGE_KEY)
+    const data = localStorage.getItem(storageKey)
     const inquiries = data ? JSON.parse(data) : []
     // Ensure all inquiries have a status (migration for old data)
     return inquiries.map((inq: StoredInquiry) => ({

@@ -3,6 +3,27 @@
  *
  * This file is the SINGLE integration point for @signal-core/catalog-react-sdk.
  * It uses the SDK's types and API utilities while keeping Potpourri's custom UI.
+ *
+ * ╔═══════════════════════════════════════════════════════════════════════════╗
+ * ║                    PACKAGE SWAP INSTRUCTIONS                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════╣
+ * ║ When @signal-core/catalog-react-sdk is published, follow these steps:     ║
+ * ║                                                                           ║
+ * ║ 1. Install the package:                                                   ║
+ * ║    pnpm add @signal-core/catalog-react-sdk                                ║
+ * ║                                                                           ║
+ * ║ 2. Uncomment line ~25:                                                    ║
+ * ║    import { fetchJson } from '@signal-core/catalog-react-sdk'             ║
+ * ║                                                                           ║
+ * ║ 3. Delete lines ~27-87:                                                   ║
+ * ║    - The mockProducts import                                              ║
+ * ║    - The SDKProduct interface (provided by SDK)                           ║
+ * ║    - The entire fetchJson stub function                                   ║
+ * ║                                                                           ║
+ * ║ 4. Run: pnpm typecheck && pnpm build                                      ║
+ * ║                                                                           ║
+ * ║ 5. Test all routes: /, /catalog, /item/*, /admin                          ║
+ * ╚═══════════════════════════════════════════════════════════════════════════╝
  */
 
 import { useState, useMemo, useEffect } from 'react'
@@ -14,12 +35,17 @@ import { clientConfig } from './client.config'
 // =============================================================================
 // SDK Integration - @signal-core/catalog-react-sdk
 // =============================================================================
-// TODO: Uncomment when @signal-core/catalog-react-sdk is available
+// STEP 2: Uncomment the line below when @signal-core/catalog-react-sdk is available
 // import { fetchJson } from '@signal-core/catalog-react-sdk'
+
+// ┌───────────────────────────────────────────────────────────────────────────┐
+// │ STEP 3: DELETE FROM HERE ────────────────────────────────────────────────│
+// └───────────────────────────────────────────────────────────────────────────┘
 
 import { mockProducts } from './data/mockProducts'
 
 // SDK Product type (matches signal-catalog server models)
+// NOTE: This interface will be provided by @signal-core/catalog-react-sdk
 interface SDKProduct {
   id: string
   orgId: string
@@ -36,7 +62,7 @@ interface SDKProduct {
 }
 
 // Local fetchJson stub - uses mock data until real SDK is available
-// This simulates the SDK's fetchJson function for development
+// NOTE: This function will be provided by @signal-core/catalog-react-sdk
 async function fetchJson<T>(url: string): Promise<T> {
   // Simulate network delay for realistic behavior
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -79,6 +105,10 @@ async function fetchJson<T>(url: string): Promise<T> {
   // All products request: /store/{id}/products
   return sdkProducts as T
 }
+
+// ┌───────────────────────────────────────────────────────────────────────────┐
+// │ STEP 3: DELETE TO HERE ──────────────────────────────────────────────────│
+// └───────────────────────────────────────────────────────────────────────────┘
 
 // UI Components
 import {

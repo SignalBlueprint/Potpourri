@@ -14,6 +14,9 @@ interface InquiryModalProps {
   productId: string
 }
 
+// Rate limit cooldown duration in milliseconds
+const SUBMIT_COOLDOWN_MS = 2000
+
 export function InquiryModal({ isOpen, onClose, productName, productId }: InquiryModalProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -23,8 +26,17 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isCooldown, setIsCooldown] = useState(false)
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const modalRef = useRef<HTMLDivElement>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
+
+  // Clean up cooldown timer on unmount
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current)
+    }
+  }, [])
 
   // Reset form state when closing
   const handleClose = useCallback(() => {
@@ -61,10 +73,17 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+
+    // Rate limit check - prevent rapid submissions
+    if (isCooldown) {
+      setError('Please wait a moment before submitting again.')
+      return
+    }
+
     setIsSubmitting(true)
     setError(null)
 
-    trackInquiry('submit', { productId, productName })
+    trackEvent('inquiry_submit', { productId, productName })
 
     const result = await submitInquiry({
       productId,
@@ -73,6 +92,11 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
     })
 
     setIsSubmitting(false)
+
+    // Start cooldown after any submission attempt
+    setIsCooldown(true)
+    if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current)
+    cooldownTimerRef.current = setTimeout(() => setIsCooldown(false), SUBMIT_COOLDOWN_MS)
 
     if (result.success) {
       trackEvent('inquiry_success', { productId, productName })
@@ -206,7 +230,7 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
               <Button type="button" variant="secondary" onClick={handleClose} className="flex-1">
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
+              <Button type="submit" disabled={isSubmitting || isCooldown} className="flex-1">
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
                     <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
@@ -227,6 +251,8 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
                     </svg>
                     Sending...
                   </span>
+                ) : isCooldown ? (
+                  'Please wait...'
                 ) : (
                   'Send Inquiry'
                 )}
