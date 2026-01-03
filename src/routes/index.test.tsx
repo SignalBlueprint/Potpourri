@@ -26,7 +26,9 @@ function renderWithProviders(initialPath: string) {
 describe('Home route', () => {
   it('renders the home page', async () => {
     renderWithProviders('/')
-    expect(await screen.findByText('Welcome to Potpourri')).toBeInTheDocument()
+    // Home page displays "Potpourri" as the main h1 in HeroSection (multiple headings use this name)
+    const headings = await screen.findAllByRole('heading', { name: 'Potpourri' })
+    expect(headings.length).toBeGreaterThan(0)
   })
 
   it('displays the tagline', async () => {
