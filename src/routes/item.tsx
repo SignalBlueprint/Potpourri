@@ -3,6 +3,7 @@ import { createRoute, Link } from '@tanstack/react-router'
 import { rootRoute } from '../app'
 import { Card, Container, Button, Badge } from '../ui'
 import { SEO } from '../components/SEO'
+import { ProductSchema } from '../components/ProductSchema'
 import { ProductGallery } from '../ui/ProductGallery'
 import { RelatedProducts, RelatedProductsSkeleton } from '../ui/RelatedProducts'
 import { InquiryModal } from '../ui/InquiryModal'
@@ -89,6 +90,14 @@ function ItemPage() {
         description={product.description}
         image={product.imageUrl ?? undefined}
         type="product"
+      />
+      <ProductSchema
+        id={product.id}
+        name={product.name}
+        description={product.description}
+        price={product.price}
+        imageUrl={product.imageUrl}
+        category={product.category}
       />
       <Container>
         {/* Breadcrumb */}
