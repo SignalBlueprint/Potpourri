@@ -14,6 +14,7 @@ interface ProductGalleryProps {
 export function ProductGallery({ images, productName, category }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set())
 
   // Filter out null images and ensure we have at least one placeholder
   const validImages = images.filter((img): img is string => img !== null)
@@ -21,6 +22,14 @@ export function ProductGallery({ images, productName, category }: ProductGallery
   const hasMultipleImages = validImages.length > 1
 
   const categoryIcon = categoryIcons[category as Category] || '📦'
+
+  // Check if selected image has failed to load
+  const selectedImageFailed = failedImages.has(selectedIndex)
+
+  // Handle image load error
+  const handleImageError = useCallback((index: number) => {
+    setFailedImages((prev) => new Set(prev).add(index))
+  }, [])
 
   // Navigation handlers
   const goToPrevious = useCallback(() => {
@@ -59,13 +68,14 @@ export function ProductGallery({ images, productName, category }: ProductGallery
       <div className="space-y-4">
         {/* Main Image with zoom capability */}
         <div className="group relative aspect-square overflow-hidden rounded-xl bg-neutral-100">
-          {hasImages ? (
+          {hasImages && !selectedImageFailed ? (
             <>
               <img
                 src={validImages[selectedIndex] || validImages[0]}
                 alt={`${productName} - Image ${selectedIndex + 1}`}
                 className="h-full w-full cursor-zoom-in object-cover transition-transform duration-500 group-hover:scale-105"
                 onClick={() => setIsZoomed(true)}
+                onError={() => handleImageError(selectedIndex)}
               />
               {/* Zoom hint overlay */}
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/10 group-hover:opacity-100">
@@ -150,11 +160,18 @@ export function ProductGallery({ images, productName, category }: ProductGallery
                 aria-label={`View image ${index + 1}`}
               >
                 <div className="h-16 w-16 sm:h-20 sm:w-20">
-                  <img
-                    src={image}
-                    alt={`${productName} thumbnail ${index + 1}`}
-                    className="h-full w-full object-cover"
-                  />
+                  {failedImages.has(index) ? (
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200">
+                      <span className="text-2xl opacity-40">{categoryIcon}</span>
+                    </div>
+                  ) : (
+                    <img
+                      src={image}
+                      alt={`${productName} thumbnail ${index + 1}`}
+                      className="h-full w-full object-cover"
+                      onError={() => handleImageError(index)}
+                    />
+                  )}
                 </div>
               </button>
             ))}
@@ -163,7 +180,7 @@ export function ProductGallery({ images, productName, category }: ProductGallery
       </div>
 
       {/* Zoom Modal / Lightbox */}
-      {isZoomed && hasImages && (
+      {isZoomed && hasImages && !selectedImageFailed && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
           onClick={() => setIsZoomed(false)}
