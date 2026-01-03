@@ -98,7 +98,7 @@
 |----|-------|----------|--------|------------|------|-------|---------------------|-------|
 | POT-050 | Add checkout flow skeleton | P2 | TODO | - | Commerce | `src/routes/checkout.tsx` | Route exists when enableCheckout=true, cart summary + form shell | Payment integration later |
 | POT-051 | Add quote request mode | P2 | TODO | - | Commerce | `src/ui/InquiryModal.tsx`, `src/routes/item.tsx` | priceMode='quote' shows "Request Quote" with quantity field | Variable pricing |
-| POT-052 | Add inventory badges | P2 | TODO | - | UX | `src/ui/ProductCard.tsx`, `src/routes/item.tsx` | "In Stock" / "Low Stock" / "Out of Stock" badge | Urgency signals |
+| POT-052 | Add inventory badges | P2 | DONE | - | UX | `src/data/mockProducts.ts`, `src/ui/index.tsx`, `src/ui/ProductCard.tsx`, `src/routes/item.tsx`, `src/catalogCore.tsx` | "In Stock" / "Low Stock" / "Out of Stock" badge | Urgency signals. Added StockStatus type, InventoryBadge component, stock field to all products |
 | POT-053 | Add product favorites/wishlist | P2 | TODO | - | UX | `src/hooks/useFavorites.ts` | Heart icon saves to localStorage, favorites page | Engagement feature |
 | POT-054 | Add product comparison | P2 | TODO | - | UX | `src/routes/compare.tsx` | Select 2-4 products, side-by-side table | Decision helper |
 | POT-055 | Add recently viewed products | P2 | TODO | - | UX | `src/hooks/useRecentlyViewed.ts`, `src/routes/item.tsx` | Show last 4 viewed products on item page | Cross-sell |
@@ -126,8 +126,8 @@
 | BLOCKED Epic | 5 | 0 | 0 | 5 |
 | P0 | 20 | 20 | 0 | 0 |
 | P1 | 17 | 15 | 2 | 0 |
-| P2 | 20 | 0 | 20 | 0 |
-| **Total** | **62** | **35** | **22** | **5** |
+| P2 | 20 | 1 | 19 | 0 |
+| **Total** | **62** | **36** | **21** | **5** |
 
 ---
 
@@ -147,4 +147,4 @@
 
 ---
 
-*Last updated: 2026-01-03 (POT-038 slice 2 - alt text audit + decorative SVG aria-hidden)*
+*Last updated: 2026-01-03 (POT-052 - inventory badges with stock status)*

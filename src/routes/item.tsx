@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
 import { rootRoute } from '../app'
-import { Card, Container, Button, Badge } from '../ui'
+import { Card, Container, Button, Badge, InventoryBadge } from '../ui'
 import { SEO } from '../components/SEO'
 import { Breadcrumbs, BreadcrumbsSkeleton } from '../components/Breadcrumbs'
 import { ProductSchema } from '../components/ProductSchema'
@@ -159,10 +159,7 @@ function ItemPage() {
               <Card className="space-y-3 bg-neutral-50/80">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-neutral-600">Availability</span>
-                  <span className="flex items-center gap-1.5 font-medium text-green-700">
-                    <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                    In Stock
-                  </span>
+                  <InventoryBadge stock={product.stock} />
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-neutral-600">Item ID</span>

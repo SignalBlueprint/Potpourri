@@ -181,6 +181,7 @@ function adaptProduct(p: SDKProduct): MockProduct {
     imageUrl,
     isNew: daysSinceCreated < 30,
     isFeatured: p.tags?.includes('featured') || false,
+    stock: 'in_stock' as const,
     createdAt: createdDate,
   }
 }
