@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-Gift shop storefront client (Vite + React + TanStack). Currently uses stub routes; will swap to `@signal/catalog-core` package when available.
+Gift shop storefront client (Vite + React + TanStack). Thin client consuming `@signal/catalog-core` package (pending). All branding via `src/client.config.ts`.
 
 ```bash
 npm install && npm run dev   # Start development
@@ -15,48 +15,61 @@ A lightweight, white-label gift shop client that:
 
 - Renders a catalog from a shared package (`@signal/catalog-core`)
 - Uses `client.config.ts` as the single source of branding/tenant config
-- Supports future checkout, admin, and inquiry features via feature flags
+- Supports checkout, admin, and inquiry features via feature flags
+- Enables unattended agent development via autopilot task queue
 
-## Current Status
+## Current Status (Reality Check)
 
-| Area                | Status                                             |
-| ------------------- | -------------------------------------------------- |
-| Scaffold            | Complete                                           |
-| Stub Routes         | Working (/, /catalog, /item/:id, /admin)           |
-| Package Integration | Pending `@signal/catalog-core`                     |
-| Branding Config     | Complete (`client.config.ts`)                      |
-| CI/CD               | Complete (lint, typecheck, test, build, automerge) |
-| Deployment          | Not configured                                     |
+- ✅ Working
+  - Scaffold complete (Vite + React + TanStack Router/Query)
+  - Branding config (`src/client.config.ts`) with theme application
+  - CI pipeline (lint, typecheck, test, build)
+  - Auto-merge workflow (label `automerge`)
+  - Auto-PR creation for `claude/**` branches
+  - Catalog page with filtering and sorting
+  - Product detail page with gallery and inquiry modal
+  - Admin dashboard with professional SaaS styling
+
+- 🟡 Partial
+  - Package integration seam exists (`src/catalogCore.tsx`) but uses stubs
+  - Inquiry modal exists but no backend/lead capture
+  - Admin has UI but limited functionality
+
+- ❌ Missing/Broken
+  - `@signal/catalog-core` package not yet available
+  - No deployment config (Vercel/Netlify)
+  - No auth gating on admin route
+  - Checkout disabled (feature flag exists, no implementation)
 
 ## How to Run
 
+### Install
+
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
 ```
 
-### Available Scripts
+### Dev
 
-| Script               | Description                              |
-| -------------------- | ---------------------------------------- |
-| `npm run dev`        | Start Vite dev server                    |
-| `npm run build`      | TypeScript build + Vite production build |
-| `npm run lint`       | Run ESLint                               |
-| `npm run format`     | Check Prettier formatting                |
-| `npm run format:fix` | Fix Prettier formatting                  |
-| `npm run typecheck`  | Run TypeScript type checking             |
-| `npm run test`       | Run tests with Vitest                    |
+```bash
+npm run dev
+```
 
-### Environment Variables
+### Test
+
+```bash
+npm run test          # Single run
+npm run test:watch    # Watch mode
+```
+
+### Build
+
+```bash
+npm run build         # TypeScript + Vite production build
+npm run preview       # Preview production build locally
+```
+
+### Env Vars
 
 | Variable            | Description                      | Default |
 | ------------------- | -------------------------------- | ------- |
@@ -64,53 +77,83 @@ npm run preview
 
 ## Architecture (Short)
 
+### High-level Components
+
 ```
-src/
-├── main.tsx           # App entry (QueryClient + Router providers)
-├── app.tsx            # Root route + layout
-├── client.config.ts   # Branding, tenant, feature flags (EDIT THIS)
-├── catalogCore.tsx    # Package adapter (swap stub → real package here)
-└── routes/            # Page components (temporary stubs)
-    ├── index.tsx      # Home (/)
-    ├── catalog.tsx    # Catalog (/catalog)
-    ├── item.tsx       # Item detail (/item/:id)
-    └── admin.tsx      # Admin panel (/admin)
+┌─────────────────────────────────────────────────────────────┐
+│                    Potpourri (Thin Client)                  │
+├─────────────────────────────────────────────────────────────┤
+│  src/client.config.ts  ← Single source of branding/config  │
+│  src/catalogCore.tsx   ← Package seam (stub → real)        │
+│  src/routes/*          ← Page components                   │
+├─────────────────────────────────────────────────────────────┤
+│              @signal/catalog-core (pending)                 │
+│  makeRouteTree({ clientConfig }) → TanStack routes         │
+│  CatalogApp({ clientConfig }) → Optional full app          │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-**Integration Point**: `src/catalogCore.tsx` is the single file to modify when `@signal/catalog-core` is installed. Uncomment the real import, delete the stub section.
+### Key Files
+
+| File                    | Purpose                                              |
+| ----------------------- | ---------------------------------------------------- |
+| `src/client.config.ts`  | Branding, tenant ID, feature flags, contact info     |
+| `src/catalogCore.tsx`   | Package adapter (ONE file imports `@signal/catalog-core`) |
+| `src/main.tsx`          | App entry (QueryClient + Router providers)           |
+| `src/app.tsx`           | Root route + layout                                  |
+| `src/routes/index.tsx`  | Home page                                            |
+| `src/routes/catalog.tsx`| Catalog grid                                         |
+| `src/routes/item.tsx`   | Product detail                                       |
+| `src/routes/admin.tsx`  | Admin dashboard                                      |
 
 ## Known Issues
 
-1. **Stub routes only** - All pages are placeholder UI until package integration
+1. **Package seam uses stubs** - Real `@signal/catalog-core` not yet published
 2. **No auth gating** - Admin route is publicly accessible
-3. **No deployment config** - Needs Vercel/Netlify/Docker setup
+3. **No deployment config** - Needs Vercel/Netlify setup
 4. **Checkout disabled** - Feature flag exists but no implementation
+5. **Inquiry form has no backend** - Modal exists but doesn't persist leads
 
 ## Task Queue (Autopilot)
 
-| ID       | Task                                                      | Size | Status  |
-| -------- | --------------------------------------------------------- | ---- | ------- |
-| GIFT-001 | Swap stub index route to catalog-core IndexPage           | S    | Pending |
-| GIFT-002 | Swap stub catalog route to catalog-core CatalogPage       | S    | Pending |
-| GIFT-003 | Swap stub item route to catalog-core ItemPage             | S    | Pending |
-| GIFT-004 | Swap stub admin route to catalog-core AdminPage           | S    | Pending |
-| GIFT-005 | Apply brand colors from config to Tailwind theme          | S    | DONE (PR #8, files: tailwind.config.js, src/styles.css) |
-| GIFT-006 | Add logo component using brand.logoUrl                    | S    | Pending |
-| GIFT-007 | Create inquiry/contact form component                     | M    | Pending |
-| GIFT-008 | Add basic meta tags and Open Graph for SEO                | S    | Pending |
-| GIFT-009 | Add Vercel deployment config (vercel.json)                | S    | Pending |
-| GIFT-010 | Add admin route auth gate (simple password or flag check) | S    | Pending |
+| ID       | Title                                        | Priority | Status      | Files                                                    | Acceptance Criteria                                                                                                                                      | Notes/PR |
+| -------- | -------------------------------------------- | -------- | ----------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| GIFT-001 | Polish home hero section                     | 1        | READY       | `src/routes/index.tsx`, `src/client.config.ts`           | WHAT: Add compelling hero with brand imagery and CTA / WHY: First impression drives engagement / WHERE: Home route / DONE: Hero visible, CTA links to catalog |          |
+| GIFT-002 | Add inquiry form backend/lead capture        | 1        | READY       | `src/routes/item.tsx`, `src/api/inquiries.ts`            | WHAT: POST inquiry to API / WHY: Capture leads for follow-up / WHERE: Inquiry modal / DONE: Submission persists, user sees confirmation                 |          |
+| GIFT-003 | Polish catalog grid cards                    | 2        | TODO        | `src/routes/catalog.tsx`, `src/components/ProductCard.tsx` | WHAT: Improve card styling with hover effects / WHY: Visual polish increases conversions / WHERE: Catalog page / DONE: Cards have shadows, transitions  |          |
+| GIFT-004 | Add category navigation component            | 2        | TODO        | `src/components/CategoryNav.tsx`, `src/routes/catalog.tsx` | WHAT: Sidebar or tabs for category filtering / WHY: Easier browsing / WHERE: Catalog page / DONE: Click category filters products                       |          |
+| GIFT-005 | Polish product detail gallery                | 2        | TODO        | `src/routes/item.tsx`, `src/components/Gallery.tsx`      | WHAT: Add zoom and thumbnail nav / WHY: Users want to inspect products / WHERE: Item page / DONE: Click thumbnail shows image, zoom works               |          |
+| GIFT-006 | Add admin auth gate                          | 2        | TODO        | `src/routes/admin.tsx`, `src/hooks/useAuth.ts`           | WHAT: Simple password/flag check / WHY: Prevent public access / WHERE: Admin route / DONE: Unauthenticated users see login prompt                       |          |
+| GIFT-007 | Add Vercel deployment config                 | 3        | TODO        | `vercel.json`, `.env.example`                            | WHAT: Configure Vercel deployment / WHY: Enable production hosting / WHERE: Root / DONE: `vercel deploy` works                                          |          |
+| GIFT-008 | Prepare catalogCore for package swap         | 3        | TODO        | `src/catalogCore.tsx`                                    | WHAT: Add clear swap instructions and types / WHY: Smooth integration when package ready / WHERE: Package seam / DONE: Comments explain swap process    |          |
+| GIFT-009 | Add SEO meta tags and Open Graph             | 3        | TODO        | `index.html`, `src/components/SEO.tsx`                   | WHAT: Dynamic meta tags per page / WHY: Better sharing/search / WHERE: Head / DONE: Sharing shows correct title/image                                   |          |
+| GIFT-010 | Add contact page with map                    | 3        | TODO        | `src/routes/contact.tsx`, `src/client.config.ts`         | WHAT: Contact form + address map / WHY: Multiple contact methods / WHERE: New route / DONE: Form submits, map shows location                            |          |
+| GIFT-011 | Add footer with contact info                 | 4        | TODO        | `src/components/Footer.tsx`, `src/app.tsx`               | WHAT: Footer with hours, address, links / WHY: Standard UX / WHERE: Layout / DONE: Footer visible on all pages                                          |          |
+| GIFT-012 | Add loading skeletons                        | 4        | TODO        | `src/components/Skeleton.tsx`, `src/routes/*`            | WHAT: Skeleton loaders during fetch / WHY: Perceived performance / WHERE: All data routes / DONE: Skeletons show during load                            |          |
+| GIFT-013 | Add error boundary                           | 4        | TODO        | `src/components/ErrorBoundary.tsx`, `src/app.tsx`        | WHAT: Catch and display errors gracefully / WHY: UX on failures / WHERE: Root / DONE: Errors show friendly message                                      |          |
+| GIFT-014 | Verify CI automerge flow                     | 5        | TODO        | `.github/workflows/automerge.yml`                        | WHAT: Test automerge with real PR / WHY: Confirm autopilot works / WHERE: CI / DONE: PR with label merges automatically                                 |          |
+| GIFT-015 | Add related products section                 | 5        | TODO        | `src/routes/item.tsx`, `src/components/RelatedProducts.tsx` | WHAT: Show similar items on detail page / WHY: Cross-sell / WHERE: Item page / DONE: Related items display below main product                           |          |
 
-**Size Guide**: S = <1hr, M = 1-3hr, L = 3-8hr
+**Status Values**: `TODO` | `READY` | `IN_PROGRESS` | `DONE` | `BLOCKED`
 
 ## Release Gates
 
 All PRs must pass before merge:
 
-- [ ] `npm run lint` - ESLint passes
-- [ ] `npm run typecheck` - TypeScript passes
-- [ ] `npm run test` - Vitest passes
-- [ ] `npm run build` - Production build succeeds
+```bash
+npm run lint       # ESLint passes
+npm run typecheck  # TypeScript passes
+npm run test       # Vitest passes
+npm run build      # Production build succeeds
+```
 
-Auto-merge enabled: Add `automerge` label to PRs for automatic squash-merge after CI passes.
-automerge test 01/02/2026 17:45:54
+Auto-merge: Add `automerge` label to PRs for automatic squash-merge after CI passes.
+
+## Control-Plane Docs
+
+| Document                                              | Purpose                                |
+| ----------------------------------------------------- | -------------------------------------- |
+| [docs/AI_STATE.md](docs/AI_STATE.md)                  | Suite goal, repo map, active blockers  |
+| [docs/AI_PLAYBOOK.md](docs/AI_PLAYBOOK.md)            | Agent rules, task size, stop conditions|
+| [docs/AI_METRICS.json](docs/AI_METRICS.json)          | Counters and timestamps                |
+| [docs/PACKAGE_INTEGRATION.md](docs/PACKAGE_INTEGRATION.md) | @signal/catalog-core seam spec    |

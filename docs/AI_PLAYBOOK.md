@@ -1,69 +1,95 @@
 # AI Playbook
 
-Rules for AI agents working on this repo.
+> Rules for agents working on Potpourri.
 
 ## Minimal Read Mode
 
-To reduce token costs, follow this read order:
+Before starting any task, read ONLY these files:
 
-1. **README.md** - Always read first (TL;DR + Task Queue)
-2. **docs/AI_STATE.md** - Current blockers and last PRs
-3. **src/client.config.ts** - Only if task involves branding/config
-4. **src/catalogCore.tsx** - Only if task involves package integration
+1. `README.md` - Task queue, release gates, current status
+2. `docs/AI_STATE.md` - Blockers, repo map, recent PRs
+3. Files listed in the task's `Files` column
 
-**Do NOT read** unless explicitly needed:
-
-- `package-lock.json`
-- `node_modules/`
-- `.github/workflows/` (CI is documented in README)
-- Test files (unless fixing tests)
+Do NOT scan the entire codebase. Read only what is needed.
 
 ## Task Size Rules
 
-| Size | Time  | Scope                                       |
-| ---- | ----- | ------------------------------------------- |
-| S    | <1hr  | Single file change, no new dependencies     |
-| M    | 1-3hr | 2-5 files, may add dev dependency           |
-| L    | 3-8hr | Multiple components, new feature flag       |
-| XL   | 8hr+  | Architectural change, requires planning doc |
+- **Max diff**: <200 lines of code changed
+- **Max files**: 5 files per PR
+- **One repo per PR**: Never cross repo boundaries
+- **One task per PR**: Complete one GIFT-### task, then stop
 
-**Autopilot Limit**: Only execute S and M tasks autonomously. L and XL require human approval.
+## Branch Naming
 
-## Task Execution Protocol
+```
+claude/<task-description>-<session-id>
+```
 
-1. Check `docs/AI_STATE.md` for blockers
-2. Find task in README.md Task Queue
-3. Verify all dependencies are met
-4. Execute task
-5. Run `npm run lint && npm run typecheck && npm run test && npm run build`
-6. Update `docs/AI_STATE.md` with PR info
-7. Update `docs/AI_METRICS.json` counters
-8. Create PR with `automerge` label (if S/M size)
+Example: `claude/polish-hero-section-A1B2C`
+
+## Definition of Done
+
+A task is DONE when:
+
+1. All acceptance criteria met (WHAT/WHY/WHERE/DONE format)
+2. `npm run lint` passes
+3. `npm run typecheck` passes
+4. `npm run test` passes
+5. `npm run build` passes
+6. PR created with `automerge` label
+7. Task status updated to `DONE` in README.md Task Queue
 
 ## Commit Message Format
 
 ```
-<type>: <short description>
+<type>: <description>
 
-[GIFT-XXX] <optional longer description>
+GIFT-### (if applicable)
 ```
 
-Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
-## File Modification Rules
+## PR Creation
 
-- **client.config.ts**: Never modify structure, only values
-- **catalogCore.tsx**: Only modify stub section or swap to real import
-- **routes/\*.tsx**: These are temporary; prefer modifying catalogCore.tsx
-- **package.json**: Add dependencies only if task explicitly requires
+1. Push to `claude/<description>-<session-id>` branch
+2. Auto-PR workflow creates PR with `automerge` label
+3. CI runs release gates
+4. If passing, PR auto-merges
 
-## PR Checklist
+## Stop Conditions
 
-Before creating PR:
+STOP and mark task as `BLOCKED` if:
 
-- [ ] All release gates pass locally
-- [ ] Task ID in commit message
-- [ ] AI_STATE.md updated
-- [ ] AI_METRICS.json incremented
-- [ ] No console.log or debug code
-- [ ] No hardcoded secrets or credentials
+1. **Missing dependency**: Package or file doesn't exist
+2. **Unclear requirements**: Acceptance criteria is ambiguous
+3. **Breaking change needed**: Task requires breaking existing functionality
+4. **Auth/secrets needed**: Task requires credentials not available
+5. **Cross-repo dependency**: Task requires changes in another repo
+
+## How to Mark BLOCKED
+
+1. Update task status to `BLOCKED` in README.md
+2. Add blocker to `docs/AI_STATE.md` Active Blockers table
+3. Create PR with partial work (if any)
+4. Add `blocked` label to PR
+5. Document blocker reason in PR description
+
+## Task Pickup Order
+
+1. Pick tasks marked `READY` first (highest priority, lowest risk)
+2. Then pick `TODO` tasks in priority order (1 = highest)
+3. Never pick `IN_PROGRESS` tasks (another agent may be working)
+4. Never pick `BLOCKED` tasks until blocker is resolved
+
+## Package Seam Rule
+
+**CRITICAL**: Only `src/catalogCore.tsx` may import `@signal/catalog-core`.
+
+All other files must import from `./catalogCore.tsx`. This enables:
+- Easy stub-to-real swap
+- Single point of package version control
+- Clear integration boundary
+
+---
+
+*Version: 1.0.0*
