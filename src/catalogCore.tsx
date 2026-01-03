@@ -14,7 +14,10 @@ import { clientConfig } from './client.config'
 // =============================================================================
 // SDK Integration - @signal-core/catalog-react-sdk
 // =============================================================================
-import { fetchJson } from '@signal-core/catalog-react-sdk'
+// TODO: Uncomment when @signal-core/catalog-react-sdk is available
+// import { fetchJson } from '@signal-core/catalog-react-sdk'
+
+import { mockProducts } from './data/mockProducts'
 
 // SDK Product type (matches signal-catalog server models)
 interface SDKProduct {
@@ -30,6 +33,51 @@ interface SDKProduct {
   images: Array<{ id: string; url: string; type: 'original' | 'generated' }>
   createdAt: string
   updatedAt: string
+}
+
+// Local fetchJson stub - uses mock data until real SDK is available
+// This simulates the SDK's fetchJson function for development
+async function fetchJson<T>(url: string): Promise<T> {
+  // Simulate network delay for realistic behavior
+  await new Promise((resolve) => setTimeout(resolve, 100))
+
+  // Convert mock products to SDK format
+  const sdkProducts: SDKProduct[] = mockProducts.map((p) => ({
+    id: p.id,
+    orgId: 'demo-org',
+    name: p.name,
+    description: p.description,
+    price: p.price,
+    currency: 'USD',
+    category: p.category,
+    status: 'active' as const,
+    tags: [
+      ...(p.isNew ? ['new'] : []),
+      ...(p.isFeatured ? ['featured'] : []),
+    ],
+    images: p.imageUrl
+      ? [{ id: `img-${p.id}`, url: p.imageUrl, type: 'original' as const }]
+      : [],
+    createdAt: p.createdAt.toISOString(),
+    updatedAt: p.createdAt.toISOString(),
+  }))
+
+  // Parse URL to determine what to return
+  const urlParts = url.split('/')
+  const productsIndex = urlParts.indexOf('products')
+
+  if (productsIndex !== -1 && urlParts[productsIndex + 1]) {
+    // Single product request: /store/{id}/products/{productId}
+    const productId = urlParts[productsIndex + 1]
+    const product = sdkProducts.find((p) => p.id === productId)
+    if (!product) {
+      throw new Error(`Product not found: ${productId}`)
+    }
+    return product as T
+  }
+
+  // All products request: /store/{id}/products
+  return sdkProducts as T
 }
 
 // UI Components
