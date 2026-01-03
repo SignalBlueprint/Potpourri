@@ -3,6 +3,7 @@ import { clientConfig } from './client.config'
 import { makeRouteTree } from './catalogCore'
 import { AppShell } from './layout/AppShell'
 import { contactRoute } from './routes/contact'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 export const rootRoute = createRootRoute({
   component: RootLayout,
@@ -10,9 +11,11 @@ export const rootRoute = createRootRoute({
 
 function RootLayout() {
   return (
-    <AppShell>
-      <Outlet />
-    </AppShell>
+    <ErrorBoundary>
+      <AppShell>
+        <Outlet />
+      </AppShell>
+    </ErrorBoundary>
   )
 }
 
