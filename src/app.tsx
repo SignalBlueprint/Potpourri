@@ -16,10 +16,7 @@ function RootLayout() {
               {clientConfig.brand.name}
             </Link>
             <div className="flex gap-6">
-              <Link
-                to="/"
-                className="text-gray-600 hover:text-gray-900 [&.active]:text-indigo-600"
-              >
+              <Link to="/" className="text-gray-600 hover:text-gray-900 [&.active]:text-indigo-600">
                 Home
               </Link>
               <Link

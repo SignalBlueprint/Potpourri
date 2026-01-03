@@ -85,13 +85,7 @@ export const clientConfig: ClientConfig = {
   },
 
   catalog: {
-    categories: [
-      'Home Decor',
-      'Kitchen & Dining',
-      'Garden & Outdoor',
-      'Seasonal',
-      'Gift Sets',
-    ],
+    categories: ['Home Decor', 'Kitchen & Dining', 'Garden & Outdoor', 'Seasonal', 'Gift Sets'],
     taxNote: 'Sales tax calculated at checkout based on shipping address.',
     shippingNote: 'Free shipping on orders over $50. Standard delivery 3-5 business days.',
   },
