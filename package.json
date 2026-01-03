@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "type": "module",
   "pendingDependencies": {
-    "@signal/catalog-core": "workspace:* OR ^1.0.0 (move to dependencies when ready)"
+    "@signal/catalog-core": "workspace:* OR ^1.0.0 (move to dependencies when ready)",
+    "@signal-core/catalog-react-sdk": "file:../signal-catalog/packages/react-sdk (move to dependencies when SDK is available)"
   },
   "scripts": {
     "dev": "vite",
@@ -18,7 +19,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@signal-core/catalog-react-sdk": "file:../signal-catalog/packages/react-sdk",
     "@tanstack/react-query": "^5.62.0",
     "@tanstack/react-router": "^1.93.0",
     "@tanstack/react-table": "^8.21.3",
