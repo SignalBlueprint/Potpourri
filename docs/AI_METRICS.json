@@ -1,0 +1,29 @@
+{
+  "lastUpdated": "2026-01-03",
+  "counters": {
+    "totalPRs": 4,
+    "mergedPRs": 4,
+    "closedPRs": 0,
+    "tasksCompleted": 0,
+    "tasksPending": 10
+  },
+  "tasksBySize": {
+    "S": { "completed": 0, "pending": 9 },
+    "M": { "completed": 0, "pending": 1 },
+    "L": { "completed": 0, "pending": 0 },
+    "XL": { "completed": 0, "pending": 0 }
+  },
+  "tasksByCategory": {
+    "packageIntegration": { "completed": 0, "pending": 4 },
+    "theming": { "completed": 0, "pending": 2 },
+    "features": { "completed": 0, "pending": 1 },
+    "seo": { "completed": 0, "pending": 1 },
+    "deployment": { "completed": 0, "pending": 1 },
+    "security": { "completed": 0, "pending": 1 }
+  },
+  "ciRuns": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  }
+}
