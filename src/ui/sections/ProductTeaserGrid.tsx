@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Card, Badge, Button, SectionTitle } from '../index'
+import { SkeletonCard, SkeletonImage, Skeleton } from '../../components/Skeleton'
 
 // Mock new arrival items
 const mockNewArrivals = [
@@ -110,6 +111,45 @@ export function ProductTeaserGrid({
             View All Products
           </Button>
         </Link>
+      </div>
+    </section>
+  )
+}
+
+// =============================================================================
+// ProductTeaserGridSkeleton - Loading placeholder for new arrivals
+// =============================================================================
+
+interface ProductTeaserGridSkeletonProps {
+  itemCount?: number
+}
+
+export function ProductTeaserGridSkeleton({ itemCount = 6 }: ProductTeaserGridSkeletonProps) {
+  return (
+    <section className="py-12 sm:py-16" aria-label="Loading products">
+      {/* Title skeleton */}
+      <div className="mb-8 text-center">
+        <Skeleton className="mx-auto mb-2 h-8 w-40" />
+        <Skeleton className="mx-auto h-4 w-32" />
+      </div>
+
+      {/* Grid skeleton */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: itemCount }).map((_, i) => (
+          <SkeletonCard key={i}>
+            <SkeletonImage aspectRatio="square" />
+            <div className="p-4">
+              <Skeleton className="mb-1 h-3 w-20" />
+              <Skeleton className="mb-2 h-5 w-3/4" />
+              <Skeleton className="h-6 w-16" />
+            </div>
+          </SkeletonCard>
+        ))}
+      </div>
+
+      {/* CTA skeleton */}
+      <div className="mt-10 text-center">
+        <Skeleton className="mx-auto h-12 w-40 rounded-lg" />
       </div>
     </section>
   )

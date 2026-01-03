@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
 import { rootRoute } from '../app'
 import { Card, Container, Button, Badge } from '../ui'
 import { SEO } from '../components/SEO'
 import { ProductGallery } from '../ui/ProductGallery'
-import { RelatedProducts } from '../ui/RelatedProducts'
+import { RelatedProducts, RelatedProductsSkeleton } from '../ui/RelatedProducts'
 import { InquiryModal } from '../ui/InquiryModal'
 import { mockProducts, categoryIcons, type Category } from '../data/mockProducts'
 import { clientConfig } from '../client.config'
+import { Skeleton, SkeletonImage, SkeletonCard } from '../components/Skeleton'
 
 export const itemRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -18,12 +19,30 @@ export const itemRoute = createRoute({
 function ItemPage() {
   const { id } = itemRoute.useParams()
   const [isInquiryOpen, setIsInquiryOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Simulate initial data fetch
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 600)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Find the product by ID
   const product = mockProducts.find((p) => p.id === id)
 
   // Get config values
   const { enableCheckout } = clientConfig.features
+
+  // Show loading skeleton
+  if (isLoading) {
+    return (
+      <Container>
+        <ItemDetailSkeleton />
+      </Container>
+    )
+  }
 
   // Handle product not found
   if (!product) {
@@ -278,6 +297,100 @@ function ItemPage() {
         productName={product.name}
         productId={product.id}
       />
+    </>
+  )
+}
+
+// =============================================================================
+// ItemDetailSkeleton - Loading placeholder for product detail page
+// =============================================================================
+
+function ItemDetailSkeleton() {
+  return (
+    <>
+      {/* Breadcrumb skeleton */}
+      <nav className="py-4" aria-label="Loading">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-4 w-12" />
+          <span className="text-neutral-400">/</span>
+          <Skeleton className="h-4 w-16" />
+          <span className="text-neutral-400">/</span>
+          <Skeleton className="h-4 w-24" />
+        </div>
+      </nav>
+
+      {/* Product Detail skeleton */}
+      <section className="pb-12">
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+          {/* Image Gallery skeleton */}
+          <div className="space-y-4">
+            <SkeletonImage aspectRatio="square" className="rounded-xl" />
+            <div className="flex gap-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <SkeletonImage key={i} className="h-16 w-16 rounded-lg" aspectRatio="auto" />
+              ))}
+            </div>
+          </div>
+
+          {/* Product Info skeleton */}
+          <div className="space-y-6">
+            {/* Category & Badges */}
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-6 w-24 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+
+            {/* Title & Price */}
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-3/4" />
+              <Skeleton className="h-8 w-24" />
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-2/3" />
+            </div>
+
+            {/* Product Details Card */}
+            <SkeletonCard className="space-y-3 p-4">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            </SkeletonCard>
+
+            {/* Action buttons */}
+            <div className="flex gap-3">
+              <Skeleton className="h-12 w-40 rounded-lg" />
+              <Skeleton className="h-12 w-24 rounded-lg" />
+            </div>
+
+            {/* Trust indicators */}
+            <div className="grid grid-cols-2 gap-4 border-t border-neutral-200 pt-6">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-5 rounded-full" />
+                <Skeleton className="h-4 w-28" />
+              </div>
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-5 rounded-full" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Related Products skeleton */}
+      <RelatedProductsSkeleton />
+
+      {/* Bottom spacing */}
+      <div className="pb-16" />
     </>
   )
 }
