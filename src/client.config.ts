@@ -63,6 +63,30 @@ export interface ClientConfig {
   catalog: CatalogConfig
 }
 
+// =============================================================================
+// Theme Application
+// Call this once at app startup to sync CSS custom properties with config
+// =============================================================================
+export function applyTheme(config: ClientConfig = clientConfig): void {
+  const root = document.documentElement
+  const { colors } = config.brand
+
+  // Brand colors
+  root.style.setProperty('--color-brand-primary', colors.primary)
+  root.style.setProperty('--color-brand-accent', colors.accent)
+
+  // Neutral palette
+  root.style.setProperty('--color-neutral-50', colors.neutral[50])
+  root.style.setProperty('--color-neutral-100', colors.neutral[100])
+  root.style.setProperty('--color-neutral-200', colors.neutral[200])
+  root.style.setProperty('--color-neutral-600', colors.neutral[600])
+  root.style.setProperty('--color-neutral-800', colors.neutral[800])
+  root.style.setProperty('--color-neutral-900', colors.neutral[900])
+
+  // Update document title with brand name
+  document.title = `${config.brand.name} | ${config.brand.tagline}`
+}
+
 export const clientConfig: ClientConfig = {
   brand: {
     name: 'Potpourri',
