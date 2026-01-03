@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { Product } from '../data/mockProducts'
 import { categoryIcons, type Category } from '../data/mockProducts'
@@ -14,10 +15,12 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onQuickAction }: ProductCardProps) {
+  const [imageError, setImageError] = useState(false)
   const { enableCheckout } = clientConfig.features
   const categoryIcon = categoryIcons[product.category as Category] || '📦'
 
   const actionLabel = enableCheckout ? 'Add to Cart' : 'View Details'
+  const showFallback = !product.imageUrl || imageError
 
   const handleQuickAction = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -34,12 +37,13 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
       <article className="relative overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-card ring-brand-primary/0 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-primary/20 hover:shadow-elevated hover:ring-4 hover:ring-brand-primary/10">
         {/* Image Container with aspect ratio */}
         <div className="relative aspect-square overflow-hidden bg-neutral-50">
-          {product.imageUrl ? (
+          {!showFallback ? (
             <img
-              src={product.imageUrl}
+              src={product.imageUrl!}
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200">
