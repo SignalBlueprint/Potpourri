@@ -22,7 +22,7 @@ Current truth for AI agents. Update after every PR.
 
 ## Active Branch
 
-None currently active.
+`claude/review-priority-task-y996s` - GIFT-005: Apply brand colors from config to Tailwind theme
 
 ## Environment Notes
 

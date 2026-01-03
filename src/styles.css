@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand colors from client.config.ts */
+    --color-brand-primary: #6366f1;
+    --color-brand-secondary: #4f46e5;
+    --color-brand-accent: #818cf8;
+  }
+}
