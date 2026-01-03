@@ -93,11 +93,34 @@ function Footer() {
     <footer className="mt-auto border-t border-neutral-200 bg-white">
       <Container>
         <div className="py-12">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
             {/* Brand */}
             <div className="space-y-3">
               <h3 className="text-lg font-semibold text-neutral-900">{brand.name}</h3>
               <p className="text-sm text-neutral-600">{brand.tagline}</p>
+            </div>
+
+            {/* Quick Links */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-600">
+                Quick Links
+              </h4>
+              <nav className="flex flex-col space-y-2 text-sm">
+                <Link to="/" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                  Home
+                </Link>
+                <Link to="/catalog" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                  Shop
+                </Link>
+                <Link to="/contact" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                  Contact
+                </Link>
+                {clientConfig.features.enableAdmin && (
+                  <Link to="/admin" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                    Admin
+                  </Link>
+                )}
+              </nav>
             </div>
 
             {/* Contact */}
