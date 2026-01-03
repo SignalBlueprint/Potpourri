@@ -59,12 +59,28 @@ export interface CatalogConfig {
   shippingNote: string
 }
 
+export interface Testimonial {
+  id: string
+  name: string
+  location: string
+  text: string
+  rating: number
+}
+
+export interface TestimonialsConfig {
+  enabled: boolean
+  title: string
+  subtitle: string
+  items: Testimonial[]
+}
+
 export interface ClientConfig {
   brand: BrandConfig
   tenant: TenantConfig
   features: FeaturesConfig
   contact: ContactConfig
   catalog: CatalogConfig
+  testimonials: TestimonialsConfig
 }
 
 // =============================================================================
@@ -146,5 +162,34 @@ export const clientConfig: ClientConfig = {
     categories: ['Home Decor', 'Kitchen & Dining', 'Garden & Outdoor', 'Seasonal', 'Gift Sets'],
     taxNote: 'Sales tax calculated at checkout based on shipping address.',
     shippingNote: 'Free shipping on orders over $50. Standard delivery 3-5 business days.',
+  },
+
+  testimonials: {
+    enabled: true,
+    title: 'What Our Customers Say',
+    subtitle: 'Real reviews from our happy shoppers',
+    items: [
+      {
+        id: '1',
+        name: 'Sarah M.',
+        location: 'Portland, OR',
+        text: 'Found the perfect housewarming gift here! The quality exceeded my expectations and the packaging was beautiful.',
+        rating: 5,
+      },
+      {
+        id: '2',
+        name: 'James K.',
+        location: 'Seattle, WA',
+        text: 'Great selection of unique items you won\'t find anywhere else. The staff was incredibly helpful with gift recommendations.',
+        rating: 5,
+      },
+      {
+        id: '3',
+        name: 'Emily R.',
+        location: 'Vancouver, WA',
+        text: 'I always come here for birthday gifts. Everything is so thoughtfully curated and the prices are fair.',
+        rating: 5,
+      },
+    ],
   },
 }
