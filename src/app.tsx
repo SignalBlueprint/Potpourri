@@ -13,7 +13,7 @@ function RootLayout() {
         <div className="mx-auto max-w-7xl px-4">
           <div className="flex h-16 items-center justify-between">
             <Link to="/" className="text-xl font-bold text-indigo-600">
-              {clientConfig.branding.name}
+              {clientConfig.brand.name}
             </Link>
             <div className="flex gap-6">
               <Link
@@ -28,7 +28,7 @@ function RootLayout() {
               >
                 Catalog
               </Link>
-              {clientConfig.features.enableAdminPanel && (
+              {clientConfig.features.enableAdmin && (
                 <Link
                   to="/admin"
                   className="text-gray-600 hover:text-gray-900 [&.active]:text-indigo-600"
