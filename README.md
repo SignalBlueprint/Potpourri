@@ -109,8 +109,7 @@ npm run preview       # Preview production build locally
 ## Known Issues
 
 1. **Package seam uses stubs** - Real `@signal/catalog-core` not yet published
-2. **No deployment config** - Needs Vercel/Netlify setup
-3. **Checkout disabled** - Feature flag exists but no implementation
+2. **Checkout disabled** - Feature flag exists but no implementation
 
 ## Task Queue (Autopilot)
 
@@ -122,7 +121,7 @@ npm run preview       # Preview production build locally
 | GIFT-004 | Add category navigation component            | 2        | DONE        | `src/components/CategoryNav.tsx`, `src/routes/catalog.tsx` | WHAT: Sidebar or tabs for category filtering / WHY: Easier browsing / WHERE: Catalog page / DONE: Click category filters products                       | Branch: claude/cost-control-setup-BjjJY |
 | GIFT-005 | Polish product detail gallery                | 2        | DONE        | `src/routes/item.tsx`, `src/ui/ProductGallery.tsx`       | WHAT: Add zoom and thumbnail nav / WHY: Users want to inspect products / WHERE: Item page / DONE: Click thumbnail shows image, zoom works               | Branch: claude/cost-control-setup-8LW3i |
 | GIFT-006 | Add admin auth gate                          | 2        | DONE        | `src/routes/admin.tsx`, `src/hooks/useAuth.ts`           | WHAT: Simple password/flag check / WHY: Prevent public access / WHERE: Admin route / DONE: Unauthenticated users see login prompt                       | Branch: claude/cost-control-setup-6D4uU |
-| GIFT-007 | Add Vercel deployment config                 | 3        | TODO        | `vercel.json`, `.env.example`                            | WHAT: Configure Vercel deployment / WHY: Enable production hosting / WHERE: Root / DONE: `vercel deploy` works                                          |          |
+| GIFT-007 | Add Vercel deployment config                 | 3        | DONE        | `vercel.json`, `.env.example`                            | WHAT: Configure Vercel deployment / WHY: Enable production hosting / WHERE: Root / DONE: `vercel deploy` works                                          | Branch: claude/cost-control-setup-EEwp6 |
 | GIFT-008 | Prepare catalogCore for package swap         | 3        | TODO        | `src/catalogCore.tsx`                                    | WHAT: Add clear swap instructions and types / WHY: Smooth integration when package ready / WHERE: Package seam / DONE: Comments explain swap process    |          |
 | GIFT-009 | Add SEO meta tags and Open Graph             | 3        | DONE        | `index.html`, `src/components/SEO.tsx`                   | WHAT: Dynamic meta tags per page / WHY: Better sharing/search / WHERE: Head / DONE: Sharing shows correct title/image                                   | Branch: claude/cost-control-setup-8aQDd |
 | GIFT-010 | Add contact page with map                    | 3        | DONE        | `src/routes/contact.tsx`, `src/client.config.ts`, `src/app.tsx` | WHAT: Contact form + address map / WHY: Multiple contact methods / WHERE: New route / DONE: Form submits, map shows location                            | Branch: claude/cost-control-setup-MvyPW |

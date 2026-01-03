@@ -44,7 +44,6 @@ Auto-merge enabled via `automerge` label.
 | ID | Blocker | Impact | Owner | Notes |
 |----|---------|--------|-------|-------|
 | B1 | `@signal/catalog-core` not published | Cannot swap stubs for real package | Neal | Package in development |
-| B2 | No deployment config | Cannot deploy to production | - | GIFT-007 addresses this |
 
 ## Last 10 Merged PRs
 
