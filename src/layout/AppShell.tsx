@@ -35,7 +35,7 @@ function Header({ searchSlot }: HeaderProps) {
       <Container>
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo & Tagline */}
-          <Link to="/" className="group flex items-baseline gap-2">
+          <Link to="/" className="group flex items-baseline gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
             <span className="text-xl font-semibold text-neutral-900 transition-colors group-hover:text-brand-primary">
               {clientConfig.brand.name}
             </span>
@@ -78,6 +78,7 @@ function NavLink({ to, children }: NavLinkProps) {
         rounded-lg px-3 py-2 text-sm font-medium text-neutral-600
         transition-colors duration-200
         hover:bg-neutral-100 hover:text-neutral-900
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2
         [&.active]:bg-brand-primary/10 [&.active]:text-brand-primary
       "
     >
@@ -110,17 +111,17 @@ function Footer() {
                 Quick Links
               </h4>
               <nav className="flex flex-col space-y-2 text-sm">
-                <Link to="/" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                <Link to="/" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Home
                 </Link>
-                <Link to="/catalog" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                <Link to="/catalog" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Shop
                 </Link>
-                <Link to="/contact" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                <Link to="/contact" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Contact
                 </Link>
                 {clientConfig.features.enableAdmin && (
-                  <Link to="/admin" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                  <Link to="/admin" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                     Admin
                   </Link>
                 )}
@@ -136,7 +137,7 @@ function Footer() {
                 <p>
                   <a
                     href={`mailto:${contact.email}`}
-                    className="transition-colors hover:text-brand-primary"
+                    className="rounded transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                   >
                     {contact.email}
                   </a>
@@ -144,7 +145,7 @@ function Footer() {
                 <p>
                   <a
                     href={`tel:${contact.phone.replace(/[^0-9]/g, '')}`}
-                    className="transition-colors hover:text-brand-primary"
+                    className="rounded transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                   >
                     {contact.phone}
                   </a>

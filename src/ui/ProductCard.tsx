@@ -32,7 +32,7 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
     <Link
       to="/item/$id"
       params={{ id: product.id }}
-      className="group block"
+      className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
     >
       <article className="relative overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-card ring-brand-primary/0 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-primary/20 hover:shadow-elevated hover:ring-4 hover:ring-brand-primary/10">
         {/* Image Container with aspect ratio */}
