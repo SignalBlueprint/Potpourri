@@ -5,6 +5,10 @@ export { AdminStatCard, AdminStatCardSkeleton, PackageIcon, TagIcon, InboxIcon, 
 
 // Re-export search component
 export { SearchInput } from './SearchInput'
+
+// Re-export empty state components
+export { EmptyState, CatalogEmptyState } from './EmptyState'
+export type { EmptyStateProps, CatalogEmptyStateProps } from './EmptyState'
 export type { AdminStatCardProps } from './AdminStatCard'
 export { AdminProductsTable, AdminProductsTableEmpty, AdminProductsTableSkeleton, mockProducts } from './AdminProductsTable'
 export type { AdminProduct } from './AdminProductsTable'

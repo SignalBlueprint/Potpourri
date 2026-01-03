@@ -1,7 +1,7 @@
 import { createRoute } from '@tanstack/react-router'
 import { useState, useMemo, useEffect } from 'react'
 import { rootRoute } from '../app'
-import { Container, PageHeader } from '../ui'
+import { Container, PageHeader, CatalogEmptyState } from '../ui'
 import { SEO } from '../components/SEO'
 import { Breadcrumbs, BreadcrumbsSkeleton } from '../components/Breadcrumbs'
 import { FilterBar, FilterBarSkeleton } from '../ui/FilterBar'
@@ -131,7 +131,7 @@ function CatalogPage() {
               </div>
             ) : filteredProducts.length === 0 ? (
               // Empty state
-              <EmptyState
+              <CatalogEmptyState
                 search={search}
                 category={selectedCategory}
                 onClearFilters={() => {
@@ -156,41 +156,5 @@ function CatalogPage() {
       </div>
     </Container>
     </>
-  )
-}
-
-// =============================================================================
-// Empty State Component
-// =============================================================================
-
-interface EmptyStateProps {
-  search: string
-  category: string | null
-  onClearFilters: () => void
-}
-
-function EmptyState({ search, category, onClearFilters }: EmptyStateProps) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="mb-4 text-6xl">🔍</div>
-      <h3 className="mb-2 text-lg font-semibold text-neutral-900">
-        No products found
-      </h3>
-      <p className="mb-6 max-w-md text-neutral-600">
-        {search && category
-          ? `We couldn't find any products matching "${search}" in ${category}.`
-          : search
-            ? `We couldn't find any products matching "${search}".`
-            : category
-              ? `No products available in ${category} right now.`
-              : 'No products are currently available.'}
-      </p>
-      <button
-        onClick={onClearFilters}
-        className="rounded-lg bg-brand-primary px-6 py-2.5 font-medium text-white transition-colors hover:bg-neutral-800"
-      >
-        Clear Filters
-      </button>
-    </div>
   )
 }
