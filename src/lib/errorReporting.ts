@@ -1,133 +1,80 @@
 // =============================================================================
 // Error Reporting
-// Placeholder for error reporting integration (Sentry, Bugsnag, etc.)
+// Placeholder implementation ready for Sentry, Bugsnag, etc.
 // =============================================================================
 
-/**
- * Error context for additional debugging information.
- */
-export interface ErrorContext {
-  // Component/location where error occurred
-  component?: string
-  action?: string
-
-  // User context
-  userId?: string
-  sessionId?: string
-
-  // Additional metadata
+interface ErrorContext {
+  componentStack?: string
   extra?: Record<string, unknown>
-
-  // Tags for filtering
   tags?: Record<string, string>
+  user?: {
+    id?: string
+    email?: string
+  }
 }
 
 /**
- * Severity levels for error reporting.
+ * Capture an exception for error reporting.
+ * In development: logs to console.
+ * In production: would send to error reporting service.
  */
-export type ErrorSeverity = 'fatal' | 'error' | 'warning' | 'info'
+export function captureException(error: Error, context?: ErrorContext): void {
+  // Always log to console for visibility
+  console.error('[Error Report]', error.message, {
+    error,
+    ...context,
+  })
 
-/**
- * Capture and report an exception.
- * In development, logs to console. In production, sends to error reporting service.
- *
- * @example
- * try {
- *   await riskyOperation()
- * } catch (error) {
- *   captureException(error, { component: 'InquiryModal', action: 'submit' })
- * }
- */
-export function captureException(
-  error: Error | unknown,
-  context?: ErrorContext,
-  severity: ErrorSeverity = 'error'
-): void {
-  const errorObject = error instanceof Error ? error : new Error(String(error))
-
-  // Development: log to console for debugging
-  if (import.meta.env.DEV) {
-    console.error('[error-reporting]', {
-      message: errorObject.message,
-      stack: errorObject.stack,
-      severity,
-      context,
-    })
-    return
-  }
-
-  // Production: send to error reporting service
-  // TODO: Replace with actual error reporting integration
+  // Production: integrate with real error reporting service
   // Examples:
   //
   // Sentry:
-  // import * as Sentry from '@sentry/react'
-  // Sentry.captureException(errorObject, {
-  //   level: severity,
-  //   tags: context?.tags,
-  //   extra: { ...context?.extra, component: context?.component, action: context?.action },
-  // })
+  // if (typeof Sentry !== 'undefined') {
+  //   Sentry.captureException(error, {
+  //     extra: context?.extra,
+  //     tags: context?.tags,
+  //   })
+  // }
   //
   // Bugsnag:
-  // import Bugsnag from '@bugsnag/js'
-  // Bugsnag.notify(errorObject, (event) => {
-  //   event.severity = severity
-  //   event.addMetadata('context', context)
-  // })
-
-  // For now, still log in production as a fallback
-  console.error('[error]', errorObject.message, context)
+  // if (typeof Bugsnag !== 'undefined') {
+  //   Bugsnag.notify(error, (event) => {
+  //     event.addMetadata('context', context)
+  //   })
+  // }
 }
 
 /**
- * Capture a message (non-exception) for logging/alerting.
- *
- * @example
- * captureMessage('User attempted invalid action', { action: 'delete', userId: '123' }, 'warning')
+ * Capture a message/log for error reporting.
+ * Useful for non-error events that need visibility.
  */
 export function captureMessage(
   message: string,
-  context?: ErrorContext,
-  severity: ErrorSeverity = 'info'
+  level: 'info' | 'warning' | 'error' = 'info',
+  context?: ErrorContext
 ): void {
-  // Development: log to console
-  if (import.meta.env.DEV) {
-    const logFn = severity === 'error' || severity === 'fatal' ? console.error : console.warn
-    logFn('[error-reporting]', message, context)
-    return
-  }
+  const logFn = level === 'error' ? console.error : level === 'warning' ? console.warn : console.log
+  logFn(`[${level.toUpperCase()}]`, message, context ?? '')
 
-  // Production: send to error reporting service
-  // TODO: Replace with actual integration
-  // Sentry.captureMessage(message, { level: severity, extra: context })
-
-  console.warn('[message]', message, context)
+  // Production: integrate with real error reporting service
+  // Example (Sentry):
+  // if (typeof Sentry !== 'undefined') {
+  //   Sentry.captureMessage(message, level)
+  // }
 }
 
 /**
  * Set user context for error reports.
- * Call this after user authentication.
+ * Call this when user logs in/out.
  */
-export function setUserContext(user: { id: string; email?: string }): void {
+export function setUserContext(user: { id?: string; email?: string } | null): void {
   if (import.meta.env.DEV) {
-    console.log('[error-reporting] User context set:', user)
-    return
+    console.log('[Error Reporting] User context set:', user)
   }
 
-  // Production:
-  // Sentry.setUser({ id: user.id, email: user.email })
-  void user
-}
-
-/**
- * Clear user context (e.g., on logout).
- */
-export function clearUserContext(): void {
-  if (import.meta.env.DEV) {
-    console.log('[error-reporting] User context cleared')
-    return
-  }
-
-  // Production:
-  // Sentry.setUser(null)
+  // Production: integrate with real error reporting service
+  // Example (Sentry):
+  // if (typeof Sentry !== 'undefined') {
+  //   Sentry.setUser(user)
+  // }
 }

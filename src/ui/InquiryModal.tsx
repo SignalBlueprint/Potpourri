@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, type FormEvent } from 'react'
 import { Button, Input } from './index'
 import { submitInquiry } from '../api/inquiries'
-import { trackInquiry } from '../lib/analytics'
+import { trackEvent } from '../lib/analytics'
 
 // =============================================================================
 // InquiryModal - Modal form for product inquiries
@@ -37,8 +37,8 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
   // Focus trap and escape key handling
   useEffect(() => {
     if (isOpen) {
-      // Track inquiry modal open
-      trackInquiry('start', { productId, productName })
+      // Track that inquiry modal was opened
+      trackEvent('inquiry_start', { productId, productName })
 
       // Focus the first input when modal opens
       nameInputRef.current?.focus()
@@ -75,10 +75,10 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
     setIsSubmitting(false)
 
     if (result.success) {
-      trackInquiry('success', { productId, productName })
+      trackEvent('inquiry_success', { productId, productName })
       setIsSubmitted(true)
     } else {
-      trackInquiry('error', { productId, productName, errorMessage: result.error })
+      trackEvent('inquiry_error', { productId, productName, error: result.error ?? 'unknown' })
       setError(result.error || 'Failed to submit inquiry. Please try again.')
     }
   }

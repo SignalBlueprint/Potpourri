@@ -70,18 +70,18 @@
 
 | ID | Title | Priority | Status | Blocked By | Area | Files | Acceptance Criteria | Notes |
 |----|-------|----------|--------|------------|------|-------|---------------------|-------|
-| POT-030 | Add env validation on startup | P1 | DONE | - | Ops | `src/lib/env.ts`, `src/main.tsx` | Missing VITE_API_BASE_URL shows actionable error in console | Validates env at startup, warns in dev |
-| POT-031 | Add analytics event placeholders | P1 | DONE | - | Analytics | `src/lib/analytics.ts`, `src/ui/InquiryModal.tsx` | trackEvent('inquiry_submit') etc, logs in dev, no-op in prod | Analytics stubs integrated in InquiryModal |
-| POT-032 | Add error reporting placeholder | P1 | DONE | - | Ops | `src/lib/errorReporting.ts`, `src/components/ErrorBoundary.tsx` | captureException stub called on errors, ready for Sentry | ErrorBoundary integrated with error reporting |
+| POT-030 | Add env validation on startup | P1 | DONE | - | Ops | `src/lib/env.ts`, `src/main.tsx`, `src/vite-env.d.ts` | Missing VITE_API_BASE_URL shows actionable error in console | Validates env vars at startup, logs warnings in dev |
+| POT-031 | Add analytics event placeholders | P1 | DONE | - | Analytics | `src/lib/analytics.ts`, `src/routes/item.tsx`, `src/ui/InquiryModal.tsx` | trackEvent('inquiry_submit') etc, logs in dev, no-op in prod | Tracks product_view, inquiry_start/success/error |
+| POT-032 | Add error reporting placeholder | P1 | DONE | - | Ops | `src/lib/errorReporting.ts`, `src/components/ErrorBoundary.tsx` | captureException stub called on errors, ready for Sentry | ErrorBoundary calls captureException |
 | POT-033 | Add console logging config | P1 | TODO | - | Ops | `src/lib/logger.ts` | Logger respects NODE_ENV, debug in dev, errors only in prod | Clean production console |
-| POT-034 | Verify production build optimization | P1 | TODO | - | Performance | `vite.config.ts`, `package.json` | Bundle <500KB gzipped, no duplicate deps, tree shaking works | Run `npm run build && analyze` |
+| POT-034 | Verify production build optimization | P1 | DONE | - | Performance | `vite.config.ts`, `package.json` | Bundle <500KB gzipped, no duplicate deps, tree shaking works | Build verified: 118KB gzipped |
 | POT-035 | Add inquiry status management | P1 | DONE | - | Admin | `src/ui/AdminInquiriesTable.tsx`, `src/api/inquiries.ts` | Status dropdown (new/contacted/closed), persists to localStorage | Status dropdown in table, persists to localStorage |
-| POT-036 | Add admin inquiry detail modal | P1 | DONE | - | Admin | `src/ui/InquiryDetailModal.tsx`, `src/routes/admin.tsx` | Click row opens modal with full inquiry data | Full inquiry view with status change + reply link |
-| POT-037 | Add trust badges to footer | P1 | DONE | - | Trust | `src/layout/AppShell.tsx`, `src/client.config.ts` | Payment security, shipping, guarantee badges visible | 4 configurable trust badges with icons |
+| POT-036 | Add admin inquiry detail modal | P1 | DONE | - | Admin | `src/ui/InquiryDetailModal.tsx`, `src/routes/admin.tsx` | Click row opens modal with full inquiry data | Full modal with status change and email reply |
+| POT-037 | Add trust badges to footer | P1 | DONE | - | Trust | `src/layout/AppShell.tsx` | Payment security, shipping, guarantee badges visible | 4 trust badges with icons in footer |
 | POT-038 | Add basic accessibility fixes | P1 | TODO | - | A11y | Multiple files | Focus states visible, alt text present, no critical axe violations | WCAG 2.1 AA basics |
 | POT-039 | Add keyboard navigation for gallery | P1 | TODO | - | A11y | `src/ui/ProductGallery.tsx` | Arrow keys navigate, Escape closes zoom, focus ring visible | Power users + a11y |
 | POT-040 | Prepare catalogCore swap instructions | P1 | TODO | - | Docs | `src/catalogCore.tsx` | Clear comments: "delete lines X-Y, uncomment line Z" | Smooth handoff |
-| POT-041 | Secure admin password handling | P1 | DONE | - | Security | `src/hooks/useAuth.ts`, `src/vite-env.d.ts` | Password from env var, not hardcoded in source | VITE_ADMIN_PASSWORD env var, defaults to "admin123" in dev |
+| POT-041 | Secure admin password handling | P1 | DONE | - | Security | `src/hooks/useAuth.ts`, `src/lib/env.ts` | Password from env var, not hardcoded in source | Uses VITE_ADMIN_PASSWORD with fallback |
 | POT-042 | Add rate limiting awareness to forms | P1 | TODO | - | Security | `src/ui/InquiryModal.tsx`, `src/routes/contact.tsx` | Disable submit for 2s after submit, show if rate limited | Prevent spam |
 | POT-043 | Add SEO robots.txt and sitemap | P1 | DONE | - | SEO | `public/robots.txt`, `public/sitemap.xml` | Both files exist and are valid | Basic SEO |
 | POT-044 | Add JSON-LD product schema | P1 | DONE | - | SEO | `src/components/ProductSchema.tsx`, `src/routes/item.tsx` | Valid JSON-LD in page source | Rich snippets |

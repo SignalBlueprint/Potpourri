@@ -25,7 +25,7 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Report error to error reporting service
     captureException(error, {
-      component: 'ErrorBoundary',
+      componentStack: errorInfo.componentStack ?? undefined,
       extra: {
         componentStack: errorInfo.componentStack,
       },

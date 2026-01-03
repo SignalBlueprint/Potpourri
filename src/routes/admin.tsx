@@ -26,7 +26,7 @@ import {
   ShoppingCartIcon,
 } from '../ui'
 import type { AdminProduct, ProductFormData, Category, AdminInquiry } from '../ui'
-import { updateInquiryStatus, type InquiryStatus } from '../api/inquiries'
+import { updateInquiryStatus } from '../api/inquiries'
 
 // =============================================================================
 // Route guard: block access if enableAdmin is false
@@ -139,7 +139,7 @@ function AdminPage() {
 
   // Inquiry detail modal state
   const [selectedInquiry, setSelectedInquiry] = useState<AdminInquiry | null>(null)
-  const [inquiryRefreshKey, setInquiryRefreshKey] = useState(0)
+  const [isInquiryDetailOpen, setIsInquiryDetailOpen] = useState(false)
 
   // Simulate loading state for demo purposes
   useEffect(() => {
@@ -191,23 +191,23 @@ function AdminPage() {
     }
   }
 
-  // Inquiry detail handlers
+  // Inquiry handlers
   const handleViewInquiry = (inquiry: AdminInquiry) => {
     setSelectedInquiry(inquiry)
+    setIsInquiryDetailOpen(true)
   }
 
   const handleCloseInquiryDetail = () => {
+    setIsInquiryDetailOpen(false)
     setSelectedInquiry(null)
   }
 
-  const handleInquiryStatusChange = (inquiryId: string, status: InquiryStatus) => {
+  const handleInquiryStatusChange = (inquiryId: string, status: AdminInquiry['status']) => {
     updateInquiryStatus(inquiryId, status)
-    // Update selected inquiry if it's the one being changed
-    if (selectedInquiry?.id === inquiryId) {
+    // Update local selected inquiry if it's the one being changed
+    if (selectedInquiry && selectedInquiry.id === inquiryId) {
       setSelectedInquiry({ ...selectedInquiry, status })
     }
-    // Trigger a refresh of the inquiries table
-    setInquiryRefreshKey((prev) => prev + 1)
   }
 
   // Show login form if not authenticated
@@ -316,8 +316,8 @@ function AdminPage() {
           <AdminInquiriesTableSkeleton />
         ) : (
           <AdminInquiriesTable
-            key={inquiryRefreshKey}
             onView={handleViewInquiry}
+            onStatusChange={handleInquiryStatusChange}
           />
         )}
       </section>
@@ -353,6 +353,14 @@ function AdminPage() {
         onClose={() => setIsCategoriesPanelOpen(false)}
         categories={categories}
         onCategoriesChange={setCategories}
+      />
+
+      {/* Inquiry Detail Modal */}
+      <InquiryDetailModal
+        inquiry={selectedInquiry}
+        isOpen={isInquiryDetailOpen}
+        onClose={handleCloseInquiryDetail}
+        onStatusChange={handleInquiryStatusChange}
       />
     </Container>
   )

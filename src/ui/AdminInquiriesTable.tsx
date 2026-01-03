@@ -9,7 +9,7 @@ import {
   type SortingState,
 } from '@tanstack/react-table'
 import { Button, Input } from './index'
-import { getLocalInquiries, updateInquiryStatus, type InquiryStatus } from '../api/inquiries'
+import { getLocalInquiries, updateInquiryStatus, getInquiryStatus } from '../api/inquiries'
 
 // =============================================================================
 // Inquiry type for the table
@@ -116,26 +116,30 @@ interface AdminInquiriesTableProps {
   inquiries?: AdminInquiry[]
   isLoading?: boolean
   onView?: (inquiry: AdminInquiry) => void
+  onStatusChange?: (inquiryId: string, status: AdminInquiry['status']) => void
 }
 
 export function AdminInquiriesTable({
   inquiries: propInquiries,
   isLoading = false,
   onView,
+  onStatusChange,
 }: AdminInquiriesTableProps) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'timestamp', desc: true }])
   const [globalFilter, setGlobalFilter] = useState('')
   const [inquiries, setInquiries] = useState<AdminInquiry[]>([])
 
   // Handle status change
-  const handleStatusChange = useCallback((inquiryId: string, newStatus: InquiryStatus) => {
-    // Update in localStorage
-    updateInquiryStatus(inquiryId, newStatus)
+  const handleStatusChange = useCallback((inquiryId: string, newStatus: AdminInquiry['status']) => {
     // Update local state
-    setInquiries((prev) =>
-      prev.map((inq) => (inq.id === inquiryId ? { ...inq, status: newStatus } : inq))
-    )
-  }, [])
+    setInquiries(prev => prev.map(inq =>
+      inq.id === inquiryId ? { ...inq, status: newStatus } : inq
+    ))
+    // Persist to localStorage
+    updateInquiryStatus(inquiryId, newStatus)
+    // Notify parent if callback provided
+    onStatusChange?.(inquiryId, newStatus)
+  }, [onStatusChange])
 
   // Load inquiries from localStorage or use mock data
   useEffect(() => {
@@ -153,12 +157,17 @@ export function AdminInquiriesTable({
           email: inq.email,
           message: inq.message,
           timestamp: inq.timestamp,
-          status: inq.status || 'new',
+          status: inq.status ?? 'new',
         }))
         setInquiries(transformed)
       } else {
         // Use mock data if no local inquiries
-        setInquiries(mockInquiries)
+        // Also load any stored statuses for mock inquiries
+        const mockWithStoredStatuses = mockInquiries.map((inq) => {
+          const storedStatus = getInquiryStatus(inq.id)
+          return storedStatus ? { ...inq, status: storedStatus } : inq
+        })
+        setInquiries(mockWithStoredStatuses)
       }
     }
   }, [propInquiries])
@@ -210,20 +219,10 @@ export function AdminInquiriesTable({
           const status = info.getValue()
           const inquiryId = info.row.original.id
           return (
-            <select
-              value={status}
-              onChange={(e) => handleStatusChange(inquiryId, e.target.value as InquiryStatus)}
-              className={`
-                cursor-pointer rounded-full px-3 py-1 text-xs font-medium
-                border-0 outline-none focus:ring-2 focus:ring-brand-primary/20
-                ${statusStyles[status]}
-              `}
-              aria-label={`Change status for inquiry from ${info.row.original.name}`}
-            >
-              <option value="new">New</option>
-              <option value="contacted">Contacted</option>
-              <option value="closed">Closed</option>
-            </select>
+            <StatusDropdown
+              status={status}
+              onChange={(newStatus) => handleStatusChange(inquiryId, newStatus)}
+            />
           )
         },
       }),
@@ -441,6 +440,79 @@ export function AdminInquiriesTableSkeleton() {
           </table>
         </div>
       </div>
+    </div>
+  )
+}
+
+// =============================================================================
+// StatusDropdown - Inline status selector
+// =============================================================================
+
+interface StatusDropdownProps {
+  status: AdminInquiry['status']
+  onChange: (status: AdminInquiry['status']) => void
+}
+
+function StatusDropdown({ status, onChange }: StatusDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const statusOptions: { value: AdminInquiry['status']; label: string }[] = [
+    { value: 'new', label: 'New' },
+    { value: 'contacted', label: 'Contacted' },
+    { value: 'closed', label: 'Closed' },
+  ]
+
+  const handleSelect = (newStatus: AdminInquiry['status']) => {
+    onChange(newStatus)
+    setIsOpen(false)
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${statusStyles[status]} hover:opacity-80`}
+        aria-label={`Change status from ${status}`}
+      >
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+        <svg
+          className={`h-3 w-3 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <>
+          {/* Backdrop to close dropdown */}
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setIsOpen(false)}
+          />
+          {/* Dropdown menu */}
+          <div className="absolute left-0 top-full z-20 mt-1 w-32 overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg">
+            {statusOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => handleSelect(option.value)}
+                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-neutral-50 ${
+                  status === option.value ? 'bg-neutral-100 font-medium' : ''
+                }`}
+              >
+                <span className={`h-2 w-2 rounded-full ${
+                  option.value === 'new' ? 'bg-blue-500' :
+                  option.value === 'contacted' ? 'bg-amber-500' : 'bg-neutral-400'
+                }`} />
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }

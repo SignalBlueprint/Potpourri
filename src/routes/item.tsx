@@ -11,6 +11,7 @@ import { InquiryModal } from '../ui/InquiryModal'
 import { mockProducts, categoryIcons, type Category } from '../data/mockProducts'
 import { clientConfig } from '../client.config'
 import { Skeleton, SkeletonImage, SkeletonCard } from '../components/Skeleton'
+import { trackProductView } from '../lib/analytics'
 
 export const itemRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -23,6 +24,12 @@ function ItemPage() {
   const [isInquiryOpen, setIsInquiryOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Find the product by ID
+  const product = mockProducts.find((p) => p.id === id)
+
+  // Get config values
+  const { enableCheckout } = clientConfig.features
+
   // Simulate initial data fetch
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -31,11 +38,12 @@ function ItemPage() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Find the product by ID
-  const product = mockProducts.find((p) => p.id === id)
-
-  // Get config values
-  const { enableCheckout } = clientConfig.features
+  // Track product view when product loads
+  useEffect(() => {
+    if (!isLoading && product) {
+      trackProductView(product.id, product.name, product.category)
+    }
+  }, [isLoading, product])
 
   // Show loading skeleton
   if (isLoading) {

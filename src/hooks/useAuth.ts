@@ -1,4 +1,5 @@
 import { useState, useCallback, useSyncExternalStore } from 'react'
+import { getEnv } from '../lib/env'
 
 // =============================================================================
 // Admin Authentication Hook
@@ -6,16 +7,9 @@ import { useState, useCallback, useSyncExternalStore } from 'react'
 
 const AUTH_STORAGE_KEY = 'potpourri_admin_auth'
 
-// Admin password from environment variable with fallback for development
-// IMPORTANT: Set VITE_ADMIN_PASSWORD in production to override the default
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123'
-
-// Warn in development if using default password
-if (import.meta.env.DEV && !import.meta.env.VITE_ADMIN_PASSWORD) {
-  console.warn(
-    '[auth] Using default admin password. Set VITE_ADMIN_PASSWORD in production.'
-  )
-}
+// Admin password from environment variable, with fallback for development
+// IMPORTANT: Set VITE_ADMIN_PASSWORD in production .env file
+const ADMIN_PASSWORD = getEnv().VITE_ADMIN_PASSWORD ?? 'admin123'
 
 // External store for sessionStorage sync
 function getAuthSnapshot(): boolean {

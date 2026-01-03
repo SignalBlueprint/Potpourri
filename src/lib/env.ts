@@ -1,59 +1,70 @@
 // =============================================================================
 // Environment Validation
-// Fail fast if required environment variables are missing.
+// Fail fast with actionable error messages if required env vars are missing.
 // =============================================================================
 
-interface EnvConfig {
+/**
+ * Environment configuration with validation.
+ * Call validateEnv() at app startup to ensure all required vars are set.
+ */
+export interface EnvConfig {
   VITE_API_BASE_URL: string
   VITE_ADMIN_PASSWORD?: string
 }
 
-interface EnvValidationResult {
-  valid: boolean
-  config: EnvConfig
-  warnings: string[]
+/**
+ * Get the current environment configuration.
+ * Returns validated environment variables.
+ */
+export function getEnv(): EnvConfig {
+  return {
+    VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL ?? '/api',
+    VITE_ADMIN_PASSWORD: import.meta.env.VITE_ADMIN_PASSWORD,
+  }
 }
 
 /**
- * Validate environment variables at startup.
- * Logs warnings for missing optional vars, throws for missing required vars.
+ * Validate required environment variables at startup.
+ * Logs warnings for missing optional vars, errors for missing required vars.
  */
-export function validateEnv(): EnvValidationResult {
+export function validateEnv(): void {
+  const env = getEnv()
   const warnings: string[] = []
+  const errors: string[] = []
 
-  // Required env vars (with defaults for development)
-  const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
-
-  // Optional env vars
-  const VITE_ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
-
-  // Warn if admin password is not set (security concern for production)
-  if (!VITE_ADMIN_PASSWORD && import.meta.env.PROD) {
+  // VITE_API_BASE_URL is optional (defaults to /api)
+  if (!import.meta.env.VITE_API_BASE_URL) {
     warnings.push(
-      'VITE_ADMIN_PASSWORD not set. Using default password is a security risk in production.'
+      'VITE_API_BASE_URL is not set. Using default "/api". ' +
+        'Set this in your .env file for production.'
+    )
+  }
+
+  // VITE_ADMIN_PASSWORD is recommended for production
+  if (!env.VITE_ADMIN_PASSWORD) {
+    warnings.push(
+      'VITE_ADMIN_PASSWORD is not set. Using hardcoded fallback. ' +
+        'Set this in your .env file for production security.'
     )
   }
 
   // Log warnings in development
   if (import.meta.env.DEV && warnings.length > 0) {
-    console.warn('[env] Validation warnings:')
+    console.warn(
+      '%c[Env Validation] Warnings:',
+      'color: orange; font-weight: bold'
+    )
     warnings.forEach((w) => console.warn(`  - ${w}`))
   }
 
-  return {
-    valid: true,
-    config: {
-      VITE_API_BASE_URL,
-      VITE_ADMIN_PASSWORD,
-    },
-    warnings,
+  // Throw on critical errors
+  if (errors.length > 0) {
+    const errorMessage = `Environment validation failed:\n${errors.map((e) => `  - ${e}`).join('\n')}`
+    console.error(
+      '%c[Env Validation] Critical Errors:',
+      'color: red; font-weight: bold'
+    )
+    errors.forEach((e) => console.error(`  - ${e}`))
+    throw new Error(errorMessage)
   }
-}
-
-/**
- * Get a validated env value with type safety.
- */
-export function getEnv<K extends keyof EnvConfig>(key: K): EnvConfig[K] {
-  const result = validateEnv()
-  return result.config[key]
 }
