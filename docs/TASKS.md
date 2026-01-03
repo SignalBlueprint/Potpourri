@@ -102,7 +102,7 @@
 | POT-053 | Add product favorites/wishlist | P2 | TODO | - | UX | `src/hooks/useFavorites.ts` | Heart icon saves to localStorage, favorites page | Engagement feature |
 | POT-054 | Add product comparison | P2 | TODO | - | UX | `src/routes/compare.tsx` | Select 2-4 products, side-by-side table | Decision helper |
 | POT-055 | Add recently viewed products | P2 | DONE | - | UX | `src/hooks/useRecentlyViewed.ts`, `src/ui/RecentlyViewed.tsx`, `src/routes/item.tsx` | Show last 4 viewed products on item page | Cross-sell. localStorage persistence, syncs across tabs |
-| POT-056 | Add newsletter signup | P2 | TODO | - | Marketing | `src/ui/NewsletterForm.tsx`, `src/layout/AppShell.tsx` | Email input in footer, localStorage capture | Lead nurture |
+| POT-056 | Add newsletter signup | P2 | DONE | - | Marketing | `src/ui/NewsletterForm.tsx`, `src/layout/AppShell.tsx`, `src/ui/index.tsx`, `src/lib/analytics.ts` | Email input in footer, localStorage capture | Lead nurture. Centered form above trust badges, analytics tracking, success state |
 | POT-057 | Add social share buttons | P2 | TODO | - | Marketing | `src/ui/ShareButtons.tsx`, `src/routes/item.tsx` | Share to Twitter, Facebook, copy link | Viral growth |
 | POT-058 | Add admin product import CSV | P2 | TODO | - | Admin | `src/ui/AdminImportCSV.tsx` | Upload CSV, parse, preview, import | Bulk operations |
 | POT-059 | Add admin export data | P2 | TODO | - | Admin | `src/routes/admin.tsx` | Download products/inquiries as CSV | Data portability |
@@ -126,8 +126,8 @@
 | BLOCKED Epic | 5 | 0 | 0 | 5 |
 | P0 | 20 | 20 | 0 | 0 |
 | P1 | 17 | 15 | 2 | 0 |
-| P2 | 20 | 2 | 18 | 0 |
-| **Total** | **62** | **37** | **20** | **5** |
+| P2 | 20 | 3 | 17 | 0 |
+| **Total** | **62** | **38** | **19** | **5** |
 
 ---
 
@@ -147,4 +147,4 @@
 
 ---
 
-*Last updated: 2026-01-03 (POT-055 - recently viewed products)*
+*Last updated: 2026-01-03 (POT-056 - newsletter signup form)*

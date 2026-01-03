@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { type ReactNode } from 'react'
 import { clientConfig } from '../client.config'
-import { Container } from '../ui'
+import { Container, NewsletterForm } from '../ui'
 import { MobileNav } from './MobileNav'
 
 // =============================================================================
@@ -179,8 +179,23 @@ function Footer() {
             </div>
           </div>
 
-          {/* Trust Badges */}
+          {/* Newsletter Signup */}
           <div className="mt-8 border-t border-neutral-200 pt-6">
+            <div className="mx-auto max-w-md text-center">
+              <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-600">
+                Stay Updated
+              </h4>
+              <p className="mt-2 text-sm text-neutral-600">
+                Get the latest arrivals and exclusive offers.
+              </p>
+              <div className="mt-3">
+                <NewsletterForm />
+              </div>
+            </div>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="mt-6 border-t border-neutral-200 pt-6">
             <div className="flex flex-wrap items-center justify-center gap-6 text-neutral-500">
               <TrustBadge icon="shield" label="Secure Checkout" />
               <TrustBadge icon="truck" label="Free Shipping $50+" />
