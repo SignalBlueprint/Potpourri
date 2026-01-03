@@ -31,6 +31,7 @@ describe('Home route', () => {
 
   it('displays the tagline', async () => {
     renderWithProviders('/')
-    expect(await screen.findByText('Your curated gift shop experience')).toBeInTheDocument()
+    const taglines = await screen.findAllByText('Curated gifts for every occasion')
+    expect(taglines.length).toBeGreaterThan(0)
   })
 })

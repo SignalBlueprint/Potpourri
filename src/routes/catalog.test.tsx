@@ -26,11 +26,11 @@ function renderWithProviders(initialPath: string) {
 describe('Catalog route', () => {
   it('renders the catalog page', async () => {
     renderWithProviders('/catalog')
-    expect(await screen.findByRole('heading', { name: 'Catalog' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Shop' })).toBeInTheDocument()
   })
 
   it('displays browse message', async () => {
     renderWithProviders('/catalog')
-    expect(await screen.findByText('Browse our curated collection')).toBeInTheDocument()
+    expect(await screen.findByText(/Browse our curated collection/)).toBeInTheDocument()
   })
 })

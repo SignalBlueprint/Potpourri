@@ -5,11 +5,19 @@
 
 export interface BrandConfig {
   name: string
+  tagline: string
   logoUrl: string
   colors: {
     primary: string
-    secondary: string
     accent: string
+    neutral: {
+      50: string
+      100: string
+      200: string
+      600: string
+      800: string
+      900: string
+    }
   }
 }
 
@@ -34,6 +42,11 @@ export interface ContactConfig {
     zip: string
     country: string
   }
+  hours: {
+    weekdays: string
+    saturday: string
+    sunday: string
+  }
 }
 
 export interface CatalogConfig {
@@ -52,12 +65,20 @@ export interface ClientConfig {
 
 export const clientConfig: ClientConfig = {
   brand: {
-    name: 'Potpourri Gift Shop',
+    name: 'Potpourri',
+    tagline: 'Curated gifts for every occasion',
     logoUrl: '/logo.svg',
     colors: {
-      primary: '#6366f1',
-      secondary: '#4f46e5',
-      accent: '#818cf8',
+      primary: '#7c6a5d', // Warm taupe
+      accent: '#d4a59a', // Dusty rose
+      neutral: {
+        50: '#faf9f7', // Warm white
+        100: '#f5f3f0', // Light cream
+        200: '#e8e4df', // Soft beige
+        600: '#6b6560', // Muted gray
+        800: '#3d3936', // Dark charcoal
+        900: '#2a2724', // Near black
+      },
     },
   },
 
@@ -81,6 +102,11 @@ export const clientConfig: ClientConfig = {
       state: 'OR',
       zip: '97201',
       country: 'USA',
+    },
+    hours: {
+      weekdays: 'Mon-Fri: 10am - 7pm',
+      saturday: 'Sat: 10am - 6pm',
+      sunday: 'Sun: 12pm - 5pm',
     },
   },
 

@@ -5,8 +5,50 @@
 @layer base {
   :root {
     /* Brand colors from client.config.ts */
-    --color-brand-primary: #6366f1;
-    --color-brand-secondary: #4f46e5;
-    --color-brand-accent: #818cf8;
+    --color-brand-primary: #7c6a5d;
+    --color-brand-accent: #d4a59a;
+
+    /* Neutral palette */
+    --color-neutral-50: #faf9f7;
+    --color-neutral-100: #f5f3f0;
+    --color-neutral-200: #e8e4df;
+    --color-neutral-600: #6b6560;
+    --color-neutral-800: #3d3936;
+    --color-neutral-900: #2a2724;
+  }
+
+  /* Base typography and background */
+  html {
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-neutral-50 text-neutral-800;
+    background: linear-gradient(180deg, var(--color-neutral-50) 0%, var(--color-neutral-100) 100%);
+    min-height: 100vh;
+  }
+
+  /* Headings */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-tight text-neutral-900;
+  }
+}
+
+@layer components {
+  /* Focus ring utility for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2;
+  }
+
+  /* Smooth transition utility */
+  .transition-base {
+    @apply transition-all duration-200 ease-in-out;
   }
 }
