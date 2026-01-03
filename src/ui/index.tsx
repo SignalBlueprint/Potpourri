@@ -1,5 +1,13 @@
 import { forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react'
 
+// Re-export admin components
+export { AdminStatCard, AdminStatCardSkeleton, PackageIcon, TagIcon, InboxIcon, ShoppingCartIcon } from './AdminStatCard'
+export type { AdminStatCardProps } from './AdminStatCard'
+export { AdminProductsTable, AdminProductsTableEmpty, AdminProductsTableSkeleton, mockProducts } from './AdminProductsTable'
+export type { AdminProduct } from './AdminProductsTable'
+export { AdminQuickActions, AdminQuickActionsSkeleton } from './AdminQuickActions'
+export type { QuickAction } from './AdminQuickActions'
+
 // =============================================================================
 // Container - Consistent page wrapper with max-width and padding
 // =============================================================================

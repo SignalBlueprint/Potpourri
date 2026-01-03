@@ -1,92 +1,158 @@
-import { createRoute } from '@tanstack/react-router'
+import { createRoute, redirect } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
 import { rootRoute } from '../app'
-import { Card, Container, PageHeader, Button, Badge } from '../ui'
+import { clientConfig } from '../client.config'
+import {
+  Container,
+  PageHeader,
+  SectionTitle,
+  AdminStatCard,
+  AdminStatCardSkeleton,
+  AdminProductsTable,
+  AdminProductsTableSkeleton,
+  AdminQuickActions,
+  AdminQuickActionsSkeleton,
+  PackageIcon,
+  TagIcon,
+  InboxIcon,
+  ShoppingCartIcon,
+} from '../ui'
+
+// =============================================================================
+// Route guard: block access if enableAdmin is false
+// =============================================================================
 
 export const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin',
+  beforeLoad: () => {
+    if (!clientConfig.features.enableAdmin) {
+      throw redirect({ to: '/' })
+    }
+  },
   component: AdminPage,
 })
 
+// =============================================================================
+// Admin Dashboard Page
+// =============================================================================
+
 function AdminPage() {
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Simulate loading state for demo purposes
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <Container>
-      <PageHeader title="Admin Panel" subtitle="Manage your gift shop" />
+      <PageHeader
+        title="Admin Dashboard"
+        subtitle="Manage your inventory, view inquiries, and track orders"
+      />
 
-      {/* Quick Stats */}
-      <section className="space-y-6 pb-8">
+      {/* Summary Cards */}
+      <section className="pb-8">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Total Products" value="24" />
-          <StatCard label="Active Orders" value="8" />
-          <StatCard label="Revenue Today" value="$342" />
-          <StatCard label="Low Stock Items" value="3" trend="warning" />
+          {isLoading ? (
+            <>
+              <AdminStatCardSkeleton />
+              <AdminStatCardSkeleton />
+              <AdminStatCardSkeleton />
+              <AdminStatCardSkeleton />
+            </>
+          ) : (
+            <>
+              <AdminStatCard
+                label="Total Products"
+                value={24}
+                icon={<PackageIcon />}
+                trend={{ value: 12, label: 'from last month', direction: 'up' }}
+              />
+              <AdminStatCard
+                label="Categories"
+                value={5}
+                icon={<TagIcon />}
+              />
+              <AdminStatCard
+                label="Inquiries"
+                value={8}
+                icon={<InboxIcon />}
+                trend={{ value: 3, label: 'new this week', direction: 'up' }}
+                variant="success"
+              />
+              <AdminStatCard
+                label="Orders"
+                value={0}
+                icon={<ShoppingCartIcon />}
+                variant="default"
+              />
+            </>
+          )}
         </div>
       </section>
 
-      {/* Admin Sections */}
-      <section className="space-y-6 pb-16">
-        <h2 className="text-xl font-semibold text-neutral-900">Manage</h2>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <AdminCard
-            title="Products"
-            description="Add, edit, or remove catalog items"
-            action="Manage Products"
-          />
-          <AdminCard
-            title="Orders"
-            description="View and process customer orders"
-            action="View Orders"
-          />
-          <AdminCard
-            title="Categories"
-            description="Organize your product categories"
-            action="Edit Categories"
-          />
-          <AdminCard
-            title="Settings"
-            description="Configure store settings and preferences"
-            action="Open Settings"
-          />
+      {/* Quick Actions */}
+      <section className="pb-8">
+        <div className="mb-4">
+          <SectionTitle>Quick Actions</SectionTitle>
         </div>
+        {isLoading ? (
+          <AdminQuickActionsSkeleton />
+        ) : (
+          <AdminQuickActions
+            onAddProduct={() => console.log('Add product clicked')}
+            onImportCSV={() => console.log('Import CSV clicked')}
+            onManageCategories={() => console.log('Manage categories clicked')}
+          />
+        )}
+      </section>
+
+      {/* Products Table */}
+      <section className="pb-16">
+        <div className="mb-6">
+          <SectionTitle subtitle="View and manage your product catalog">
+            Products
+          </SectionTitle>
+        </div>
+        {isLoading ? (
+          <AdminProductsTableSkeleton />
+        ) : (
+          <AdminProductsTable
+            onEdit={(product) => console.log('Edit product:', product)}
+            onDelete={(product) => console.log('Delete product:', product)}
+          />
+        )}
       </section>
     </Container>
   )
 }
 
-interface StatCardProps {
-  label: string
-  value: string
-  trend?: 'up' | 'down' | 'warning'
-}
+// =============================================================================
+// Not Found Page (for direct access when admin is disabled)
+// =============================================================================
 
-function StatCard({ label, value, trend }: StatCardProps) {
+export function AdminNotFound() {
   return (
-    <Card className="space-y-1">
-      <p className="text-sm text-neutral-600">{label}</p>
-      <div className="flex items-baseline gap-2">
-        <p className="text-2xl font-semibold text-neutral-900">{value}</p>
-        {trend === 'warning' && <Badge variant="accent">Attention</Badge>}
+    <Container>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+        <div className="mb-6 text-6xl">🔒</div>
+        <h1 className="mb-2 text-2xl font-semibold text-neutral-900">
+          Access Restricted
+        </h1>
+        <p className="mb-6 max-w-md text-neutral-600">
+          The admin panel is not available. Please contact your administrator if you
+          believe this is an error.
+        </p>
+        <a
+          href="/"
+          className="rounded-lg bg-brand-primary px-6 py-3 font-medium text-white transition-colors hover:bg-neutral-800"
+        >
+          Return Home
+        </a>
       </div>
-    </Card>
-  )
-}
-
-interface AdminCardProps {
-  title: string
-  description: string
-  action: string
-}
-
-function AdminCard({ title, description, action }: AdminCardProps) {
-  return (
-    <Card className="flex flex-col justify-between space-y-4">
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-neutral-900">{title}</h3>
-        <p className="text-sm text-neutral-600">{description}</p>
-      </div>
-      <Button variant="secondary" className="w-full">
-        {action}
-      </Button>
-    </Card>
+    </Container>
   )
 }
