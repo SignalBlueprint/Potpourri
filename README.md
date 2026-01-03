@@ -114,9 +114,12 @@ npm run preview       # Preview production build locally
 
 ### Env Vars
 
-| Variable            | Description                      | Default |
-| ------------------- | -------------------------------- | ------- |
-| `VITE_API_BASE_URL` | API endpoint for catalog backend | `/api`  |
+| Variable              | Description                      | Default     |
+| --------------------- | -------------------------------- | ----------- |
+| `VITE_API_BASE_URL`   | API endpoint for catalog backend | `/api`      |
+| `VITE_ADMIN_PASSWORD` | Admin dashboard password         | `admin123`  |
+
+**Security Note**: Always set `VITE_ADMIN_PASSWORD` in production. The default password is only for development.
 
 ## Architecture (Short)
 
@@ -163,7 +166,7 @@ Full backlog with acceptance criteria: **[docs/TASKS.md](docs/TASKS.md)**
 | Priority | Total | Done | Remaining |
 |----------|-------|------|-----------|
 | P0 (Demo) | 20 | 20 | 0 |
-| P1 (Production) | 17 | 4 | 13 |
+| P1 (Production) | 17 | 11 | 6 |
 | P2 (Future) | 20 | 0 | 20 |
 | BLOCKED | 5 | 0 | 5 |
 
@@ -171,11 +174,12 @@ Full backlog with acceptance criteria: **[docs/TASKS.md](docs/TASKS.md)**
 
 | ID | Title | Area |
 |----|-------|------|
-| POT-030 | Env validation on startup | Ops |
-| POT-031 | Analytics event placeholders | Analytics |
-| POT-032 | Error reporting placeholder | Ops |
-| POT-041 | Secure admin password (from env) | Security |
-| POT-037 | Trust badges footer | Trust |
+| POT-033 | Console logging config | Ops |
+| POT-034 | Verify production build optimization | Performance |
+| POT-038 | Basic accessibility fixes | A11y |
+| POT-039 | Gallery keyboard navigation | A11y |
+| POT-040 | CatalogCore swap instructions | Docs |
+| POT-042 | Rate limiting awareness on forms | Security |
 
 ### Blocked by catalog-core
 

@@ -322,6 +322,14 @@ function AdminPage() {
         )}
       </section>
 
+      {/* Inquiry Detail Modal */}
+      <InquiryDetailModal
+        isOpen={selectedInquiry !== null}
+        onClose={handleCloseInquiryDetail}
+        inquiry={selectedInquiry}
+        onStatusChange={handleInquiryStatusChange}
+      />
+
       {/* Product Form Modal */}
       <AdminProductForm
         isOpen={isProductFormOpen}

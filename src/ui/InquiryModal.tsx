@@ -64,6 +64,8 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
     setIsSubmitting(true)
     setError(null)
 
+    trackInquiry('submit', { productId, productName })
+
     const result = await submitInquiry({
       productId,
       productName,
