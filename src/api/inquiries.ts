@@ -76,15 +76,70 @@ function saveInquiryLocally(data: InquiryPayload & { tenantId: string; timestamp
   }
 }
 
+export type InquiryStatus = 'new' | 'contacted' | 'closed'
+
+export interface StoredInquiry extends InquiryPayload {
+  id: string
+  tenantId: string
+  timestamp: string
+  status?: InquiryStatus
+}
+
 /**
  * Retrieve locally stored inquiries (for admin/debug purposes).
  */
-export function getLocalInquiries(): Array<InquiryPayload & { id: string; tenantId: string; timestamp: string }> {
+export function getLocalInquiries(): StoredInquiry[] {
   const storageKey = 'potpourri_inquiries'
   try {
     const data = localStorage.getItem(storageKey)
     return data ? JSON.parse(data) : []
   } catch {
     return []
+  }
+}
+
+/**
+ * Update the status of a locally stored inquiry.
+ */
+export function updateInquiryStatus(inquiryId: string, status: InquiryStatus): boolean {
+  const storageKey = 'potpourri_inquiries'
+  try {
+    const data = localStorage.getItem(storageKey)
+    const inquiries: StoredInquiry[] = data ? JSON.parse(data) : []
+
+    const index = inquiries.findIndex(inq => inq.id === inquiryId)
+    if (index === -1) {
+      // Inquiry not found in localStorage - it might be mock data
+      // Store the status update separately for mock data
+      const statusKey = 'potpourri_inquiry_statuses'
+      const statusData = localStorage.getItem(statusKey)
+      const statuses: Record<string, InquiryStatus> = statusData ? JSON.parse(statusData) : {}
+      statuses[inquiryId] = status
+      localStorage.setItem(statusKey, JSON.stringify(statuses))
+      return true
+    }
+
+    const inquiry = inquiries[index]
+    if (inquiry) {
+      inquiry.status = status
+      localStorage.setItem(storageKey, JSON.stringify(inquiries))
+    }
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Get the stored status for an inquiry (for mock data that isn't in localStorage).
+ */
+export function getInquiryStatus(inquiryId: string): InquiryStatus | undefined {
+  const statusKey = 'potpourri_inquiry_statuses'
+  try {
+    const data = localStorage.getItem(statusKey)
+    const statuses: Record<string, InquiryStatus> = data ? JSON.parse(data) : {}
+    return statuses[inquiryId]
+  } catch {
+    return undefined
   }
 }
