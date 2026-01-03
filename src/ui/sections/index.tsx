@@ -1,0 +1,5 @@
+export { HeroSection } from './HeroSection'
+export { CategoryGrid } from './CategoryGrid'
+export { ProductTeaserGrid } from './ProductTeaserGrid'
+export { VisitUs } from './VisitUs'
+export { TrustBadges } from './TrustBadges'
