@@ -46,9 +46,11 @@ function IndexPage({ config }: { config: ClientConfig }) {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold text-gray-900">
-        Welcome to {config.branding.name}
+        Welcome to {config.brand.name}
       </h1>
-      <p className="mt-4 text-gray-600">{config.branding.tagline}</p>
+      <p className="mt-4 text-gray-600">
+        Browse our curated collection of gifts
+      </p>
     </div>
   )
 }
@@ -137,7 +139,7 @@ export function CatalogApp({ clientConfig }: CatalogAppProps) {
         <div className="mx-auto max-w-7xl px-4">
           <div className="flex h-16 items-center justify-between">
             <Link to="/" className="text-xl font-bold text-indigo-600">
-              {clientConfig.branding.name}
+              {clientConfig.brand.name}
             </Link>
             <div className="flex gap-6">
               <Link
@@ -152,7 +154,7 @@ export function CatalogApp({ clientConfig }: CatalogAppProps) {
               >
                 Catalog
               </Link>
-              {clientConfig.features.enableAdminPanel && (
+              {clientConfig.features.enableAdmin && (
                 <Link
                   to="/admin"
                   className="text-gray-600 hover:text-gray-900 [&.active]:text-indigo-600"
