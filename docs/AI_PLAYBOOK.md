@@ -12,6 +12,7 @@ To reduce token costs, follow this read order:
 4. **src/catalogCore.tsx** - Only if task involves package integration
 
 **Do NOT read** unless explicitly needed:
+
 - `package-lock.json`
 - `node_modules/`
 - `.github/workflows/` (CI is documented in README)
@@ -19,12 +20,12 @@ To reduce token costs, follow this read order:
 
 ## Task Size Rules
 
-| Size | Time | Scope |
-|------|------|-------|
-| S | <1hr | Single file change, no new dependencies |
-| M | 1-3hr | 2-5 files, may add dev dependency |
-| L | 3-8hr | Multiple components, new feature flag |
-| XL | 8hr+ | Architectural change, requires planning doc |
+| Size | Time  | Scope                                       |
+| ---- | ----- | ------------------------------------------- |
+| S    | <1hr  | Single file change, no new dependencies     |
+| M    | 1-3hr | 2-5 files, may add dev dependency           |
+| L    | 3-8hr | Multiple components, new feature flag       |
+| XL   | 8hr+  | Architectural change, requires planning doc |
 
 **Autopilot Limit**: Only execute S and M tasks autonomously. L and XL require human approval.
 
@@ -53,12 +54,13 @@ Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
 
 - **client.config.ts**: Never modify structure, only values
 - **catalogCore.tsx**: Only modify stub section or swap to real import
-- **routes/*.tsx**: These are temporary; prefer modifying catalogCore.tsx
+- **routes/\*.tsx**: These are temporary; prefer modifying catalogCore.tsx
 - **package.json**: Add dependencies only if task explicitly requires
 
 ## PR Checklist
 
 Before creating PR:
+
 - [ ] All release gates pass locally
 - [ ] Task ID in commit message
 - [ ] AI_STATE.md updated
