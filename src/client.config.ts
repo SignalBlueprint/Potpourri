@@ -42,6 +42,10 @@ export interface ContactConfig {
     zip: string
     country: string
   }
+  coordinates: {
+    lat: number
+    lng: number
+  }
   hours: {
     weekdays: string
     saturday: string
@@ -126,6 +130,10 @@ export const clientConfig: ClientConfig = {
       state: 'OR',
       zip: '97201',
       country: 'USA',
+    },
+    coordinates: {
+      lat: 45.5152,
+      lng: -122.6784,
     },
     hours: {
       weekdays: 'Mon-Fri: 10am - 7pm',
