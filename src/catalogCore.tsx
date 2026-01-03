@@ -1,12 +1,8 @@
 /**
  * Catalog Core Adapter
  *
- * This file is the SINGLE integration point for @signal/catalog-core.
- * When the real package is installed, update the import below.
- *
- * The package should export:
- * - makeRouteTree({ clientConfig, rootRoute }) => Route[]
- * - CatalogApp({ clientConfig }) => React component (optional)
+ * This file is the SINGLE integration point for @signal-core/catalog-react-sdk.
+ * It uses the SDK's types and API utilities while keeping Potpourri's custom UI.
  */
 
 import { useState, useMemo, useEffect } from 'react'
@@ -14,6 +10,27 @@ import { createRoute, Link } from '@tanstack/react-router'
 import type { AnyRoute } from '@tanstack/react-router'
 import type { ClientConfig } from './client.config'
 import { clientConfig } from './client.config'
+
+// =============================================================================
+// SDK Integration - @signal-core/catalog-react-sdk
+// =============================================================================
+import { fetchJson } from '@signal-core/catalog-react-sdk'
+
+// SDK Product type (matches signal-catalog server models)
+interface SDKProduct {
+  id: string
+  orgId: string
+  name: string
+  description?: string
+  price?: number
+  currency?: string
+  category?: string
+  status: 'draft' | 'active' | 'out_of_stock'
+  tags?: string[]
+  images: Array<{ id: string; url: string; type: 'original' | 'generated' }>
+  createdAt: string
+  updatedAt: string
+}
 
 // UI Components
 import {
@@ -47,19 +64,16 @@ import { ProductGallery } from './ui/ProductGallery'
 import { RelatedProducts } from './ui/RelatedProducts'
 import { InquiryModal } from './ui/InquiryModal'
 
-// Data
+// Local types for backward compatibility with existing UI components
 import {
-  mockProducts,
-  filterProducts,
-  sortProducts,
   categoryIcons,
   type SortOption,
-  type Product,
   type Category,
+  type Product as MockProduct,
 } from './data/mockProducts'
 
 // =============================================================================
-// TYPES - Expected interface from @signal/catalog-core
+// TYPES
 // =============================================================================
 
 export interface CatalogCoreConfig {
@@ -73,22 +87,91 @@ export interface CatalogAppProps {
   clientConfig: ClientConfig
 }
 
+// Convert SDK product to MockProduct format for UI component compatibility
+function adaptProduct(p: SDKProduct): MockProduct {
+  const imageUrl = p.images?.[0]?.url || null
+  const createdDate = new Date(p.createdAt)
+  const now = new Date()
+  const daysSinceCreated = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+
+  return {
+    id: p.id,
+    name: p.name,
+    description: p.description || '',
+    price: p.price || 0,
+    category: p.category || 'Uncategorized',
+    imageUrl,
+    isNew: daysSinceCreated < 30,
+    isFeatured: p.tags?.includes('featured') || false,
+    createdAt: createdDate,
+  }
+}
+
 // =============================================================================
-// REAL PACKAGE IMPORT
-// When @signal/catalog-core is installed, uncomment the line below and
-// remove the TEMP FALLBACK section. That's the only change needed.
+// API HOOKS
 // =============================================================================
 
-// export { makeRouteTree, CatalogApp } from '@signal/catalog-core'
+function useProducts() {
+  const [products, setProducts] = useState<MockProduct[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const apiBase = clientConfig.tenant.apiBaseUrl
+  const customerId = clientConfig.tenant.id
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const data = await fetchJson<SDKProduct[]>(`${apiBase}/store/${customerId}/products`)
+        setProducts(data.map(adaptProduct))
+      } catch (err) {
+        setError((err as Error).message)
+        // Fall back to empty array on error
+        setProducts([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    load()
+  }, [apiBase, customerId])
+
+  return { products, isLoading, error }
+}
+
+function useProduct(id: string) {
+  const [product, setProduct] = useState<MockProduct | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const apiBase = clientConfig.tenant.apiBaseUrl
+  const customerId = clientConfig.tenant.id
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setIsLoading(true)
+        setError(null)
+        // Fetch single product by ID
+        const data = await fetchJson<SDKProduct>(`${apiBase}/store/${customerId}/products/${id}`)
+        setProduct(adaptProduct(data))
+      } catch (err) {
+        setError((err as Error).message)
+        setProduct(null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    load()
+  }, [apiBase, customerId, id])
+
+  return { product, isLoading, error }
+}
 
 // =============================================================================
-// TEMP FALLBACK - Full implementation until real package is installed
-// Delete this entire section once @signal/catalog-core is available
+// INDEX PAGE - Landing page with hero, categories, and featured products
 // =============================================================================
-
-// -----------------------------------------------------------------------------
-// Index Page - Landing page with hero, categories, and featured products
-// -----------------------------------------------------------------------------
 function IndexPage() {
   return (
     <>
@@ -125,25 +208,16 @@ function IndexPage() {
   )
 }
 
-// -----------------------------------------------------------------------------
-// Catalog Page - Product listing with filtering and sorting
-// -----------------------------------------------------------------------------
+// =============================================================================
+// CATALOG PAGE - Product listing with filtering and sorting
+// =============================================================================
 function CatalogPage() {
-  // Simulate loading state
-  const [isLoading, setIsLoading] = useState(true)
+  const { products, isLoading, error } = useProducts()
 
   // Filter state
   const [search, setSearch] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [sort, setSort] = useState<SortOption>('newest')
-
-  // Simulate initial data fetch
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 800)
-    return () => clearTimeout(timer)
-  }, [])
 
   // Debounced search for smoother UX
   const [debouncedSearch, setDebouncedSearch] = useState(search)
@@ -157,17 +231,63 @@ function CatalogPage() {
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    const filtered = filterProducts(mockProducts, {
-      search: debouncedSearch,
-      category: selectedCategory,
-    })
-    return sortProducts(filtered, sort)
-  }, [debouncedSearch, selectedCategory, sort])
+    let result = [...products]
+
+    // Apply search filter
+    if (debouncedSearch) {
+      const searchLower = debouncedSearch.toLowerCase()
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(searchLower) ||
+          p.description.toLowerCase().includes(searchLower) ||
+          p.category.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Apply category filter
+    if (selectedCategory) {
+      result = result.filter((p) => p.category === selectedCategory)
+    }
+
+    // Apply sorting
+    switch (sort) {
+      case 'newest':
+        result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        break
+      case 'price-asc':
+        result.sort((a, b) => a.price - b.price)
+        break
+      case 'price-desc':
+        result.sort((a, b) => b.price - a.price)
+        break
+      case 'name-asc':
+        result.sort((a, b) => a.name.localeCompare(b.name))
+        break
+    }
+
+    return result
+  }, [products, debouncedSearch, selectedCategory, sort])
 
   // Handle quick action (placeholder)
-  const handleQuickAction = (product: Product) => {
-    // This would integrate with cart or modal in the future
+  const handleQuickAction = (product: MockProduct) => {
     console.log('Quick action on:', product.name)
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <PageHeader
+          title="Shop"
+          subtitle="Browse our curated collection of unique gifts and home goods"
+        />
+        <div className="py-16 text-center">
+          <p className="text-red-600">Error loading products: {error}</p>
+          <Button onClick={() => window.location.reload()} className="mt-4">
+            Retry
+          </Button>
+        </div>
+      </Container>
+    )
   }
 
   return (
@@ -261,27 +381,34 @@ function EmptyState({ search, category, onClearFilters }: EmptyStateProps) {
   )
 }
 
-// -----------------------------------------------------------------------------
-// Item Page - Product detail with gallery, inquiry modal, and related products
-// -----------------------------------------------------------------------------
+// =============================================================================
+// ITEM PAGE - Product detail with gallery, inquiry modal, and related products
+// =============================================================================
 function ItemPage({ id }: { id: string }) {
+  const { product, isLoading, error } = useProduct(id)
   const [isInquiryOpen, setIsInquiryOpen] = useState(false)
-
-  // Find the product by ID
-  const product = mockProducts.find((p) => p.id === id)
 
   // Get config values
   const { enableCheckout } = clientConfig.features
 
-  // Handle product not found
-  if (!product) {
+  if (isLoading) {
+    return (
+      <Container>
+        <div className="py-16 text-center">
+          <div className="animate-pulse">Loading product...</div>
+        </div>
+      </Container>
+    )
+  }
+
+  if (error || !product) {
     return (
       <Container>
         <div className="flex min-h-[50vh] flex-col items-center justify-center py-16 text-center">
           <span className="mb-4 text-6xl">🔍</span>
           <h1 className="mb-2 text-2xl font-semibold text-neutral-900">Product Not Found</h1>
           <p className="mb-6 text-neutral-600">
-            We couldn't find the item you're looking for.
+            {error || "We couldn't find the item you're looking for."}
           </p>
           <Link
             to="/catalog"
@@ -295,13 +422,14 @@ function ItemPage({ id }: { id: string }) {
   }
 
   const categoryIcon = categoryIcons[product.category as Category] || '📦'
+  const imageUrl = product.imageUrl || '/placeholder.jpg'
 
   // Generate placeholder additional images for gallery demo
   const productImages = [
-    product.imageUrl,
-    product.imageUrl,
-    product.imageUrl,
-    product.imageUrl,
+    imageUrl,
+    imageUrl,
+    imageUrl,
+    imageUrl,
   ]
 
   const handleAddToCart = () => {
@@ -386,7 +514,7 @@ function ItemPage({ id }: { id: string }) {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-neutral-600">Item ID</span>
-                  <span className="font-mono text-xs text-neutral-500">#{id.padStart(4, '0')}</span>
+                  <span className="font-mono text-xs text-neutral-500">#{id.slice(0, 8)}</span>
                 </div>
                 {clientConfig.catalog.shippingNote && (
                   <div className="border-t border-neutral-200 pt-3 text-sm text-neutral-600">
@@ -521,9 +649,9 @@ function ItemPage({ id }: { id: string }) {
   )
 }
 
-// -----------------------------------------------------------------------------
-// Admin Page - Dashboard for managing products and inquiries
-// -----------------------------------------------------------------------------
+// =============================================================================
+// ADMIN PAGE - Dashboard for managing products and inquiries
+// =============================================================================
 function AdminPage() {
   const [isLoading, setIsLoading] = useState(true)
 
@@ -696,7 +824,3 @@ export function CatalogApp({ clientConfig: config }: CatalogAppProps) {
     </div>
   )
 }
-
-// =============================================================================
-// END TEMP FALLBACK
-// =============================================================================
