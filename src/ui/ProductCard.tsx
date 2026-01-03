@@ -31,9 +31,9 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
       params={{ id: product.id }}
       className="group block"
     >
-      <article className="relative overflow-hidden rounded-xl bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-soft">
+      <article className="relative overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-card ring-brand-primary/0 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-primary/20 hover:shadow-elevated hover:ring-4 hover:ring-brand-primary/10">
         {/* Image Container with aspect ratio */}
-        <div className="relative aspect-square overflow-hidden bg-neutral-100">
+        <div className="relative aspect-square overflow-hidden bg-neutral-50">
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
@@ -42,8 +42,8 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
               loading="lazy"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
-              <span className="text-5xl opacity-50">{categoryIcon}</span>
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200">
+              <span className="text-6xl opacity-40 transition-transform duration-300 group-hover:scale-110">{categoryIcon}</span>
             </div>
           )}
 
@@ -77,26 +77,26 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
         {/* Content */}
         <div className="p-4">
           {/* Category */}
-          <div className="mb-1.5 flex items-center gap-1.5">
-            <span className="text-sm">{categoryIcon}</span>
-            <span className="text-xs font-medium text-neutral-500">
+          <div className="mb-2 flex items-center gap-1.5">
+            <span className="text-sm transition-transform duration-200 group-hover:scale-110">{categoryIcon}</span>
+            <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">
               {product.category}
             </span>
           </div>
 
           {/* Name */}
-          <h3 className="mb-1 line-clamp-1 font-medium text-neutral-900 transition-colors group-hover:text-brand-primary">
+          <h3 className="mb-1.5 line-clamp-1 font-semibold text-neutral-900 transition-colors duration-200 group-hover:text-brand-primary">
             {product.name}
           </h3>
 
           {/* Description */}
-          <p className="mb-3 line-clamp-2 text-sm text-neutral-600">
+          <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-neutral-600">
             {product.description}
           </p>
 
           {/* Price */}
           <div className="flex items-center justify-between">
-            <span className="text-lg font-semibold text-neutral-900">
+            <span className="inline-flex items-center rounded-lg bg-neutral-50 px-2.5 py-1 text-lg font-bold text-neutral-900 transition-colors duration-200 group-hover:bg-brand-primary/10 group-hover:text-brand-primary">
               ${product.price.toFixed(2)}
             </span>
           </div>
@@ -112,24 +112,24 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
 
 export function ProductCardSkeleton() {
   return (
-    <div className="animate-pulse overflow-hidden rounded-xl bg-white shadow-card">
+    <div className="animate-pulse overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-card">
       {/* Image skeleton */}
-      <div className="aspect-square bg-neutral-200" />
+      <div className="aspect-square bg-gradient-to-br from-neutral-100 to-neutral-200" />
 
       {/* Content skeleton */}
       <div className="p-4">
         {/* Category */}
-        <div className="mb-2 h-4 w-24 rounded bg-neutral-200" />
+        <div className="mb-2 h-4 w-24 rounded-md bg-neutral-200" />
 
         {/* Name */}
-        <div className="mb-2 h-5 w-3/4 rounded bg-neutral-200" />
+        <div className="mb-2 h-5 w-3/4 rounded-md bg-neutral-200" />
 
         {/* Description */}
-        <div className="mb-1 h-4 w-full rounded bg-neutral-200" />
-        <div className="mb-3 h-4 w-2/3 rounded bg-neutral-200" />
+        <div className="mb-1 h-4 w-full rounded-md bg-neutral-200" />
+        <div className="mb-3 h-4 w-2/3 rounded-md bg-neutral-200" />
 
         {/* Price */}
-        <div className="h-6 w-20 rounded bg-neutral-200" />
+        <div className="h-8 w-24 rounded-lg bg-neutral-200" />
       </div>
     </div>
   )
