@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { useState, useEffect, useRef, useCallback, type FormEvent } from 'react'
 import { Button, Input } from './index'
+import { submitInquiry } from '../api/inquiries'
 
 // =============================================================================
 // InquiryModal - Modal form for product inquiries
@@ -20,8 +21,17 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const modalRef = useRef<HTMLDivElement>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
+
+  // Reset form state when closing
+  const handleClose = useCallback(() => {
+    setFormData({ name: '', email: '', message: '' })
+    setIsSubmitted(false)
+    setError(null)
+    onClose()
+  }, [onClose])
 
   // Focus trap and escape key handling
   useEffect(() => {
@@ -34,7 +44,7 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
 
       // Handle escape key
       const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose()
+        if (e.key === 'Escape') handleClose()
       }
       document.addEventListener('keydown', handleEscape)
 
@@ -43,38 +53,31 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
         document.removeEventListener('keydown', handleEscape)
       }
     }
-  }, [isOpen, onClose])
-
-  // Reset form when modal closes
-  useEffect(() => {
-    if (!isOpen) {
-      setFormData({ name: '', email: '', message: '' })
-      setIsSubmitted(false)
-    }
-  }, [isOpen])
+  }, [isOpen, handleClose])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError(null)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 800))
-
-    // Log the inquiry (placeholder for actual submission)
-    console.log('Inquiry submitted:', {
+    const result = await submitInquiry({
       productId,
       productName,
       ...formData,
-      timestamp: new Date().toISOString(),
     })
 
     setIsSubmitting(false)
-    setIsSubmitted(true)
+
+    if (result.success) {
+      setIsSubmitted(true)
+    } else {
+      setError(result.error || 'Failed to submit inquiry. Please try again.')
+    }
   }
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onClose()
+      handleClose()
     }
   }
 
@@ -102,7 +105,7 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
             <p className="mt-1 text-sm text-neutral-600">{productName}</p>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="rounded-lg p-1.5 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600"
             aria-label="Close modal"
           >
@@ -136,7 +139,7 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
             <p className="mb-6 text-sm text-neutral-600">
               We'll get back to you within 24 hours.
             </p>
-            <Button variant="secondary" onClick={onClose}>
+            <Button variant="secondary" onClick={handleClose}>
               Close
             </Button>
           </div>
@@ -185,8 +188,14 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
               />
             </div>
 
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
             <div className="flex gap-3 pt-2">
-              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
+              <Button type="button" variant="secondary" onClick={handleClose} className="flex-1">
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
