@@ -4,11 +4,12 @@
 
 @layer base {
   :root {
-    /* Brand colors from client.config.ts */
+    /*
+     * Brand colors - these are set dynamically by applyTheme() from client.config.ts
+     * Fallback values are provided for SSR/static HTML before JS hydration
+     */
     --color-brand-primary: #7c6a5d;
     --color-brand-accent: #d4a59a;
-
-    /* Neutral palette */
     --color-neutral-50: #faf9f7;
     --color-neutral-100: #f5f3f0;
     --color-neutral-200: #e8e4df;
