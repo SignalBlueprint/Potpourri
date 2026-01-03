@@ -1,0 +1,9 @@
+# Potpourri - Gift Shop Storefront
+# https://potpourri.shop
+
+User-agent: *
+Allow: /
+Disallow: /admin
+
+# Sitemap
+Sitemap: https://potpourri.shop/sitemap.xml
