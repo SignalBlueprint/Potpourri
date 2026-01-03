@@ -1,0 +1,77 @@
+name: Auto-create PR
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the branch name
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+
+          # Check if a PR already exists for this branch
+          EXISTING_PR=$(gh pr list --head "$BRANCH_NAME" --json number --jq '.[0].number')
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already exists for branch $BRANCH_NAME"
+            exit 0
+          fi
+
+          # Extract task ID from commit message if present (e.g., GIFT-005)
+          TASK_ID=$(git log -1 --pretty=%B | grep -oE 'GIFT-[0-9]+' | head -1 || true)
+
+          # Get the latest commit message for PR title
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+
+          # Create PR title
+          if [ -n "$TASK_ID" ]; then
+            PR_TITLE="[$TASK_ID] $COMMIT_MSG"
+          else
+            PR_TITLE="$COMMIT_MSG"
+          fi
+
+          # Get commit body for PR description
+          COMMIT_BODY=$(git log -1 --pretty=%b)
+
+          # Build PR body using heredoc
+          PR_BODY=$(cat <<EOF
+          ## Summary
+
+          Automated PR created from branch \`$BRANCH_NAME\`.
+
+          $COMMIT_BODY
+
+          ---
+          *This PR was automatically created and labeled for auto-merge.*
+          EOF
+          )
+
+          # Ensure automerge label exists (create if missing)
+          gh label create automerge --description "Auto-merge when CI passes" --color 0E8A16 2>/dev/null || true
+
+          # Create the PR with automerge label
+          gh pr create \
+            --title "$PR_TITLE" \
+            --body "$PR_BODY" \
+            --label "automerge" \
+            --head "$BRANCH_NAME" \
+            --base main
+
+          echo "PR created successfully for branch $BRANCH_NAME"
