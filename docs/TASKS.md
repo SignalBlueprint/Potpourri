@@ -80,9 +80,9 @@
 | POT-037 | Add trust badges to footer | P1 | DONE | - | Trust | `src/layout/AppShell.tsx` | Payment security, shipping, guarantee badges visible | 4 trust badges with icons in footer |
 | POT-038 | Add basic accessibility fixes | P1 | TODO | - | A11y | Multiple files | Focus states visible, alt text present, no critical axe violations | WCAG 2.1 AA basics |
 | POT-039 | Add keyboard navigation for gallery | P1 | DONE | - | A11y | `src/ui/ProductGallery.tsx` | Arrow keys navigate, Escape closes zoom, focus ring visible | Power users + a11y |
-| POT-040 | Prepare catalogCore swap instructions | P1 | TODO | - | Docs | `src/catalogCore.tsx` | Clear comments: "delete lines X-Y, uncomment line Z" | Smooth handoff |
+| POT-040 | Prepare catalogCore swap instructions | P1 | DONE | - | Docs | `src/catalogCore.tsx` | Clear comments: "delete lines X-Y, uncomment line Z" | Swap box at top of file, DELETE markers around stub code |
 | POT-041 | Secure admin password handling | P1 | DONE | - | Security | `src/hooks/useAuth.ts`, `src/lib/env.ts` | Password from env var, not hardcoded in source | Uses VITE_ADMIN_PASSWORD with fallback |
-| POT-042 | Add rate limiting awareness to forms | P1 | TODO | - | Security | `src/ui/InquiryModal.tsx`, `src/routes/contact.tsx` | Disable submit for 2s after submit, show if rate limited | Prevent spam |
+| POT-042 | Add rate limiting awareness to forms | P1 | DONE | - | Security | `src/ui/InquiryModal.tsx`, `src/routes/contact.tsx` | Disable submit for 2s after submit, show if rate limited | 2s cooldown with timer, shows "Please wait..." |
 | POT-043 | Add SEO robots.txt and sitemap | P1 | DONE | - | SEO | `public/robots.txt`, `public/sitemap.xml` | Both files exist and are valid | Basic SEO |
 | POT-044 | Add JSON-LD product schema | P1 | DONE | - | SEO | `src/components/ProductSchema.tsx`, `src/routes/item.tsx` | Valid JSON-LD in page source | Rich snippets |
 | POT-045 | Verify CI automerge flow works | P1 | DONE | - | CI | `.github/workflows/automerge.yml` | PR with automerge label merges after CI | Autopilot verified |
@@ -125,9 +125,9 @@
 |----------|-------|------|------|---------|
 | BLOCKED Epic | 5 | 0 | 0 | 5 |
 | P0 | 20 | 20 | 0 | 0 |
-| P1 | 17 | 13 | 4 | 0 |
+| P1 | 17 | 15 | 2 | 0 |
 | P2 | 20 | 0 | 20 | 0 |
-| **Total** | **62** | **33** | **24** | **5** |
+| **Total** | **62** | **35** | **22** | **5** |
 
 ---
 
@@ -147,4 +147,4 @@
 
 ---
 
-*Last updated: 2026-01-03*
+*Last updated: 2026-01-03 (POT-040, POT-042 completed)*
