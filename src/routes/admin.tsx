@@ -13,6 +13,8 @@ import {
   AdminProductsTableSkeleton,
   AdminQuickActions,
   AdminQuickActionsSkeleton,
+  AdminInquiriesTable,
+  AdminInquiriesTableSkeleton,
   PackageIcon,
   TagIcon,
   InboxIcon,
@@ -200,7 +202,7 @@ function AdminPage() {
       </section>
 
       {/* Products Table */}
-      <section className="pb-16">
+      <section className="pb-12">
         <div className="mb-6">
           <SectionTitle subtitle="View and manage your product catalog">
             Products
@@ -212,6 +214,22 @@ function AdminPage() {
           <AdminProductsTable
             onEdit={(product) => console.log('Edit product:', product)}
             onDelete={(product) => console.log('Delete product:', product)}
+          />
+        )}
+      </section>
+
+      {/* Inquiries Table */}
+      <section className="pb-16">
+        <div className="mb-6">
+          <SectionTitle subtitle="View and respond to customer inquiries">
+            Inquiries
+          </SectionTitle>
+        </div>
+        {isLoading ? (
+          <AdminInquiriesTableSkeleton />
+        ) : (
+          <AdminInquiriesTable
+            onView={(inquiry) => console.log('View inquiry:', inquiry)}
           />
         )}
       </section>
