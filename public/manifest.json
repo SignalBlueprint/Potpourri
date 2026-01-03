@@ -1,0 +1,19 @@
+{
+  "name": "Potpourri - Curated gifts for every occasion",
+  "short_name": "Potpourri",
+  "description": "Discover unique home decor, kitchen essentials, and thoughtful gift sets.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf9f7",
+  "theme_color": "#7c6a5d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "lifestyle"]
+}
