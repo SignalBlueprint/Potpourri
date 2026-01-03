@@ -7,6 +7,8 @@ export { AdminProductsTable, AdminProductsTableEmpty, AdminProductsTableSkeleton
 export type { AdminProduct } from './AdminProductsTable'
 export { AdminQuickActions, AdminQuickActionsSkeleton } from './AdminQuickActions'
 export type { QuickAction } from './AdminQuickActions'
+export { AdminInquiriesTable, AdminInquiriesTableEmpty, AdminInquiriesTableSkeleton } from './AdminInquiriesTable'
+export type { AdminInquiry } from './AdminInquiriesTable'
 
 // =============================================================================
 // Container - Consistent page wrapper with max-width and padding
