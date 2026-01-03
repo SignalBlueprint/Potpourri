@@ -23,6 +23,7 @@ export default {
       boxShadow: {
         soft: '0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 4px 16px -4px rgba(0, 0, 0, 0.08)',
         card: '0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06)',
+        elevated: '0 10px 40px -10px rgba(0, 0, 0, 0.12), 0 4px 20px -5px rgba(0, 0, 0, 0.08)',
       },
       animation: {
         float: 'float 6s ease-in-out infinite',
