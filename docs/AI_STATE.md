@@ -1,48 +1,66 @@
 # AI State
 
-Current truth for AI agents. Update after every PR.
+> Current state of the Potpourri suite for agent context.
 
-## Last Updated
+## Suite Goal
 
-2026-01-03
+Build a white-label gift shop storefront that consumes `@signal/catalog-core` for catalog functionality, configured entirely via `src/client.config.ts`.
 
-## Current Blockers
+## Repo Map
 
-| Blocker                              | Impact                               | Waiting On      |
-| ------------------------------------ | ------------------------------------ | --------------- |
-| `@signal/catalog-core` not published | Cannot complete GIFT-001 to GIFT-004 | Package release |
+```
+Potpourri (Thin Client)
+├── src/client.config.ts   ← Branding, tenant, features (EDIT THIS)
+├── src/catalogCore.tsx    ← Package seam (ONLY file importing @signal/catalog-core)
+├── src/routes/*           ← Page components
+└── .github/workflows/*    ← CI, auto-merge, auto-PR
 
-## Recent PRs
+@signal/catalog-core (External Package - Pending)
+├── makeRouteTree()        ← Returns TanStack route tree
+└── CatalogApp()           ← Optional full app component
+```
 
-| PR  | Task                                  | Status | Date       |
-| --- | ------------------------------------- | ------ | ---------- |
-| #4  | Add release gates and CI/CD workflows | Merged | 2026-01-03 |
-| #3  | Add typed client configuration        | Merged | 2026-01-03 |
-| #2  | Setup catalog-core package scaffold   | Merged | 2026-01-03 |
+### Thin Client Architecture
 
-## Active Branch
+- **Config-driven**: All branding/behavior via `client.config.ts`
+- **One seam file**: Only `src/catalogCore.tsx` imports the package
+- **Stub mode**: Currently uses inline stubs until package is published
 
-`claude/review-priority-task-y996s` - GIFT-005: Apply brand colors from config to Tailwind theme
+## Global Release Gates
 
-## Environment Notes
+All PRs must pass:
 
-- Node.js 20.x required
-- No backend deployed yet (uses stub data)
-- `VITE_API_BASE_URL` defaults to `/api`
+```bash
+npm run lint       # ESLint
+npm run typecheck  # TypeScript
+npm run test       # Vitest
+npm run build      # Production build
+```
 
-## Next Recommended Tasks
+Auto-merge enabled via `automerge` label.
 
-Tasks that can proceed without blockers:
+## Active Blockers
 
-1. **GIFT-005** - Apply brand colors (no package dependency)
-2. **GIFT-006** - Add logo component (no package dependency)
-3. **GIFT-008** - Add SEO meta tags (no package dependency)
-4. **GIFT-009** - Add Vercel deployment config (no package dependency)
-5. **GIFT-010** - Add admin auth gate (no package dependency)
+| ID | Blocker | Impact | Owner | Notes |
+|----|---------|--------|-------|-------|
+| B1 | `@signal/catalog-core` not published | Cannot swap stubs for real package | Neal | Package in development |
+| B2 | No deployment config | Cannot deploy to production | - | GIFT-007 addresses this |
 
-## Known Technical Debt
+## Last 10 Merged PRs
 
-1. Stub routes duplicate code from catalogCore.tsx (will be deleted)
-2. No error boundaries
-3. No loading states
-4. Tests are minimal (happy path only)
+| PR | Title | Date | Task ID |
+|----|-------|------|---------|
+| #19 | feat: Make brand styling driven by client.config.ts | 2026-01-02 | - |
+| #18 | feat: Upgrade admin into professional SaaS dashboard | 2026-01-02 | - |
+| #17 | feat: Build polished product detail page with gallery, inquiry modal, and related products | 2026-01-02 | - |
+| #16 | feat: Build proper shopping catalog experience with filtering and sorting | 2026-01-01 | - |
+| #15 | fix: Add contents:write permission for auto-merge | 2026-01-01 | - |
+| #14 | - | - | - |
+| #13 | - | - | - |
+| #12 | - | - | - |
+| #11 | - | - | - |
+| #10 | - | - | - |
+
+---
+
+*Last updated: 2026-01-03*

@@ -1,29 +1,82 @@
 {
-  "lastUpdated": "2026-01-03",
+  "repo": "Potpourri",
+  "version": "1.0.0",
   "counters": {
-    "totalPRs": 5,
-    "mergedPRs": 4,
-    "closedPRs": 0,
-    "tasksCompleted": 1,
-    "tasksPending": 9
+    "prs_merged": 19,
+    "tasks_done": 1,
+    "tasks_blocked": 0,
+    "gate_failures": 0
   },
-  "tasksBySize": {
-    "S": { "completed": 1, "pending": 8 },
-    "M": { "completed": 0, "pending": 1 },
-    "L": { "completed": 0, "pending": 0 },
-    "XL": { "completed": 0, "pending": 0 }
+  "weekly_buckets": [
+    {
+      "week_start": "2025-12-30",
+      "week_end": "2026-01-05",
+      "prs_merged": 5,
+      "tasks_done": 1,
+      "gate_failures": 0
+    }
+  ],
+  "tasks": {
+    "GIFT-001": {
+      "status": "READY",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-002": {
+      "status": "READY",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-003": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-004": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-005": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-006": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-007": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-008": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-009": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-010": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-011": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-012": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-013": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-014": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    },
+    "GIFT-015": {
+      "status": "TODO",
+      "last_updated": "2026-01-03T00:00:00Z"
+    }
   },
-  "tasksByCategory": {
-    "packageIntegration": { "completed": 0, "pending": 4 },
-    "theming": { "completed": 1, "pending": 1 },
-    "features": { "completed": 0, "pending": 1 },
-    "seo": { "completed": 0, "pending": 1 },
-    "deployment": { "completed": 0, "pending": 1 },
-    "security": { "completed": 0, "pending": 1 }
-  },
-  "ciRuns": {
-    "total": 1,
-    "passed": 1,
-    "failed": 0
-  }
+  "last_updated": "2026-01-03T00:00:00Z"
 }

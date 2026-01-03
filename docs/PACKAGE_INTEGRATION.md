@@ -1,9 +1,6 @@
-# @signal/catalog-core Integration Guide
+# Package Integration
 
-**For:** Neal
-**Purpose:** Integrate catalog-core with minimal friction
-
----
+> Specification for integrating `@signal/catalog-core` into Potpourri.
 
 ## Package Name
 
@@ -11,128 +8,118 @@
 @signal/catalog-core
 ```
 
-Already declared in `package.json` as a pending dependency:
+**Status**: Pending publication (placeholder acceptable)
 
-```json
-"@signal/catalog-core": "workspace:* OR ^1.0.0"
-```
+## Required Exports
 
----
+The package MUST export:
 
-## Expected Exports
+### `makeRouteTree({ clientConfig })`
 
-The package must export **at least one** of these patterns:
-
-### Pattern A: Route Tree Builder (preferred)
+Returns a TanStack Router route tree configured for the client.
 
 ```typescript
-export function makeRouteTree(options: {
-  clientConfig: ClientConfig
-  rootRoute: AnyRoute
-}): AnyRoute[]
+import { makeRouteTree } from '@signal/catalog-core'
+import { clientConfig } from './client.config'
+
+const routeTree = makeRouteTree({ clientConfig })
 ```
 
-- Returns an array of routes to add as children to the root
-- Client wires it up in `app.tsx` via `rootRoute.addChildren(routes)`
+### `CatalogApp({ clientConfig })` (Optional)
 
-### Pattern B: Complete App Component
-
-```typescript
-export function CatalogApp(props: { clientConfig: ClientConfig }): React.ReactNode
-```
-
-- Returns a complete `<RouterProvider />` with all routes
-- Client renders it directly in `main.tsx`
-
----
-
-## Expected Peer Dependencies
-
-| Package                  | Version   | Required      |
-| ------------------------ | --------- | ------------- |
-| `react`                  | `^18.0.0` | Yes           |
-| `react-dom`              | `^18.0.0` | Yes           |
-| `@tanstack/react-router` | `^1.0.0`  | Yes           |
-| `@tanstack/react-query`  | `^5.0.0`  | Yes           |
-| `tailwindcss`            | `^3.0.0`  | No (optional) |
-
----
-
-## ClientConfig Shape
-
-The package should accept this config (defined in `src/client.config.ts`):
+Full app component if client wants turnkey solution:
 
 ```typescript
-interface ClientConfig {
-  brand: {
-    name: string
-    logoUrl: string
-    colors: { primary: string; secondary: string; accent: string }
-  }
-  tenant: {
-    id: string
-    apiBaseUrl: string
-  }
-  features: {
-    enableCheckout: boolean
-    enableAdmin: boolean
-    priceMode: 'fixed' | 'variable' | 'quote'
-  }
-  contact: {
-    /* ... */
-  }
-  catalog: {
-    /* ... */
-  }
+import { CatalogApp } from '@signal/catalog-core'
+import { clientConfig } from './client.config'
+
+function App() {
+  return <CatalogApp clientConfig={clientConfig} />
 }
 ```
 
----
+## Expected Types
 
-## Versioning Notes
+```typescript
+// From @signal/catalog-core
+export interface CatalogCoreConfig {
+  clientConfig: ClientConfig  // From src/client.config.ts
+}
 
-- **Initial release:** `1.0.0`
-- **Breaking changes:** Bump major version if `makeRouteTree` signature changes
-- **Workspace mode:** Use `workspace:*` during monorepo development
-- **Published mode:** Pin to `^1.0.0` or exact version for stability
+export function makeRouteTree(config: CatalogCoreConfig): RouteTree
+export function CatalogApp(props: CatalogCoreConfig): JSX.Element
+```
 
----
+## Peer Dependencies
 
-## Integration Steps (2 files only)
+The package expects these as peer dependencies:
 
-### 1. `package.json`
+| Package | Version |
+|---------|---------|
+| `react` | `^18.0.0` |
+| `react-dom` | `^18.0.0` |
+| `@tanstack/react-router` | `^1.0.0` |
+| `@tanstack/react-query` | `^5.0.0` |
 
-Move from pending to dependencies:
+## One-File Seam Rule
 
-```json
-"dependencies": {
-  "@signal/catalog-core": "^1.0.0"
+**CRITICAL**: Only `src/catalogCore.tsx` may import `@signal/catalog-core`.
+
+### Current State (Stubs)
+
+```typescript
+// src/catalogCore.tsx
+// STUBS - Replace with real package when available
+
+export function makeRouteTree({ clientConfig }) {
+  // Inline stub implementation
 }
 ```
 
-### 2. `src/catalogCore.tsx`
-
-Replace the stub with real import:
+### Target State (Real Package)
 
 ```typescript
-// DELETE the entire "TEMP FALLBACK STUB" section
-// ADD this single line:
+// src/catalogCore.tsx
 export { makeRouteTree, CatalogApp } from '@signal/catalog-core'
 ```
 
-That's it. No other files need changes.
+## Integration Steps
+
+When `@signal/catalog-core` is published:
+
+1. **Install package**:
+   ```bash
+   npm install @signal/catalog-core
+   ```
+
+2. **Update package.json**: Move from `pendingDependencies` to `dependencies`
+
+3. **Swap seam file** (`src/catalogCore.tsx`):
+   ```typescript
+   // DELETE everything below this line
+   // --- STUB IMPLEMENTATION ---
+
+   // ADD this single line
+   export { makeRouteTree, CatalogApp } from '@signal/catalog-core'
+   ```
+
+4. **Verify**:
+   ```bash
+   npm run typecheck
+   npm run test
+   npm run build
+   ```
+
+## Testing Integration
+
+Before marking integration complete:
+
+- [ ] All routes render correctly
+- [ ] Branding from `clientConfig` applied
+- [ ] Feature flags respected
+- [ ] No TypeScript errors
+- [ ] All tests pass
 
 ---
 
-## Verification
-
-After integration, run:
-
-```bash
-npm install
-npm run typecheck
-npm run test
-npm run build
-```
-
-All gates should pass.
+*Version: 1.0.0*
