@@ -8,6 +8,7 @@ import {
   ProductTeaserGrid,
   VisitUs,
   TrustBadges,
+  Testimonials,
 } from '../ui/sections'
 
 export const indexRoute = createRoute({
@@ -43,6 +44,11 @@ function IndexPage() {
           <ProductTeaserGrid />
         </Container>
       </div>
+
+      {/* Testimonials */}
+      <Container>
+        <Testimonials />
+      </Container>
 
       {/* Visit Us Section */}
       <Container>
