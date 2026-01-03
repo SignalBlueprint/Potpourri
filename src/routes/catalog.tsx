@@ -4,6 +4,7 @@ import { rootRoute } from '../app'
 import { Container, PageHeader } from '../ui'
 import { FilterBar, FilterBarSkeleton } from '../ui/FilterBar'
 import { ProductCard, ProductCardSkeleton } from '../ui/ProductCard'
+import { CategoryNav, CategoryNavSkeleton } from '../components/CategoryNav'
 import {
   mockProducts,
   filterProducts,
@@ -67,53 +68,75 @@ function CatalogPage() {
         subtitle="Browse our curated collection of unique gifts and home goods"
       />
 
-      {/* Filter Bar */}
-      {isLoading ? (
-        <FilterBarSkeleton />
-      ) : (
-        <FilterBar
-          search={search}
-          onSearchChange={setSearch}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          sort={sort}
-          onSortChange={setSort}
-          resultCount={filteredProducts.length}
-        />
-      )}
-
-      {/* Product Grid */}
-      <section className="pb-16 pt-4">
-        {isLoading ? (
-          // Loading skeletons
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <ProductCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          // Empty state
-          <EmptyState
-            search={search}
-            category={selectedCategory}
-            onClearFilters={() => {
-              setSearch('')
-              setSelectedCategory(null)
-            }}
-          />
-        ) : (
-          // Product grid
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onQuickAction={handleQuickAction}
+      {/* Main layout with sidebar on desktop */}
+      <div className="flex flex-col gap-8 lg:flex-row">
+        {/* Category Sidebar - visible on desktop */}
+        <aside className="hidden shrink-0 lg:block lg:w-56">
+          <div className="sticky top-24">
+            {isLoading ? (
+              <CategoryNavSkeleton />
+            ) : (
+              <CategoryNav
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                products={mockProducts}
               />
-            ))}
+            )}
           </div>
-        )}
-      </section>
+        </aside>
+
+        {/* Main Content Area */}
+        <div className="min-w-0 flex-1">
+          {/* Filter Bar - category pills hidden on desktop where sidebar is shown */}
+          {isLoading ? (
+            <FilterBarSkeleton />
+          ) : (
+            <FilterBar
+              search={search}
+              onSearchChange={setSearch}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              sort={sort}
+              onSortChange={setSort}
+              resultCount={filteredProducts.length}
+              hideCategoryPills
+            />
+          )}
+
+          {/* Product Grid */}
+          <section className="pb-16 pt-4">
+            {isLoading ? (
+              // Loading skeletons
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 ? (
+              // Empty state
+              <EmptyState
+                search={search}
+                category={selectedCategory}
+                onClearFilters={() => {
+                  setSearch('')
+                  setSelectedCategory(null)
+                }}
+              />
+            ) : (
+              // Product grid
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onQuickAction={handleQuickAction}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
     </Container>
   )
 }

@@ -13,6 +13,7 @@ interface FilterBarProps {
   sort: SortOption
   onSortChange: (sort: SortOption) => void
   resultCount: number
+  hideCategoryPills?: boolean
 }
 
 export function FilterBar({
@@ -23,6 +24,7 @@ export function FilterBar({
   sort,
   onSortChange,
   resultCount,
+  hideCategoryPills = false,
 }: FilterBarProps) {
   const [isSticky, setIsSticky] = useState(false)
   const filterBarRef = useRef<HTMLDivElement>(null)
@@ -99,11 +101,13 @@ export function FilterBar({
           </div>
         </div>
 
-        {/* Category Pills */}
-        <CategoryPills
-          selectedCategory={selectedCategory}
-          onCategoryChange={onCategoryChange}
-        />
+        {/* Category Pills - hidden on lg+ when sidebar is shown */}
+        <div className={hideCategoryPills ? 'lg:hidden' : ''}>
+          <CategoryPills
+            selectedCategory={selectedCategory}
+            onCategoryChange={onCategoryChange}
+          />
+        </div>
       </div>
     </div>
   )
