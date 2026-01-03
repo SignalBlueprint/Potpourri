@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import {
   createColumnHelper,
   flexRender,
@@ -8,8 +8,8 @@ import {
   useReactTable,
   type SortingState,
 } from '@tanstack/react-table'
-import { Badge, Button, Input } from './index'
-import { getLocalInquiries } from '../api/inquiries'
+import { Button, Input } from './index'
+import { getLocalInquiries, updateInquiryStatus, type InquiryStatus } from '../api/inquiries'
 
 // =============================================================================
 // Inquiry type for the table
@@ -127,6 +127,16 @@ export function AdminInquiriesTable({
   const [globalFilter, setGlobalFilter] = useState('')
   const [inquiries, setInquiries] = useState<AdminInquiry[]>([])
 
+  // Handle status change
+  const handleStatusChange = useCallback((inquiryId: string, newStatus: InquiryStatus) => {
+    // Update in localStorage
+    updateInquiryStatus(inquiryId, newStatus)
+    // Update local state
+    setInquiries((prev) =>
+      prev.map((inq) => (inq.id === inquiryId ? { ...inq, status: newStatus } : inq))
+    )
+  }, [])
+
   // Load inquiries from localStorage or use mock data
   useEffect(() => {
     if (propInquiries) {
@@ -143,7 +153,7 @@ export function AdminInquiriesTable({
           email: inq.email,
           message: inq.message,
           timestamp: inq.timestamp,
-          status: 'new' as const,
+          status: inq.status || 'new',
         }))
         setInquiries(transformed)
       } else {
@@ -198,10 +208,22 @@ export function AdminInquiriesTable({
         header: 'Status',
         cell: (info) => {
           const status = info.getValue()
+          const inquiryId = info.row.original.id
           return (
-            <Badge className={statusStyles[status]}>
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </Badge>
+            <select
+              value={status}
+              onChange={(e) => handleStatusChange(inquiryId, e.target.value as InquiryStatus)}
+              className={`
+                cursor-pointer rounded-full px-3 py-1 text-xs font-medium
+                border-0 outline-none focus:ring-2 focus:ring-brand-primary/20
+                ${statusStyles[status]}
+              `}
+              aria-label={`Change status for inquiry from ${info.row.original.name}`}
+            >
+              <option value="new">New</option>
+              <option value="contacted">Contacted</option>
+              <option value="closed">Closed</option>
+            </select>
           )
         },
       }),
@@ -222,7 +244,7 @@ export function AdminInquiriesTable({
         ),
       }),
     ],
-    [onView]
+    [onView, handleStatusChange]
   )
 
   const table = useReactTable({

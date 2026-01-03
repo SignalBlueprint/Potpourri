@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from 'react'
 import { clientConfig } from '../client.config'
+import { captureException } from '../lib/errorReporting'
 
 interface Props {
   children: ReactNode
@@ -22,7 +23,13 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    console.error('ErrorBoundary caught an error:', error, errorInfo)
+    // Report error to error reporting service
+    captureException(error, {
+      component: 'ErrorBoundary',
+      extra: {
+        componentStack: errorInfo.componentStack,
+      },
+    })
   }
 
   handleRetry = (): void => {
