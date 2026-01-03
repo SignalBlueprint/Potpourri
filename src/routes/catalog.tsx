@@ -2,6 +2,7 @@ import { createRoute } from '@tanstack/react-router'
 import { useState, useMemo, useEffect } from 'react'
 import { rootRoute } from '../app'
 import { Container, PageHeader } from '../ui'
+import { SEO } from '../components/SEO'
 import { FilterBar, FilterBarSkeleton } from '../ui/FilterBar'
 import { ProductCard, ProductCardSkeleton } from '../ui/ProductCard'
 import { CategoryNav, CategoryNavSkeleton } from '../components/CategoryNav'
@@ -62,11 +63,16 @@ function CatalogPage() {
   }
 
   return (
-    <Container>
-      <PageHeader
+    <>
+      <SEO
         title="Shop"
-        subtitle="Browse our curated collection of unique gifts and home goods"
+        description="Browse our curated collection of unique gifts and home goods. Find the perfect present for any occasion."
       />
+      <Container>
+        <PageHeader
+          title="Shop"
+          subtitle="Browse our curated collection of unique gifts and home goods"
+        />
 
       {/* Main layout with sidebar on desktop */}
       <div className="flex flex-col gap-8 lg:flex-row">
@@ -138,6 +144,7 @@ function CatalogPage() {
         </div>
       </div>
     </Container>
+    </>
   )
 }
 

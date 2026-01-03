@@ -1,6 +1,7 @@
 import { createRoute } from '@tanstack/react-router'
 import { rootRoute } from '../app'
 import { Container } from '../ui'
+import { SEO } from '../components/SEO'
 import {
   HeroSection,
   CategoryGrid,
@@ -18,6 +19,9 @@ export const indexRoute = createRoute({
 function IndexPage() {
   return (
     <>
+      <SEO
+        description="Discover unique home decor, kitchen essentials, and thoughtful gift sets. Curated with care for every occasion."
+      />
       {/* Hero Section - Full width background */}
       <Container>
         <HeroSection />

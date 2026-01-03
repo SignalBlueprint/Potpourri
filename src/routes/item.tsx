@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
 import { rootRoute } from '../app'
 import { Card, Container, Button, Badge } from '../ui'
+import { SEO } from '../components/SEO'
 import { ProductGallery } from '../ui/ProductGallery'
 import { RelatedProducts } from '../ui/RelatedProducts'
 import { InquiryModal } from '../ui/InquiryModal'
@@ -64,6 +65,12 @@ function ItemPage() {
 
   return (
     <>
+      <SEO
+        title={product.name}
+        description={product.description}
+        image={product.imageUrl ?? undefined}
+        type="product"
+      />
       <Container>
         {/* Breadcrumb */}
         <nav className="py-4" aria-label="Breadcrumb">
