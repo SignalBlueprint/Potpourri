@@ -8,17 +8,17 @@ Current truth for AI agents. Update after every PR.
 
 ## Current Blockers
 
-| Blocker | Impact | Waiting On |
-|---------|--------|------------|
+| Blocker                              | Impact                               | Waiting On      |
+| ------------------------------------ | ------------------------------------ | --------------- |
 | `@signal/catalog-core` not published | Cannot complete GIFT-001 to GIFT-004 | Package release |
 
 ## Recent PRs
 
-| PR | Task | Status | Date |
-|----|------|--------|------|
-| #4 | Add release gates and CI/CD workflows | Merged | 2026-01-03 |
-| #3 | Add typed client configuration | Merged | 2026-01-03 |
-| #2 | Setup catalog-core package scaffold | Merged | 2026-01-03 |
+| PR  | Task                                  | Status | Date       |
+| --- | ------------------------------------- | ------ | ---------- |
+| #4  | Add release gates and CI/CD workflows | Merged | 2026-01-03 |
+| #3  | Add typed client configuration        | Merged | 2026-01-03 |
+| #2  | Setup catalog-core package scaffold   | Merged | 2026-01-03 |
 
 ## Active Branch
 

@@ -12,20 +12,21 @@ npm run build                # Production build
 ## Product Goal
 
 A lightweight, white-label gift shop client that:
+
 - Renders a catalog from a shared package (`@signal/catalog-core`)
 - Uses `client.config.ts` as the single source of branding/tenant config
 - Supports future checkout, admin, and inquiry features via feature flags
 
 ## Current Status
 
-| Area | Status |
-|------|--------|
-| Scaffold | Complete |
-| Stub Routes | Working (/, /catalog, /item/:id, /admin) |
-| Package Integration | Pending `@signal/catalog-core` |
-| Branding Config | Complete (`client.config.ts`) |
-| CI/CD | Complete (lint, typecheck, test, build, automerge) |
-| Deployment | Not configured |
+| Area                | Status                                             |
+| ------------------- | -------------------------------------------------- |
+| Scaffold            | Complete                                           |
+| Stub Routes         | Working (/, /catalog, /item/:id, /admin)           |
+| Package Integration | Pending `@signal/catalog-core`                     |
+| Branding Config     | Complete (`client.config.ts`)                      |
+| CI/CD               | Complete (lint, typecheck, test, build, automerge) |
+| Deployment          | Not configured                                     |
 
 ## How to Run
 
@@ -45,21 +46,21 @@ npm run preview
 
 ### Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | TypeScript build + Vite production build |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Check Prettier formatting |
-| `npm run format:fix` | Fix Prettier formatting |
-| `npm run typecheck` | Run TypeScript type checking |
-| `npm run test` | Run tests with Vitest |
+| Script               | Description                              |
+| -------------------- | ---------------------------------------- |
+| `npm run dev`        | Start Vite dev server                    |
+| `npm run build`      | TypeScript build + Vite production build |
+| `npm run lint`       | Run ESLint                               |
+| `npm run format`     | Check Prettier formatting                |
+| `npm run format:fix` | Fix Prettier formatting                  |
+| `npm run typecheck`  | Run TypeScript type checking             |
+| `npm run test`       | Run tests with Vitest                    |
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `VITE_API_BASE_URL` | API endpoint for catalog backend | `/api` |
+| Variable            | Description                      | Default |
+| ------------------- | -------------------------------- | ------- |
+| `VITE_API_BASE_URL` | API endpoint for catalog backend | `/api`  |
 
 ## Architecture (Short)
 
@@ -87,18 +88,18 @@ src/
 
 ## Task Queue (Autopilot)
 
-| ID | Task | Size | Status |
-|----|------|------|--------|
-| GIFT-001 | Swap stub index route to catalog-core IndexPage | S | Pending |
-| GIFT-002 | Swap stub catalog route to catalog-core CatalogPage | S | Pending |
-| GIFT-003 | Swap stub item route to catalog-core ItemPage | S | Pending |
-| GIFT-004 | Swap stub admin route to catalog-core AdminPage | S | Pending |
-| GIFT-005 | Apply brand colors from config to Tailwind theme | S | Pending |
-| GIFT-006 | Add logo component using brand.logoUrl | S | Pending |
-| GIFT-007 | Create inquiry/contact form component | M | Pending |
-| GIFT-008 | Add basic meta tags and Open Graph for SEO | S | Pending |
-| GIFT-009 | Add Vercel deployment config (vercel.json) | S | Pending |
-| GIFT-010 | Add admin route auth gate (simple password or flag check) | S | Pending |
+| ID       | Task                                                      | Size | Status  |
+| -------- | --------------------------------------------------------- | ---- | ------- |
+| GIFT-001 | Swap stub index route to catalog-core IndexPage           | S    | Pending |
+| GIFT-002 | Swap stub catalog route to catalog-core CatalogPage       | S    | Pending |
+| GIFT-003 | Swap stub item route to catalog-core ItemPage             | S    | Pending |
+| GIFT-004 | Swap stub admin route to catalog-core AdminPage           | S    | Pending |
+| GIFT-005 | Apply brand colors from config to Tailwind theme          | S    | Pending |
+| GIFT-006 | Add logo component using brand.logoUrl                    | S    | Pending |
+| GIFT-007 | Create inquiry/contact form component                     | M    | Pending |
+| GIFT-008 | Add basic meta tags and Open Graph for SEO                | S    | Pending |
+| GIFT-009 | Add Vercel deployment config (vercel.json)                | S    | Pending |
+| GIFT-010 | Add admin route auth gate (simple password or flag check) | S    | Pending |
 
 **Size Guide**: S = <1hr, M = 1-3hr, L = 3-8hr
 
