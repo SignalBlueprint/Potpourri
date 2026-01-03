@@ -15,11 +15,13 @@ import {
   AdminQuickActionsSkeleton,
   AdminInquiriesTable,
   AdminInquiriesTableSkeleton,
+  AdminProductForm,
   PackageIcon,
   TagIcon,
   InboxIcon,
   ShoppingCartIcon,
 } from '../ui'
+import type { AdminProduct, ProductFormData } from '../ui'
 
 // =============================================================================
 // Route guard: block access if enableAdmin is false
@@ -118,11 +120,41 @@ function AdminPage() {
   const [isLoading, setIsLoading] = useState(true)
   const { isAuthenticated, logout } = useAuth()
 
+  // Product form modal state
+  const [isProductFormOpen, setIsProductFormOpen] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null)
+
   // Simulate loading state for demo purposes
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000)
     return () => clearTimeout(timer)
   }, [])
+
+  // Product form handlers
+  const handleAddProduct = () => {
+    setEditingProduct(null)
+    setIsProductFormOpen(true)
+  }
+
+  const handleEditProduct = (product: AdminProduct) => {
+    setEditingProduct(product)
+    setIsProductFormOpen(true)
+  }
+
+  const handleCloseProductForm = () => {
+    setIsProductFormOpen(false)
+    setEditingProduct(null)
+  }
+
+  const handleSaveProduct = (formData: ProductFormData) => {
+    // Mock save - in real app, this would call an API
+    console.log('Saving product:', {
+      ...formData,
+      price: parseFloat(formData.price),
+      stock: parseInt(formData.stock, 10),
+      id: editingProduct?.id || `new_${Date.now()}`,
+    })
+  }
 
   // Show login form if not authenticated
   if (!isAuthenticated) {
@@ -194,7 +226,7 @@ function AdminPage() {
           <AdminQuickActionsSkeleton />
         ) : (
           <AdminQuickActions
-            onAddProduct={() => console.log('Add product clicked')}
+            onAddProduct={handleAddProduct}
             onImportCSV={() => console.log('Import CSV clicked')}
             onManageCategories={() => console.log('Manage categories clicked')}
           />
@@ -212,7 +244,7 @@ function AdminPage() {
           <AdminProductsTableSkeleton />
         ) : (
           <AdminProductsTable
-            onEdit={(product) => console.log('Edit product:', product)}
+            onEdit={handleEditProduct}
             onDelete={(product) => console.log('Delete product:', product)}
           />
         )}
@@ -233,6 +265,14 @@ function AdminPage() {
           />
         )}
       </section>
+
+      {/* Product Form Modal */}
+      <AdminProductForm
+        isOpen={isProductFormOpen}
+        onClose={handleCloseProductForm}
+        onSave={handleSaveProduct}
+        product={editingProduct}
+      />
     </Container>
   )
 }

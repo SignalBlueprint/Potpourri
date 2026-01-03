@@ -12,6 +12,8 @@ export { AdminQuickActions, AdminQuickActionsSkeleton } from './AdminQuickAction
 export type { QuickAction } from './AdminQuickActions'
 export { AdminInquiriesTable, AdminInquiriesTableEmpty, AdminInquiriesTableSkeleton } from './AdminInquiriesTable'
 export type { AdminInquiry } from './AdminInquiriesTable'
+export { AdminProductForm } from './AdminProductForm'
+export type { ProductFormData } from './AdminProductForm'
 
 // =============================================================================
 // Container - Consistent page wrapper with max-width and padding
