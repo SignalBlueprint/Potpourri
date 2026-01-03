@@ -75,3 +75,8 @@ jobs:
             --base main
 
           echo "PR created successfully for branch $BRANCH_NAME"
+
+          # Enable auto-merge on the PR (will merge when CI passes)
+          gh pr merge "$BRANCH_NAME" --auto --squash --delete-branch
+
+          echo "Auto-merge enabled for PR on branch $BRANCH_NAME"
