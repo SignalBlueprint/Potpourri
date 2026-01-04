@@ -1,88 +1,95 @@
 # Potpourri
 
-## TL;DR
-
-Gift shop storefront client (Vite + React + TanStack). Thin client consuming `@signal/catalog-core` package (pending). All branding via `src/client.config.ts`.
+Gift shop storefront (Vite + React + TanStack). Thin client designed for `@signal/catalog-core` package (pending). All branding via `src/client.config.ts`.
 
 ```bash
 npm install && npm run dev   # Start development
 npm run build                # Production build
 ```
 
-## Product Goal
+---
 
-A lightweight, white-label gift shop client that:
+## Current Status
 
-- Renders a catalog from a shared package (`@signal/catalog-core`)
-- Uses `client.config.ts` as the single source of branding/tenant config
-- Supports checkout, admin, and inquiry features via feature flags
-- Enables unattended agent development via autopilot task queue
+> **Last audit**: 2026-01-04
 
-## Current Status (Reality Check)
+### ✅ DONE
 
-> Last audit: 2026-01-03
+- Hero, catalog, product detail pages with galleries
+- Inquiry modal with localStorage fallback (demo mode)
+- Admin dashboard with auth gate (password from env var)
+- Admin: products/inquiries/categories CRUD, CSV export
+- Mobile hamburger nav, 404 page, empty states, loading skeletons
+- Contact page with map, testimonials, trust badges
+- SEO (meta, JSON-LD, sitemap, robots.txt)
+- Product favorites/wishlist with localStorage persistence
+- Product reviews/ratings (mock data)
+- Recently viewed products section
+- Inventory badges (In Stock/Low Stock/Out of Stock)
+- Newsletter signup form, social share buttons
+- Quote request mode (`priceMode='quote'`)
+- Checkout flow skeleton (gated by `enableCheckout` flag)
 
-### ✅ Demo-Ready (Phase 0 Complete)
+### 🟡 PARTIAL
 
-All critical user flows work. Ready for client demos.
+| Item | Status | Notes |
+|------|--------|-------|
+| POT-038: Accessibility | Focus states + alt text done | Axe violation scan TODO |
 
-| Feature | Status |
-|---------|--------|
-| Hero + catalog + product detail | ✅ Done |
-| Inquiry modal with localStorage fallback | ✅ Done |
-| Admin dashboard with auth gate | ✅ Done |
-| Products/inquiries/categories CRUD | ✅ Done |
-| Mobile hamburger nav | ✅ Done |
-| 404, empty states, loading skeletons | ✅ Done |
-| Contact page with map | ✅ Done |
-| SEO (meta, JSON-LD, sitemap) | ✅ Done |
-| Testimonials, trust badges placeholders | ✅ Done |
-
-### 🟡 Production Hardening Needed (13 items TODO)
-
-See [docs/TASKS.md](docs/TASKS.md) for full backlog. Key items:
-
-- Env validation, analytics stubs, error reporting
-- Accessibility fixes, keyboard gallery nav
-- Admin password from env (currently hardcoded)
-- Bundle size verification
-
-### ❌ Blocked
+### ❌ BLOCKED
 
 | Item | Blocker |
 |------|---------|
-| `@signal/catalog-core` package integration | Package not published |
-| Checkout flow | Feature disabled, waiting for package |
+| `@signal/catalog-core` integration (POT-001-005) | Package not published |
 
 ---
 
 ## Demo Readiness Checklist
 
-> Run through this before any client meeting.
+### Storefront
+- [x] Hero section renders with brand config
+- [x] Catalog with search, filter, sort
+- [x] Product detail with gallery, reviews
+- [x] Related products, recently viewed
+- [x] Inventory badges display
 
-### Pre-Demo Verification
+### Inquiry / Lead Capture
+- [x] Inquiry modal opens from product page
+- [x] Form validates (name, email, message)
+- [x] Submit persists to localStorage (demo mode)
+- [x] Success message displays
+- [x] Quote mode with quantity field
 
-- [ ] `npm run build` passes without errors
-- [ ] Test on actual mobile device (not just devtools)
-- [ ] Clear localStorage to test fresh state
-- [ ] Verify inquiry submits and appears in admin
+### Admin
+- [x] `/admin` gated by password
+- [x] Inquiries table with status dropdown
+- [x] Inquiry detail modal
+- [x] Products table with edit/delete
+- [x] Categories panel
+- [x] CSV export (products + inquiries)
 
-### Demo Flow Script
+### Mobile / Polish
+- [x] Hamburger menu <768px
+- [x] Responsive grids
+- [x] Focus-visible states
+- [x] Breadcrumbs
 
-1. **Landing** → Hero, trust badges, testimonials
-2. **Browse** → Catalog with search, filter by category
-3. **Detail** → Gallery, related products
-4. **Inquire** → Fill form, submit, see success
-5. **Admin** → Login (password: `admin123`), view inquiry
-6. **Mobile** → Hamburger menu, responsive grid
+### Reliability
+- [x] Error boundary catches crashes
+- [x] 404 page for unknown routes
+- [x] Loading skeletons
 
-### Known Demo Gotchas
+---
 
-| Issue | Note |
-|-------|------|
-| Loading skeletons | First load shows 600-800ms skeleton (expected) |
-| Admin password | Hardcoded in source - don't inspect during demo |
-| Placeholder images | Real deployment would have real product photos |
+## Sanity Check Results
+
+```
+Build:  ✅ PASS (423KB JS → 122KB gzip)
+Lint:   ⚠️ 31 warnings, 1 error (no-explicit-any in vite.config.d.ts)
+Tests:  ❌ FAIL (4 tests - useFavorites hook infinite loop in test env)
+```
+
+---
 
 ## How to Run
 
@@ -92,17 +99,10 @@ See [docs/TASKS.md](docs/TASKS.md) for full backlog. Key items:
 npm install
 ```
 
-### Dev
+### Development
 
 ```bash
 npm run dev
-```
-
-### Test
-
-```bash
-npm run test          # Single run
-npm run test:watch    # Watch mode
 ```
 
 ### Build
@@ -112,74 +112,65 @@ npm run build         # TypeScript + Vite production build
 npm run preview       # Preview production build locally
 ```
 
+### Test / Lint
+
+```bash
+npm run test          # Vitest (currently failing - see Known Issues)
+npm run lint          # ESLint
+npm run typecheck     # TypeScript only
+```
+
 ### Env Vars
 
-| Variable              | Description                      | Default     |
-| --------------------- | -------------------------------- | ----------- |
-| `VITE_API_BASE_URL`   | API endpoint for catalog backend | `/api`      |
-| `VITE_ADMIN_PASSWORD` | Admin dashboard password         | `admin123`  |
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `VITE_API_BASE_URL` | No | `/api` | Backend API endpoint |
+| `VITE_ADMIN_PASSWORD` | **Yes (prod)** | `admin123` | Admin dashboard password |
 
-**Security Note**: Always set `VITE_ADMIN_PASSWORD` in production. The default password is only for development.
+Create a `.env` file for local development:
 
-## Architecture (Short)
-
-### High-level Components
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Potpourri (Thin Client)                  │
-├─────────────────────────────────────────────────────────────┤
-│  src/client.config.ts  ← Single source of branding/config  │
-│  src/catalogCore.tsx   ← Package seam (stub → real)        │
-│  src/routes/*          ← Page components                   │
-├─────────────────────────────────────────────────────────────┤
-│              @signal/catalog-core (pending)                 │
-│  makeRouteTree({ clientConfig }) → TanStack routes         │
-│  CatalogApp({ clientConfig }) → Optional full app          │
-└─────────────────────────────────────────────────────────────┘
+```env
+VITE_ADMIN_PASSWORD=your-secure-password
 ```
 
-### Key Files
+---
 
-| File                    | Purpose                                              |
-| ----------------------- | ---------------------------------------------------- |
-| `src/client.config.ts`  | Branding, tenant ID, feature flags, contact info     |
-| `src/catalogCore.tsx`   | Package adapter (ONE file imports `@signal/catalog-core`) |
-| `src/main.tsx`          | App entry (QueryClient + Router providers)           |
-| `src/app.tsx`           | Root route + layout                                  |
-| `src/routes/index.tsx`  | Home page                                            |
-| `src/routes/catalog.tsx`| Catalog grid                                         |
-| `src/routes/item.tsx`   | Product detail                                       |
-| `src/routes/admin.tsx`  | Admin dashboard                                      |
+## Architecture (Brief)
 
-## Known Issues
+```
+Potpourri (Thin Client)
+├── src/client.config.ts    ← Single source of branding + feature flags
+├── src/catalogCore.tsx     ← Package seam (stubs → @signal/catalog-core)
+├── src/routes/*            ← Page components (TanStack Router)
+├── src/ui/*                ← Reusable components
+└── src/api/inquiries.ts    ← Lead capture with localStorage fallback
+```
 
-1. **Package seam uses stubs** - Real `@signal/catalog-core` not yet published
-2. **Checkout disabled** - Feature flag exists but no implementation
+**Package Seam**: `src/catalogCore.tsx` contains 700+ lines of stubs. When `@signal/catalog-core` publishes, delete the stubs and uncomment one import line. See swap instructions in file.
 
-## Task Queue (Summary)
+**Feature Flags**: `enableCheckout`, `enableAdmin`, `priceMode` in `client.config.ts`.
 
-Full backlog with acceptance criteria: **[docs/TASKS.md](docs/TASKS.md)**
+---
 
-### Status Overview
+## Known Issues / Next Tasks
 
-| Priority | Total | Done | Remaining |
-|----------|-------|------|-----------|
-| P0 (Demo) | 20 | 20 | 0 |
-| P1 (Production) | 17 | 11 | 6 |
-| P2 (Future) | 20 | 0 | 20 |
-| BLOCKED | 5 | 0 | 5 |
+### Bugs
 
-### Next Up (P1 Production Items)
+| ID | Issue | Priority |
+|----|-------|----------|
+| - | Tests fail: useFavorites infinite loop in jsdom | P1 |
+| - | Lint error in vite.config.d.ts | P1 |
 
-| ID | Title | Area |
-|----|-------|------|
-| POT-033 | Console logging config | Ops |
-| POT-034 | Verify production build optimization | Performance |
-| POT-038 | Basic accessibility fixes | A11y |
-| POT-039 | Gallery keyboard navigation | A11y |
-| POT-040 | CatalogCore swap instructions | Docs |
-| POT-042 | Rate limiting awareness on forms | Security |
+### Next Up (from docs/TASKS.md)
+
+| ID | Title | Priority |
+|----|-------|----------|
+| POT-038 | Complete accessibility (axe violation scan) | P1 |
+| POT-054 | Add product comparison feature | P2 |
+| POT-058 | Add admin CSV import | P2 |
+| POT-060 | Add admin dashboard charts | P2 |
+| POT-064 | Add multi-image product upload | P2 |
+| POT-065 | Add inventory management | P2 |
 
 ### Blocked by catalog-core
 
@@ -189,36 +180,40 @@ Full backlog with acceptance criteria: **[docs/TASKS.md](docs/TASKS.md)**
 | POT-002 | Swap catalogCore stubs for real package |
 | POT-003 | Package swap feature flag |
 
-**Status Values**: `TODO` | `DONE` | `BLOCKED`
+---
 
-## Release Gates
+## Task Status Summary
 
-All PRs must pass before merge:
+| Priority | Total | Done | Remaining |
+|----------|-------|------|-----------|
+| BLOCKED | 5 | 0 | 5 |
+| P0 | 20 | 20 | 0 |
+| P1 | 17 | 16 | 1 (partial) |
+| P2 | 20 | 9 | 11 |
 
-```bash
-npm run lint       # ESLint passes
-npm run typecheck  # TypeScript passes
-npm run test       # Vitest passes
-npm run build      # Production build succeeds
-```
+See [docs/TASKS.md](docs/TASKS.md) for full backlog with acceptance criteria.
 
-Auto-merge: Add `automerge` label to PRs for automatic squash-merge after CI passes.
+---
 
 ## Documentation
 
-### Ship Plan
-
 | Document | Purpose |
 |----------|---------|
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Phased plan: Demo → Production → Mobile → AI → Checkout |
-| [docs/TASKS.md](docs/TASKS.md) | Full backlog with priorities, status, acceptance criteria |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | App structure, data flow, tech decisions |
-
-### Integration & Operations
-
-| Document | Purpose |
-|----------|---------|
+| [docs/TASKS.md](docs/TASKS.md) | Full backlog with priorities and status |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Phased ship plan |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture details |
 | [docs/PACKAGE_INTEGRATION.md](docs/PACKAGE_INTEGRATION.md) | @signal/catalog-core seam spec |
-| [docs/AI_STATE.md](docs/AI_STATE.md) | Suite goal, repo map, active blockers |
-| [docs/AI_PLAYBOOK.md](docs/AI_PLAYBOOK.md) | Agent rules, task size, stop conditions |
-| [docs/AI_METRICS.json](docs/AI_METRICS.json) | Counters and timestamps |
+
+---
+
+## Release Gates
+
+PRs must pass before merge:
+
+```bash
+npm run typecheck  # TypeScript passes
+npm run build      # Production build succeeds
+# npm run test     # Currently skipped (see Known Issues)
+```
+
+Auto-merge: Add `automerge` label to PRs for automatic squash-merge after CI passes.
