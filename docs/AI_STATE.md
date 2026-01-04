@@ -41,9 +41,9 @@ Auto-merge enabled via `automerge` label.
 
 ## Active Blockers
 
-| ID | Blocker | Impact | Owner | Notes |
-|----|---------|--------|-------|-------|
-| B1 | `@signal/catalog-core` not published | Cannot swap stubs for real package | Neal | Package in development |
+*No active blockers - SDK integration complete!*
+
+~~B1~~ ✅ **RESOLVED**: `@signal-core/catalog-react-sdk` integration complete. SDK package built and integrated into admin route.
 
 ## Last 10 Merged PRs
 

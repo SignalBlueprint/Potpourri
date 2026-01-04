@@ -3,30 +3,9 @@
  *
  * This file is the SINGLE integration point for @signal-core/catalog-react-sdk.
  * It uses the SDK's types and API utilities while keeping Potpourri's custom UI.
- *
- * ╔═══════════════════════════════════════════════════════════════════════════╗
- * ║                    PACKAGE SWAP INSTRUCTIONS                               ║
- * ╠═══════════════════════════════════════════════════════════════════════════╣
- * ║ When @signal-core/catalog-react-sdk is published, follow these steps:     ║
- * ║                                                                           ║
- * ║ 1. Install the package:                                                   ║
- * ║    pnpm add @signal-core/catalog-react-sdk                                ║
- * ║                                                                           ║
- * ║ 2. Uncomment line ~25:                                                    ║
- * ║    import { fetchJson } from '@signal-core/catalog-react-sdk'             ║
- * ║                                                                           ║
- * ║ 3. Delete lines ~27-87:                                                   ║
- * ║    - The mockProducts import                                              ║
- * ║    - The SDKProduct interface (provided by SDK)                           ║
- * ║    - The entire fetchJson stub function                                   ║
- * ║                                                                           ║
- * ║ 4. Run: pnpm typecheck && pnpm build                                      ║
- * ║                                                                           ║
- * ║ 5. Test all routes: /, /catalog, /item/*, /admin                          ║
- * ╚═══════════════════════════════════════════════════════════════════════════╝
  */
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, type FormEvent } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
 import type { AnyRoute } from '@tanstack/react-router'
 import type { ClientConfig } from './client.config'
@@ -35,14 +14,8 @@ import { clientConfig } from './client.config'
 // =============================================================================
 // SDK Integration - @signal-core/catalog-react-sdk
 // =============================================================================
-// STEP 2: Uncomment the line below when @signal-core/catalog-react-sdk is available
-// import { fetchJson } from '@signal-core/catalog-react-sdk'
-
-// ┌───────────────────────────────────────────────────────────────────────────┐
-// │ STEP 3: DELETE FROM HERE ────────────────────────────────────────────────│
-// └───────────────────────────────────────────────────────────────────────────┘
-
-import { mockProducts } from './data/mockProducts'
+import { fetchJson, CatalogAdminApp } from '@signal-core/catalog-react-sdk'
+import { useAuth } from './hooks/useAuth'
 
 // SDK Product type (matches signal-catalog server models)
 // NOTE: This interface will be provided by @signal-core/catalog-react-sdk
@@ -117,17 +90,6 @@ import {
   Card,
   Button,
   Badge,
-  SectionTitle,
-  AdminStatCard,
-  AdminStatCardSkeleton,
-  AdminProductsTable,
-  AdminProductsTableSkeleton,
-  AdminQuickActions,
-  AdminQuickActionsSkeleton,
-  PackageIcon,
-  TagIcon,
-  InboxIcon,
-  ShoppingCartIcon,
 } from './ui'
 import {
   HeroSection,
@@ -163,6 +125,111 @@ export type MakeRouteTree = (config: CatalogCoreConfig) => AnyRoute[]
 
 export interface CatalogAppProps {
   clientConfig: ClientConfig
+}
+
+// =============================================================================
+// SDK Component Wrappers
+// =============================================================================
+
+/**
+ * Admin Login Form - handles authentication before showing SDK admin component
+ */
+function AdminLoginForm() {
+  const [password, setPassword] = useState('')
+  const { login, error } = useAuth()
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    login(password)
+  }
+
+  return (
+    <Container>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center">
+        <div className="w-full max-w-md rounded-xl border border-neutral-200 bg-white p-8 shadow-sm">
+          <div className="mb-6 text-center">
+            <div className="mb-4 text-4xl">🔐</div>
+            <h1 className="text-2xl font-semibold text-neutral-900">
+              Admin Login
+            </h1>
+            <p className="mt-2 text-sm text-neutral-600">
+              Enter the admin password to access the dashboard
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label
+                htmlFor="password"
+                className="mb-2 block text-sm font-medium text-neutral-700"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-lg border border-neutral-300 px-4 py-3 text-neutral-900 placeholder-neutral-400 transition-colors focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+                placeholder="Enter admin password"
+                autoFocus
+              />
+            </div>
+
+            {error && (
+              <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-brand-primary px-6 py-3 font-medium text-white transition-colors hover:bg-neutral-800"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <Link
+              to="/"
+              className="text-sm text-neutral-500 transition-colors hover:text-neutral-700"
+            >
+              ← Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    </Container>
+  )
+}
+
+/**
+ * Wrapper for CatalogAdminApp that maps clientConfig to SDK config and handles auth
+ */
+function CatalogAdminWrapper() {
+  const { isAuthenticated } = useAuth()
+  const apiBase = clientConfig.tenant.apiBaseUrl
+  const customerId = clientConfig.tenant.id
+  
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return <AdminLoginForm />
+  }
+  
+  // TODO: Integrate proper JWT token from backend authentication
+  // The SDK expects a Bearer token that will be sent in Authorization header
+  // For now, using a placeholder - in production, this should come from:
+  // 1. Backend login endpoint that returns JWT
+  // 2. Stored securely (httpOnly cookie or secure storage)
+  // 3. Refreshed when expired
+  const authToken = 'placeholder-token'
+  
+  return (
+    <div style={{ minHeight: '100vh' }}>
+      <CatalogAdminApp apiBase={apiBase} customerId={customerId} authToken={authToken} />
+    </div>
+  )
 }
 
 // Convert SDK product to MockProduct format for UI component compatibility
@@ -729,104 +796,9 @@ function ItemPage({ id }: { id: string }) {
 }
 
 // =============================================================================
-// ADMIN PAGE - Dashboard for managing products and inquiries
-// =============================================================================
-function AdminPage() {
-  const [isLoading, setIsLoading] = useState(true)
-
-  // Simulate loading state for demo purposes
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000)
-    return () => clearTimeout(timer)
-  }, [])
-
-  return (
-    <Container>
-      <PageHeader
-        title="Admin Dashboard"
-        subtitle="Manage your inventory, view inquiries, and track orders"
-      />
-
-      {/* Summary Cards */}
-      <section className="pb-8">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {isLoading ? (
-            <>
-              <AdminStatCardSkeleton />
-              <AdminStatCardSkeleton />
-              <AdminStatCardSkeleton />
-              <AdminStatCardSkeleton />
-            </>
-          ) : (
-            <>
-              <AdminStatCard
-                label="Total Products"
-                value={24}
-                icon={<PackageIcon />}
-                trend={{ value: 12, label: 'from last month', direction: 'up' }}
-              />
-              <AdminStatCard
-                label="Categories"
-                value={5}
-                icon={<TagIcon />}
-              />
-              <AdminStatCard
-                label="Inquiries"
-                value={8}
-                icon={<InboxIcon />}
-                trend={{ value: 3, label: 'new this week', direction: 'up' }}
-                variant="success"
-              />
-              <AdminStatCard
-                label="Orders"
-                value={0}
-                icon={<ShoppingCartIcon />}
-                variant="default"
-              />
-            </>
-          )}
-        </div>
-      </section>
-
-      {/* Quick Actions */}
-      <section className="pb-8">
-        <div className="mb-4">
-          <SectionTitle>Quick Actions</SectionTitle>
-        </div>
-        {isLoading ? (
-          <AdminQuickActionsSkeleton />
-        ) : (
-          <AdminQuickActions
-            onAddProduct={() => console.log('Add product clicked')}
-            onImportCSV={() => console.log('Import CSV clicked')}
-            onManageCategories={() => console.log('Manage categories clicked')}
-          />
-        )}
-      </section>
-
-      {/* Products Table */}
-      <section className="pb-16">
-        <div className="mb-6">
-          <SectionTitle subtitle="View and manage your product catalog">
-            Products
-          </SectionTitle>
-        </div>
-        {isLoading ? (
-          <AdminProductsTableSkeleton />
-        ) : (
-          <AdminProductsTable
-            onEdit={(product) => console.log('Edit product:', product)}
-            onDelete={(product) => console.log('Delete product:', product)}
-          />
-        )}
-      </section>
-    </Container>
-  )
-}
-
-// =============================================================================
 // Route Tree Factory
 // =============================================================================
+// Note: AdminPage stub has been replaced with CatalogAdminWrapper (SDK integration)
 
 export const makeRouteTree: MakeRouteTree = ({ clientConfig: config, rootRoute }) => {
   const indexRoute = createRoute({
@@ -859,7 +831,7 @@ export const makeRouteTree: MakeRouteTree = ({ clientConfig: config, rootRoute }
         throw new Error('Admin access disabled')
       }
     },
-    component: AdminPage,
+    component: CatalogAdminWrapper,
   })
 
   return [indexRoute, catalogRoute, itemRoute, adminRoute]

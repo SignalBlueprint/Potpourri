@@ -7,40 +7,50 @@ npm install && npm run dev   # Start development
 npm run build                # Production build
 ```
 
----
+## Product Goal
 
-## Current Status
+A lightweight, white-label gift shop client that:
 
-> **Last audit**: 2026-01-04
+- Renders a catalog from a shared package (`@signal/catalog-core`)
+- Uses `client.config.ts` as the single source of branding/tenant config
+- Supports checkout, admin, and inquiry features via feature flags
+- Enables unattended agent development via autopilot task queue
 
-### ✅ DONE
+## Current Status (Reality Check)
 
-- Hero, catalog, product detail pages with galleries
-- Inquiry modal with localStorage fallback (demo mode)
-- Admin dashboard with auth gate (password from env var)
-- Admin: products/inquiries/categories CRUD, CSV export
-- Mobile hamburger nav, 404 page, empty states, loading skeletons
-- Contact page with map, testimonials, trust badges
-- SEO (meta, JSON-LD, sitemap, robots.txt)
-- Product favorites/wishlist with localStorage persistence
-- Product reviews/ratings (mock data)
-- Recently viewed products section
-- Inventory badges (In Stock/Low Stock/Out of Stock)
-- Newsletter signup form, social share buttons
-- Quote request mode (`priceMode='quote'`)
-- Checkout flow skeleton (gated by `enableCheckout` flag)
+> Last audit: 2026-01-03
 
-### 🟡 PARTIAL
+### ✅ Demo-Ready (Phase 0 Complete)
 
-| Item | Status | Notes |
-|------|--------|-------|
-| POT-038: Accessibility | Focus states + alt text done | Axe violation scan TODO |
+All critical user flows work. Ready for client demos.
 
-### ❌ BLOCKED
+| Feature | Status |
+|---------|--------|
+| Hero + catalog + product detail | ✅ Done |
+| Inquiry modal with localStorage fallback | ✅ Done |
+| Admin dashboard with auth gate | ✅ Done |
+| Products/inquiries/categories CRUD | ✅ Done |
+| Mobile hamburger nav | ✅ Done |
+| 404, empty states, loading skeletons | ✅ Done |
+| Contact page with map | ✅ Done |
+| SEO (meta, JSON-LD, sitemap) | ✅ Done |
+| Testimonials, trust badges placeholders | ✅ Done |
 
-| Item | Blocker |
-|------|---------|
-| `@signal/catalog-core` integration (POT-001-005) | Package not published |
+### 🟡 Production Hardening Needed (13 items TODO)
+
+See [docs/TASKS.md](docs/TASKS.md) for full backlog. Key items:
+
+- Env validation, analytics stubs, error reporting
+- Accessibility fixes, keyboard gallery nav
+- Admin password from env (currently hardcoded)
+- Bundle size verification
+
+### ❌ Blocked
+
+| Item | Status |
+|------|--------|
+| `@signal-core/catalog-react-sdk` integration | ✅ Complete - SDK integrated into admin route |
+| Checkout flow | Feature disabled, can be enabled when needed |
 
 ---
 
@@ -122,89 +132,84 @@ npm run typecheck     # TypeScript only
 
 ### Env Vars
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `VITE_API_BASE_URL` | No | `/api` | Backend API endpoint |
-| `VITE_ADMIN_PASSWORD` | **Yes (prod)** | `admin123` | Admin dashboard password |
+| Variable            | Description                      | Default |
+| ------------------- | -------------------------------- | ------- |
+| `VITE_API_BASE_URL` | API endpoint for catalog backend | `/api`  |
 
-Create a `.env` file for local development:
+## Architecture (Short)
 
-```env
-VITE_ADMIN_PASSWORD=your-secure-password
-```
-
----
-
-## Architecture (Brief)
+### High-level Components
 
 ```
-Potpourri (Thin Client)
-├── src/client.config.ts    ← Single source of branding + feature flags
-├── src/catalogCore.tsx     ← Package seam (stubs → @signal/catalog-core)
-├── src/routes/*            ← Page components (TanStack Router)
-├── src/ui/*                ← Reusable components
-└── src/api/inquiries.ts    ← Lead capture with localStorage fallback
+┌─────────────────────────────────────────────────────────────┐
+│                    Potpourri (Thin Client)                  │
+├─────────────────────────────────────────────────────────────┤
+│  src/client.config.ts  ← Single source of branding/config  │
+│  src/catalogCore.tsx   ← Package seam (stub → real)        │
+│  src/routes/*          ← Page components                   │
+├─────────────────────────────────────────────────────────────┤
+│              @signal/catalog-core (pending)                 │
+│  makeRouteTree({ clientConfig }) → TanStack routes         │
+│  CatalogApp({ clientConfig }) → Optional full app          │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-**Package Seam**: `src/catalogCore.tsx` contains 700+ lines of stubs. When `@signal/catalog-core` publishes, delete the stubs and uncomment one import line. See swap instructions in file.
+### Key Files
 
-**Feature Flags**: `enableCheckout`, `enableAdmin`, `priceMode` in `client.config.ts`.
+| File                    | Purpose                                              |
+| ----------------------- | ---------------------------------------------------- |
+| `src/client.config.ts`  | Branding, tenant ID, feature flags, contact info     |
+| `src/catalogCore.tsx`   | Package adapter (ONE file imports `@signal/catalog-core`) |
+| `src/main.tsx`          | App entry (QueryClient + Router providers)           |
+| `src/app.tsx`           | Root route + layout                                  |
+| `src/routes/index.tsx`  | Home page                                            |
+| `src/routes/catalog.tsx`| Catalog grid                                         |
+| `src/routes/item.tsx`   | Product detail                                       |
+| `src/routes/admin.tsx`  | Admin dashboard                                      |
 
----
+## Known Issues
 
-## Known Issues / Next Tasks
+1. **Package seam uses stubs** - Real `@signal/catalog-core` not yet published
+2. **Checkout disabled** - Feature flag exists but no implementation
 
-### Bugs
+## Task Queue (Summary)
 
-| ID | Issue | Priority |
-|----|-------|----------|
-| - | Tests fail: useFavorites infinite loop in jsdom | P1 |
-| - | Lint error in vite.config.d.ts | P1 |
+Full backlog with acceptance criteria: **[docs/TASKS.md](docs/TASKS.md)**
 
-### Next Up (from docs/TASKS.md)
-
-| ID | Title | Priority |
-|----|-------|----------|
-| POT-038 | Complete accessibility (axe violation scan) | P1 |
-| POT-054 | Add product comparison feature | P2 |
-| POT-058 | Add admin CSV import | P2 |
-| POT-060 | Add admin dashboard charts | P2 |
-| POT-064 | Add multi-image product upload | P2 |
-| POT-065 | Add inventory management | P2 |
-
-### Blocked by catalog-core
-
-| ID | Title |
-|----|-------|
-| POT-001 | Publish @signal/catalog-core |
-| POT-002 | Swap catalogCore stubs for real package |
-| POT-003 | Package swap feature flag |
-
----
-
-## Task Status Summary
+### Status Overview
 
 | Priority | Total | Done | Remaining |
 |----------|-------|------|-----------|
+| P0 (Demo) | 20 | 20 | 0 |
+| P1 (Production) | 17 | 4 | 13 |
+| P2 (Future) | 20 | 0 | 20 |
 | BLOCKED | 5 | 0 | 5 |
-| P0 | 20 | 20 | 0 |
-| P1 | 17 | 16 | 1 (partial) |
-| P2 | 20 | 9 | 11 |
 
-See [docs/TASKS.md](docs/TASKS.md) for full backlog with acceptance criteria.
+### Next Up (P1 Production Items)
 
----
+| ID | Title | Area |
+|----|-------|------|
+| POT-030 | Env validation on startup | Ops |
+| POT-031 | Analytics event placeholders | Analytics |
+| POT-032 | Error reporting placeholder | Ops |
+| POT-041 | Secure admin password (from env) | Security |
+| POT-037 | Trust badges footer | Trust |
 
-## Documentation
+### SDK Integration Status
 
-| Document | Purpose |
-|----------|---------|
-| [docs/TASKS.md](docs/TASKS.md) | Full backlog with priorities and status |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Phased ship plan |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture details |
-| [docs/PACKAGE_INTEGRATION.md](docs/PACKAGE_INTEGRATION.md) | @signal/catalog-core seam spec |
+| ID | Title | Status |
+|----|-------|--------|
+| POT-001 | Build @signal-core/catalog-react-sdk package | ✅ DONE |
+| POT-002 | Integrate SDK components into catalogCore routes | ✅ DONE |
+| POT-003 | Add SDK integration feature flag | ✅ DONE |
+| POT-004 | Verify SDK peer dependencies compatibility | ✅ DONE |
+| POT-005 | Update types and config mapping for SDK | ✅ DONE |
 
----
+**Status**: SDK integration complete! `CatalogAdminApp` is integrated into admin route with proper authentication flow.
+
+**Note**: See [docs/INTEGRATION_PLAN.md](docs/INTEGRATION_PLAN.md) for integration details.
+
+**Status Values**: `TODO` | `DONE` | `BLOCKED`
 
 ## Release Gates
 

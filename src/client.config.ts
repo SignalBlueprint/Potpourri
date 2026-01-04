@@ -30,6 +30,7 @@ export interface FeaturesConfig {
   enableCheckout: boolean
   enableAdmin: boolean
   priceMode: 'fixed' | 'variable' | 'quote'
+  useSDKAdmin: boolean // Feature flag to toggle SDK admin component vs custom implementation
 }
 
 export interface ContactConfig {
@@ -148,6 +149,7 @@ export const clientConfig: ClientConfig = {
     enableCheckout: false,
     enableAdmin: true,
     priceMode: 'fixed',
+    useSDKAdmin: true, // Use SDK CatalogAdminApp component (set to false to disable SDK integration)
   },
 
   contact: {
