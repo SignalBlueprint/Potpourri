@@ -27,6 +27,7 @@ import {
 } from '../ui'
 import type { AdminProduct, ProductFormData, Category, AdminInquiry } from '../ui'
 import { updateInquiryStatus } from '../api/inquiries'
+import { exportProductsCSV, exportInquiriesCSV } from '../lib/exportData'
 
 // =============================================================================
 // Route guard: block access if enableAdmin is false
@@ -282,6 +283,8 @@ function AdminPage() {
           <AdminQuickActions
             onAddProduct={handleAddProduct}
             onImportCSV={() => console.log('Import CSV clicked')}
+            onExportProducts={exportProductsCSV}
+            onExportInquiries={exportInquiriesCSV}
             onManageCategories={() => setIsCategoriesPanelOpen(true)}
           />
         )}

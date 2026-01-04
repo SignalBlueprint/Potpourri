@@ -105,7 +105,7 @@
 | POT-056 | Add newsletter signup | P2 | DONE | - | Marketing | `src/ui/NewsletterForm.tsx`, `src/layout/AppShell.tsx`, `src/ui/index.tsx`, `src/lib/analytics.ts` | Email input in footer, localStorage capture | Lead nurture. Centered form above trust badges, analytics tracking, success state |
 | POT-057 | Add social share buttons | P2 | DONE | - | Marketing | `src/ui/ShareButtons.tsx`, `src/ui/index.tsx`, `src/routes/item.tsx` | Share to Twitter, Facebook, copy link | Viral growth. ShareButtons with X/Twitter, Facebook share popups, copy link with confirmation |
 | POT-058 | Add admin product import CSV | P2 | TODO | - | Admin | `src/ui/AdminImportCSV.tsx` | Upload CSV, parse, preview, import | Bulk operations |
-| POT-059 | Add admin export data | P2 | TODO | - | Admin | `src/routes/admin.tsx` | Download products/inquiries as CSV | Data portability |
+| POT-059 | Add admin export data | P2 | DONE | - | Admin | `src/lib/exportData.ts`, `src/ui/AdminQuickActions.tsx`, `src/routes/admin.tsx` | Download products/inquiries as CSV | Data portability. Export Products/Export Inquiries buttons in Quick Actions download CSV files |
 | POT-060 | Add admin dashboard charts | P2 | TODO | - | Admin | `src/ui/AdminCharts.tsx` | Inquiry trends, category distribution | Visual analytics |
 | POT-061 | Add AI media pipeline placeholder | P2 | TODO | POT-001 | AI | `src/lib/mediaPipeline.ts` | Stub for image optimization, embedding generation | Phase 3 prep |
 | POT-062 | Add embeddings search UX | P2 | TODO | POT-061 | AI | `src/ui/SemanticSearch.tsx` | Natural language search with embedding matching | Phase 3 feature |
@@ -126,8 +126,8 @@
 | BLOCKED Epic | 5 | 0 | 0 | 5 |
 | P0 | 20 | 20 | 0 | 0 |
 | P1 | 17 | 15 | 2 | 0 |
-| P2 | 20 | 8 | 12 | 0 |
-| **Total** | **62** | **43** | **14** | **5** |
+| P2 | 20 | 9 | 11 | 0 |
+| **Total** | **62** | **44** | **13** | **5** |
 
 ---
 
@@ -147,4 +147,4 @@
 
 ---
 
-*Last updated: 2026-01-04 (POT-063 - product reviews/ratings)*
+*Last updated: 2026-01-04 (POT-059 - admin export data)*
