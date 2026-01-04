@@ -47,12 +47,12 @@ See [docs/TASKS.md](docs/TASKS.md) for full backlog. Key items:
 - Admin password from env (currently hardcoded)
 - Bundle size verification
 
-### ❌ Blocked
+### ✅ SDK Integration Complete
 
-| Item | Blocker |
-|------|---------|
-| `@signal/catalog-core` package integration | Package not published |
-| Checkout flow | Feature disabled, waiting for package |
+| Item | Status |
+|------|--------|
+| `@signal-core/catalog-react-sdk` integration | ✅ Complete - SDK integrated into admin route |
+| Checkout flow | Feature disabled, can be enabled when needed |
 
 ---
 
@@ -151,8 +151,9 @@ npm run preview       # Preview production build locally
 
 ## Known Issues
 
-1. **Package seam uses stubs** - Real `@signal/catalog-core` not yet published
+1. **Package seam uses stubs** - SDK package (`@signal-core/catalog-react-sdk`) installed but needs to be built before integration
 2. **Checkout disabled** - Feature flag exists but no implementation
+3. **Integration plan available** - See [docs/INTEGRATION_PLAN.md](docs/INTEGRATION_PLAN.md) for SDK integration strategy
 
 ## Task Queue (Summary)
 
@@ -177,13 +178,19 @@ Full backlog with acceptance criteria: **[docs/TASKS.md](docs/TASKS.md)**
 | POT-041 | Secure admin password (from env) | Security |
 | POT-037 | Trust badges footer | Trust |
 
-### Blocked by catalog-core
+### SDK Integration Status
 
-| ID | Title |
-|----|-------|
-| POT-001 | Publish @signal/catalog-core |
-| POT-002 | Swap catalogCore stubs for real package |
-| POT-003 | Package swap feature flag |
+| ID | Title | Status |
+|----|-------|--------|
+| POT-001 | Build @signal-core/catalog-react-sdk package | ✅ DONE |
+| POT-002 | Integrate SDK components into catalogCore routes | ✅ DONE |
+| POT-003 | Add SDK integration feature flag | ✅ DONE |
+| POT-004 | Verify SDK peer dependencies compatibility | ✅ DONE |
+| POT-005 | Update types and config mapping for SDK | ✅ DONE |
+
+**Status**: SDK integration complete! `CatalogAdminApp` is integrated into admin route with proper authentication flow.
+
+**Note**: See [docs/INTEGRATION_PLAN.md](docs/INTEGRATION_PLAN.md) for integration details.
 
 **Status Values**: `TODO` | `DONE` | `BLOCKED`
 

@@ -19,19 +19,20 @@
 
 ## Backlog Table
 
-### Epic: BLOCKED - Catalog-Core Package Integration
+### Epic: BLOCKED - Catalog SDK Integration
 
-> **Owner**: Neal (external)
-> **Status**: BLOCKED - Package not yet published
-> **Impact**: Cannot swap stubs for real package, cannot add package-dependent features
+> **Status**: BLOCKED - SDK package needs to be built, then integration can proceed
+> **Impact**: Cannot integrate SDK components, must use stub implementations
+> **Package**: `@signal-core/catalog-react-sdk` (installed locally, needs build)
+> **See**: [docs/INTEGRATION_PLAN.md](INTEGRATION_PLAN.md) for detailed strategy
 
 | ID | Title | Priority | Status | Blocked By | Area | Files | Acceptance Criteria | Notes |
 |----|-------|----------|--------|------------|------|-------|---------------------|-------|
-| POT-001 | Publish @signal/catalog-core package | P0 | BLOCKED | External | Package | N/A | Package published to npm or private registry | Owner: Neal |
-| POT-002 | Swap catalogCore stubs for real package | P0 | BLOCKED | POT-001 | Integration | `src/catalogCore.tsx` | Uncomment real import, delete 600+ lines of stubs, all routes render | One-line change once package ready |
-| POT-003 | Add package swap feature flag | P1 | BLOCKED | POT-001 | Config | `src/client.config.ts`, `src/catalogCore.tsx` | Feature flag toggles stub vs real, both paths work | Safe rollout mechanism |
-| POT-004 | Verify package peer dependencies | P1 | BLOCKED | POT-001 | Integration | `package.json` | React 18, TanStack Router/Query versions compatible | Check before merge |
-| POT-005 | Update types to match package exports | P1 | BLOCKED | POT-001 | Types | `src/catalogCore.tsx` | Types match package API exactly, no TS errors | May need type overrides |
+| POT-001 | Build @signal-core/catalog-react-sdk package | P0 | DONE | - | Package | `signal-catalog/packages/react-sdk` | Package builds successfully with `npm run build`, dist/ folder created | Built successfully, dist/ folder created |
+| POT-002 | Integrate SDK components into catalogCore routes | P0 | DONE | - | Integration | `src/catalogCore.tsx` | SDK imports enabled, wrapper components created, admin route uses CatalogAdminApp | CatalogAdminWrapper integrated with auth flow |
+| POT-003 | Add SDK integration feature flag | P1 | DONE | - | Config | `src/client.config.ts`, `src/catalogCore.tsx` | Feature flag added to FeaturesConfig, useSDKAdmin flag available | Feature flag added (useSDKAdmin: true), ready for future use |
+| POT-004 | Verify SDK peer dependencies compatibility | P1 | DONE | - | Integration | `package.json`, `docs/DEPENDENCY_VERIFICATION.md` | React 18 versions compatible, verify no conflicts | Verified: React ^18.3.1 compatible with SDK's ^18.2.0 requirement |
+| POT-005 | Update types and config mapping for SDK | P1 | DONE | - | Types | `src/catalogCore.tsx` | Types match SDK component props, clientConfig properly mapped to apiBase/customerId | Config mapped: apiBaseUrl→apiBase, tenant.id→customerId |
 
 ---
 
