@@ -25,6 +25,8 @@ export { InquiryDetailModal } from './InquiryDetailModal'
 export { NewsletterForm } from './NewsletterForm'
 export { ShareButtons } from './ShareButtons'
 export { FavoriteButton } from './FavoriteButton'
+export { ProductReviews, ProductReviewsSkeleton } from './ProductReviews'
+export type { Review } from './ProductReviews'
 
 // =============================================================================
 // Container - Consistent page wrapper with max-width and padding
