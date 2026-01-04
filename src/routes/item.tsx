@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
 import { rootRoute } from '../app'
-import { Card, Container, Button, Badge, InventoryBadge, ShareButtons } from '../ui'
+import { Card, Container, Button, Badge, InventoryBadge, ShareButtons, FavoriteButton } from '../ui'
 import { SEO } from '../components/SEO'
 import { Breadcrumbs, BreadcrumbsSkeleton } from '../components/Breadcrumbs'
 import { ProductSchema } from '../components/ProductSchema'
@@ -217,24 +217,7 @@ function ItemPage() {
                     Inquire About This Item
                   </Button>
                 )}
-                <Button size="lg" variant="secondary">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2 h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                  Save
-                </Button>
+                <FavoriteButton productId={product.id} size="lg" showLabel />
               </div>
 
               {/* Trust indicators */}

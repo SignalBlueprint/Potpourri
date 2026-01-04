@@ -24,6 +24,7 @@ export type { Category } from './AdminCategoriesPanel'
 export { InquiryDetailModal } from './InquiryDetailModal'
 export { NewsletterForm } from './NewsletterForm'
 export { ShareButtons } from './ShareButtons'
+export { FavoriteButton } from './FavoriteButton'
 
 // =============================================================================
 // Container - Consistent page wrapper with max-width and padding

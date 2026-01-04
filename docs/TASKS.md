@@ -99,7 +99,7 @@
 | POT-050 | Add checkout flow skeleton | P2 | TODO | - | Commerce | `src/routes/checkout.tsx` | Route exists when enableCheckout=true, cart summary + form shell | Payment integration later |
 | POT-051 | Add quote request mode | P2 | TODO | - | Commerce | `src/ui/InquiryModal.tsx`, `src/routes/item.tsx` | priceMode='quote' shows "Request Quote" with quantity field | Variable pricing |
 | POT-052 | Add inventory badges | P2 | DONE | - | UX | `src/data/mockProducts.ts`, `src/ui/index.tsx`, `src/ui/ProductCard.tsx`, `src/routes/item.tsx`, `src/catalogCore.tsx` | "In Stock" / "Low Stock" / "Out of Stock" badge | Urgency signals. Added StockStatus type, InventoryBadge component, stock field to all products |
-| POT-053 | Add product favorites/wishlist | P2 | TODO | - | UX | `src/hooks/useFavorites.ts` | Heart icon saves to localStorage, favorites page | Engagement feature |
+| POT-053 | Add product favorites/wishlist | P2 | DONE | - | UX | `src/hooks/useFavorites.ts`, `src/ui/FavoriteButton.tsx`, `src/routes/favorites.tsx`, `src/ui/ProductCard.tsx`, `src/routes/item.tsx`, `src/layout/AppShell.tsx`, `src/layout/MobileNav.tsx`, `src/app.tsx`, `src/ui/index.tsx` | Heart icon saves to localStorage, favorites page | Engagement feature. useFavorites hook with localStorage persistence + cross-tab sync, FavoriteButton component, /favorites page with empty state, heart icon in header with count badge |
 | POT-054 | Add product comparison | P2 | TODO | - | UX | `src/routes/compare.tsx` | Select 2-4 products, side-by-side table | Decision helper |
 | POT-055 | Add recently viewed products | P2 | DONE | - | UX | `src/hooks/useRecentlyViewed.ts`, `src/ui/RecentlyViewed.tsx`, `src/routes/item.tsx` | Show last 4 viewed products on item page | Cross-sell. localStorage persistence, syncs across tabs |
 | POT-056 | Add newsletter signup | P2 | DONE | - | Marketing | `src/ui/NewsletterForm.tsx`, `src/layout/AppShell.tsx`, `src/ui/index.tsx`, `src/lib/analytics.ts` | Email input in footer, localStorage capture | Lead nurture. Centered form above trust badges, analytics tracking, success state |
@@ -126,8 +126,8 @@
 | BLOCKED Epic | 5 | 0 | 0 | 5 |
 | P0 | 20 | 20 | 0 | 0 |
 | P1 | 17 | 15 | 2 | 0 |
-| P2 | 20 | 4 | 16 | 0 |
-| **Total** | **62** | **39** | **18** | **5** |
+| P2 | 20 | 5 | 15 | 0 |
+| **Total** | **62** | **40** | **17** | **5** |
 
 ---
 
@@ -147,4 +147,4 @@
 
 ---
 
-*Last updated: 2026-01-03 (POT-057 - social share buttons)*
+*Last updated: 2026-01-04 (POT-053 - product favorites/wishlist)*

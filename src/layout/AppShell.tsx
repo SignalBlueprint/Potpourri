@@ -3,6 +3,7 @@ import { type ReactNode } from 'react'
 import { clientConfig } from '../client.config'
 import { Container, NewsletterForm } from '../ui'
 import { MobileNav } from './MobileNav'
+import { useFavorites } from '../hooks/useFavorites'
 
 // =============================================================================
 // AppShell - Main layout wrapper with header, content area, and footer
@@ -54,6 +55,9 @@ function Header({ searchSlot }: HeaderProps) {
             {clientConfig.features.enableAdmin && <NavLink to="/admin">Admin</NavLink>}
           </nav>
 
+          {/* Favorites Link */}
+          <FavoritesNavLink />
+
           {/* Mobile Navigation */}
           <MobileNav />
         </div>
@@ -83,6 +87,48 @@ function NavLink({ to, children }: NavLinkProps) {
       "
     >
       {children}
+    </Link>
+  )
+}
+
+// =============================================================================
+// FavoritesNavLink - Heart icon with count badge
+// =============================================================================
+function FavoritesNavLink() {
+  const { count } = useFavorites()
+
+  return (
+    <Link
+      to="/favorites"
+      className="
+        relative rounded-lg p-2 text-neutral-600
+        transition-colors duration-200
+        hover:bg-neutral-100 hover:text-red-500
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2
+        [&.active]:text-red-500
+      "
+      aria-label={`Favorites${count > 0 ? ` (${count} items)` : ''}`}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+        />
+      </svg>
+      {count > 0 && (
+        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+          {count > 9 ? '9+' : count}
+        </span>
+      )}
     </Link>
   )
 }
@@ -119,6 +165,9 @@ function Footer() {
                 </Link>
                 <Link to="/contact" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Contact
+                </Link>
+                <Link to="/favorites" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
+                  My Favorites
                 </Link>
                 {clientConfig.features.enableAdmin && (
                   <Link to="/admin" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
