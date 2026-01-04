@@ -16,6 +16,8 @@ interface AdminQuickActionsProps {
   onAddProduct?: () => void
   onImportCSV?: () => void
   onManageCategories?: () => void
+  onExportProducts?: () => void
+  onExportInquiries?: () => void
 }
 
 export function AdminQuickActions({
@@ -23,6 +25,8 @@ export function AdminQuickActions({
   onAddProduct,
   onImportCSV,
   onManageCategories,
+  onExportProducts,
+  onExportInquiries,
 }: AdminQuickActionsProps) {
   const defaultActions: QuickAction[] = [
     {
@@ -35,6 +39,18 @@ export function AdminQuickActions({
       label: 'Import CSV',
       icon: <UploadIcon />,
       onClick: onImportCSV,
+      variant: 'secondary',
+    },
+    {
+      label: 'Export Products',
+      icon: <DownloadIcon />,
+      onClick: onExportProducts,
+      variant: 'secondary',
+    },
+    {
+      label: 'Export Inquiries',
+      icon: <DownloadIcon />,
+      onClick: onExportInquiries,
       variant: 'secondary',
     },
     {
@@ -71,7 +87,7 @@ export function AdminQuickActions({
 export function AdminQuickActionsSkeleton() {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      {Array.from({ length: 3 }).map((_, i) => (
+      {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
           className="h-10 w-32 animate-pulse rounded-lg bg-neutral-200"
@@ -130,6 +146,24 @@ function FolderIcon({ className = 'h-5 w-5' }: { className?: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
+      />
+    </svg>
+  )
+}
+
+function DownloadIcon({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
       />
     </svg>
   )
