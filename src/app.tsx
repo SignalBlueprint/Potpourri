@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { clientConfig } from './client.config'
 import { makeRouteTree } from './catalogCore'
 import { AppShell } from './layout/AppShell'
+import { checkoutRoute } from './routes/checkout'
 import { contactRoute } from './routes/contact'
 import { favoritesRoute } from './routes/favorites'
 import { notFoundRoute } from './routes/notFound'
@@ -32,7 +33,7 @@ function RootLayout() {
 const routes = makeRouteTree({ clientConfig, rootRoute })
 // Add additional routes not managed by catalog-core
 // Note: notFoundRoute must be last as it's a catch-all (*) route
-const routeTree = rootRoute.addChildren([...routes, contactRoute, favoritesRoute, notFoundRoute])
+const routeTree = rootRoute.addChildren([...routes, checkoutRoute, contactRoute, favoritesRoute, notFoundRoute])
 
 export const router = createRouter({ routeTree })
 
