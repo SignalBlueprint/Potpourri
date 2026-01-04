@@ -4,6 +4,7 @@ import type { Product } from '../data/mockProducts'
 import { categoryIcons, type Category } from '../data/mockProducts'
 import { clientConfig } from '../client.config'
 import { Badge, Button } from './index'
+import { FavoriteButton } from './FavoriteButton'
 
 // =============================================================================
 // ProductCard - Reusable product card with hover effects
@@ -75,6 +76,11 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
                 Out of Stock
               </span>
             )}
+          </div>
+
+          {/* Favorite button overlay */}
+          <div className="absolute right-3 top-3">
+            <FavoriteButton productId={product.id} size="sm" />
           </div>
 
           {/* Quick action overlay on hover */}

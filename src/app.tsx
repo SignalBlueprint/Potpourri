@@ -4,6 +4,7 @@ import { clientConfig } from './client.config'
 import { makeRouteTree } from './catalogCore'
 import { AppShell } from './layout/AppShell'
 import { contactRoute } from './routes/contact'
+import { favoritesRoute } from './routes/favorites'
 import { notFoundRoute } from './routes/notFound'
 import { ErrorBoundary } from './components/ErrorBoundary'
 
@@ -31,7 +32,7 @@ function RootLayout() {
 const routes = makeRouteTree({ clientConfig, rootRoute })
 // Add additional routes not managed by catalog-core
 // Note: notFoundRoute must be last as it's a catch-all (*) route
-const routeTree = rootRoute.addChildren([...routes, contactRoute, notFoundRoute])
+const routeTree = rootRoute.addChildren([...routes, contactRoute, favoritesRoute, notFoundRoute])
 
 export const router = createRouter({ routeTree })
 

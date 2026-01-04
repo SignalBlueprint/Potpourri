@@ -93,6 +93,9 @@ export function MobileNav() {
           <MobileNavLink to="/contact" onClick={closeMenu}>
             Contact
           </MobileNavLink>
+          <MobileNavLink to="/favorites" onClick={closeMenu}>
+            My Favorites
+          </MobileNavLink>
           {clientConfig.features.enableAdmin && (
             <MobileNavLink to="/admin" onClick={closeMenu}>
               Admin
