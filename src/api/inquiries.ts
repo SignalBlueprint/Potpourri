@@ -4,12 +4,16 @@
 
 import { clientConfig } from '../client.config'
 
+export type InquiryType = 'inquiry' | 'quote'
+
 export interface InquiryPayload {
   productId: string
   productName: string
   name: string
   email: string
   message: string
+  type?: InquiryType
+  quantity?: number
 }
 
 export interface InquiryResponse {

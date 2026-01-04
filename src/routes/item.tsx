@@ -31,7 +31,8 @@ function ItemPage() {
   const product = mockProducts.find((p) => p.id === id)
 
   // Get config values
-  const { enableCheckout } = clientConfig.features
+  const { enableCheckout, priceMode } = clientConfig.features
+  const isQuoteMode = priceMode === 'quote'
 
   // Simulate initial data fetch
   useEffect(() => {
@@ -199,22 +200,45 @@ function ItemPage() {
                   </Button>
                 ) : (
                   <Button size="lg" className="flex-1 sm:flex-initial" onClick={() => setIsInquiryOpen(true)}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="mr-2 h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                      />
-                    </svg>
-                    Inquire About This Item
+                    {isQuoteMode ? (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="mr-2 h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                          />
+                        </svg>
+                        Request a Quote
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="mr-2 h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                          />
+                        </svg>
+                        Inquire About This Item
+                      </>
+                    )}
                   </Button>
                 )}
                 <FavoriteButton productId={product.id} size="lg" showLabel />
@@ -291,6 +315,7 @@ function ItemPage() {
         onClose={() => setIsInquiryOpen(false)}
         productName={product.name}
         productId={product.id}
+        mode={isQuoteMode ? 'quote' : 'inquiry'}
       />
     </>
   )
