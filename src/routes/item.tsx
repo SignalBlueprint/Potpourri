@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
 import { rootRoute } from '../app'
-import { Card, Container, Button, Badge, InventoryBadge, ShareButtons, FavoriteButton } from '../ui'
+import { Card, Container, Button, Badge, InventoryBadge, ShareButtons, FavoriteButton, ProductReviews, ProductReviewsSkeleton } from '../ui'
 import { SEO } from '../components/SEO'
 import { Breadcrumbs, BreadcrumbsSkeleton } from '../components/Breadcrumbs'
 import { ProductSchema } from '../components/ProductSchema'
@@ -296,6 +296,9 @@ function ItemPage() {
           </div>
         </section>
 
+        {/* Customer Reviews */}
+        <ProductReviews productId={product.id} />
+
         {/* Related Products */}
         <RelatedProducts
           currentProductId={product.id}
@@ -396,6 +399,9 @@ function ItemDetailSkeleton() {
           </div>
         </div>
       </section>
+
+      {/* Reviews skeleton */}
+      <ProductReviewsSkeleton />
 
       {/* Related Products skeleton */}
       <RelatedProductsSkeleton />

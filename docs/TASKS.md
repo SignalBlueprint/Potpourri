@@ -109,7 +109,7 @@
 | POT-060 | Add admin dashboard charts | P2 | TODO | - | Admin | `src/ui/AdminCharts.tsx` | Inquiry trends, category distribution | Visual analytics |
 | POT-061 | Add AI media pipeline placeholder | P2 | TODO | POT-001 | AI | `src/lib/mediaPipeline.ts` | Stub for image optimization, embedding generation | Phase 3 prep |
 | POT-062 | Add embeddings search UX | P2 | TODO | POT-061 | AI | `src/ui/SemanticSearch.tsx` | Natural language search with embedding matching | Phase 3 feature |
-| POT-063 | Add product reviews/ratings | P2 | TODO | - | Trust | `src/ui/ProductReviews.tsx`, `src/routes/item.tsx` | Star rating display, review list | Social proof |
+| POT-063 | Add product reviews/ratings | P2 | DONE | - | Trust | `src/ui/ProductReviews.tsx`, `src/ui/index.tsx`, `src/routes/item.tsx` | Star rating display, review list | Social proof. ProductReviews with StarRating, ReviewCard, rating distribution bars, show more/less, skeleton. Mock data seeded by product ID. |
 | POT-064 | Add multi-image product upload | P2 | TODO | - | Admin | `src/ui/ImageUploader.tsx` | Drag-drop multiple images, reorder, delete | Rich product media |
 | POT-065 | Add inventory management | P2 | TODO | - | Admin | `src/ui/AdminInventory.tsx` | Stock counts, low stock alerts, reorder points | Ops visibility |
 | POT-066 | Add order management (when checkout enabled) | P2 | TODO | POT-050 | Admin | `src/routes/admin.tsx` | Orders list, status updates, fulfillment | Post-checkout ops |
@@ -126,8 +126,8 @@
 | BLOCKED Epic | 5 | 0 | 0 | 5 |
 | P0 | 20 | 20 | 0 | 0 |
 | P1 | 17 | 15 | 2 | 0 |
-| P2 | 20 | 7 | 13 | 0 |
-| **Total** | **62** | **42** | **15** | **5** |
+| P2 | 20 | 8 | 12 | 0 |
+| **Total** | **62** | **43** | **14** | **5** |
 
 ---
 
@@ -147,4 +147,4 @@
 
 ---
 
-*Last updated: 2026-01-04 (POT-050 - checkout flow skeleton)*
+*Last updated: 2026-01-04 (POT-063 - product reviews/ratings)*
