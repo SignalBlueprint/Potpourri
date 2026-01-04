@@ -96,7 +96,7 @@
 
 | ID | Title | Priority | Status | Blocked By | Area | Files | Acceptance Criteria | Notes |
 |----|-------|----------|--------|------------|------|-------|---------------------|-------|
-| POT-050 | Add checkout flow skeleton | P2 | TODO | - | Commerce | `src/routes/checkout.tsx` | Route exists when enableCheckout=true, cart summary + form shell | Payment integration later |
+| POT-050 | Add checkout flow skeleton | P2 | DONE | - | Commerce | `src/routes/checkout.tsx`, `src/app.tsx` | Route exists when enableCheckout=true, cart summary + form shell | Shows disabled state when feature flag off, full form skeleton when enabled |
 | POT-051 | Add quote request mode | P2 | DONE | - | Commerce | `src/ui/InquiryModal.tsx`, `src/routes/item.tsx`, `src/api/inquiries.ts` | priceMode='quote' shows "Request Quote" with quantity field | Variable pricing. InquiryModal accepts mode prop, shows quantity field in quote mode, updated CTA text/icon |
 | POT-052 | Add inventory badges | P2 | DONE | - | UX | `src/data/mockProducts.ts`, `src/ui/index.tsx`, `src/ui/ProductCard.tsx`, `src/routes/item.tsx`, `src/catalogCore.tsx` | "In Stock" / "Low Stock" / "Out of Stock" badge | Urgency signals. Added StockStatus type, InventoryBadge component, stock field to all products |
 | POT-053 | Add product favorites/wishlist | P2 | DONE | - | UX | `src/hooks/useFavorites.ts`, `src/ui/FavoriteButton.tsx`, `src/routes/favorites.tsx`, `src/ui/ProductCard.tsx`, `src/routes/item.tsx`, `src/layout/AppShell.tsx`, `src/layout/MobileNav.tsx`, `src/app.tsx`, `src/ui/index.tsx` | Heart icon saves to localStorage, favorites page | Engagement feature. useFavorites hook with localStorage persistence + cross-tab sync, FavoriteButton component, /favorites page with empty state, heart icon in header with count badge |
@@ -126,8 +126,8 @@
 | BLOCKED Epic | 5 | 0 | 0 | 5 |
 | P0 | 20 | 20 | 0 | 0 |
 | P1 | 17 | 15 | 2 | 0 |
-| P2 | 20 | 6 | 14 | 0 |
-| **Total** | **62** | **41** | **16** | **5** |
+| P2 | 20 | 7 | 13 | 0 |
+| **Total** | **62** | **42** | **15** | **5** |
 
 ---
 
@@ -147,4 +147,4 @@
 
 ---
 
-*Last updated: 2026-01-04 (POT-051 - quote request mode)*
+*Last updated: 2026-01-04 (POT-050 - checkout flow skeleton)*
