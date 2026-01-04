@@ -7,22 +7,28 @@ import { trackEvent } from '../lib/analytics'
 // InquiryModal - Modal form for product inquiries
 // =============================================================================
 
+export type InquiryMode = 'inquiry' | 'quote'
+
 interface InquiryModalProps {
   isOpen: boolean
   onClose: () => void
   productName: string
   productId: string
+  mode?: InquiryMode
 }
 
 // Rate limit cooldown duration in milliseconds
 const SUBMIT_COOLDOWN_MS = 2000
 
-export function InquiryModal({ isOpen, onClose, productName, productId }: InquiryModalProps) {
+export function InquiryModal({ isOpen, onClose, productName, productId, mode = 'inquiry' }: InquiryModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: '',
+    quantity: 1,
   })
+
+  const isQuoteMode = mode === 'quote'
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -40,7 +46,7 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
 
   // Reset form state when closing
   const handleClose = useCallback(() => {
-    setFormData({ name: '', email: '', message: '' })
+    setFormData({ name: '', email: '', message: '', quantity: 1 })
     setIsSubmitted(false)
     setError(null)
     onClose()
@@ -83,12 +89,16 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
     setIsSubmitting(true)
     setError(null)
 
-    trackEvent('inquiry_submit', { productId, productName })
+    trackEvent('inquiry_submit', { productId, productName, type: mode })
 
     const result = await submitInquiry({
       productId,
       productName,
-      ...formData,
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+      type: mode,
+      ...(isQuoteMode ? { quantity: formData.quantity } : {}),
     })
 
     setIsSubmitting(false)
@@ -132,7 +142,7 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
         <div className="mb-6 flex items-start justify-between">
           <div>
             <h2 id="inquiry-modal-title" className="text-xl font-semibold text-neutral-900">
-              Inquire About This Item
+              {isQuoteMode ? 'Request a Quote' : 'Inquire About This Item'}
             </h2>
             <p className="mt-1 text-sm text-neutral-600">{productName}</p>
           </div>
@@ -167,9 +177,13 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-neutral-900">Inquiry Sent!</h3>
+            <h3 className="mb-2 text-lg font-semibold text-neutral-900">
+              {isQuoteMode ? 'Quote Request Sent!' : 'Inquiry Sent!'}
+            </h3>
             <p className="mb-6 text-sm text-neutral-600">
-              We'll get back to you within 24 hours.
+              {isQuoteMode
+                ? "We'll prepare your quote and get back to you within 24 hours."
+                : "We'll get back to you within 24 hours."}
             </p>
             <Button variant="secondary" onClick={handleClose}>
               Close
@@ -196,6 +210,18 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
               value={formData.email}
               onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
             />
+
+            {isQuoteMode && (
+              <Input
+                label="Quantity"
+                type="number"
+                min={1}
+                placeholder="1"
+                required
+                value={formData.quantity}
+                onChange={(e) => setFormData((prev) => ({ ...prev, quantity: Math.max(1, parseInt(e.target.value) || 1) }))}
+              />
+            )}
 
             <div className="space-y-1.5">
               <label htmlFor="inquiry-message" className="block text-sm font-medium text-neutral-800">
@@ -253,6 +279,8 @@ export function InquiryModal({ isOpen, onClose, productName, productId }: Inquir
                   </span>
                 ) : isCooldown ? (
                   'Please wait...'
+                ) : isQuoteMode ? (
+                  'Request Quote'
                 ) : (
                   'Send Inquiry'
                 )}
