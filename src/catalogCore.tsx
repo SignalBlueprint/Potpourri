@@ -1,29 +1,12 @@
 /**
- * Catalog Core Adapter
+ * Catalog Core
  *
- * This file is the SINGLE integration point for @signal-core/catalog-react-sdk.
- * It uses the SDK's types and API utilities while keeping Potpourri's custom UI.
+ * Central catalog functionality for the Potpourri gift shop storefront.
+ * Provides product data, routes, and shared catalog components.
  *
- * ╔═══════════════════════════════════════════════════════════════════════════╗
- * ║                    PACKAGE SWAP INSTRUCTIONS                               ║
- * ╠═══════════════════════════════════════════════════════════════════════════╣
- * ║ When @signal-core/catalog-react-sdk is published, follow these steps:     ║
- * ║                                                                           ║
- * ║ 1. Install the package:                                                   ║
- * ║    pnpm add @signal-core/catalog-react-sdk                                ║
- * ║                                                                           ║
- * ║ 2. Uncomment line ~25:                                                    ║
- * ║    import { fetchJson } from '@signal-core/catalog-react-sdk'             ║
- * ║                                                                           ║
- * ║ 3. Delete lines ~27-87:                                                   ║
- * ║    - The mockProducts import                                              ║
- * ║    - The SDKProduct interface (provided by SDK)                           ║
- * ║    - The entire fetchJson stub function                                   ║
- * ║                                                                           ║
- * ║ 4. Run: pnpm typecheck && pnpm build                                      ║
- * ║                                                                           ║
- * ║ 5. Test all routes: /, /catalog, /item/*, /admin                          ║
- * ╚═══════════════════════════════════════════════════════════════════════════╝
+ * Data sources:
+ * - Mock products from ./data/mockProducts.ts (demo mode)
+ * - localStorage for user-created products via admin
  */
 
 import { useState, useMemo, useEffect, type FormEvent } from 'react'
@@ -31,27 +14,14 @@ import { createRoute, Link } from '@tanstack/react-router'
 import type { AnyRoute } from '@tanstack/react-router'
 import type { ClientConfig } from './client.config'
 import { clientConfig } from './client.config'
-
-// =============================================================================
-// SDK Integration - @signal-core/catalog-react-sdk
-// =============================================================================
-<<<<<<< HEAD
-import { fetchJson, CatalogAdminApp } from '@signal-core/catalog-react-sdk'
 import { useAuth } from './hooks/useAuth'
-=======
-// STEP 2: Uncomment the line below when @signal-core/catalog-react-sdk is available
-// import { fetchJson } from '@signal-core/catalog-react-sdk'
-
-// ┌───────────────────────────────────────────────────────────────────────────┐
-// │ STEP 3: DELETE FROM HERE ────────────────────────────────────────────────│
-// └───────────────────────────────────────────────────────────────────────────┘
-
 import { mockProducts } from './data/mockProducts'
->>>>>>> abf32a452fda6a5e9cbc961dff0c394cb94b26ec
 
-// SDK Product type (matches signal-catalog server models)
-// NOTE: This interface will be provided by @signal-core/catalog-react-sdk
-interface SDKProduct {
+// =============================================================================
+// Product Types
+// =============================================================================
+
+interface CatalogProduct {
   id: string
   orgId: string
   name: string
@@ -66,14 +36,20 @@ interface SDKProduct {
   updatedAt: string
 }
 
-// Local fetchJson stub - uses mock data until real SDK is available
-// NOTE: This function will be provided by @signal-core/catalog-react-sdk
-async function fetchJson<T>(url: string): Promise<T> {
+// =============================================================================
+// Data Fetching
+// =============================================================================
+
+/**
+ * Fetch products from the catalog.
+ * Uses mock data for demo mode.
+ */
+async function fetchProducts<T>(url: string): Promise<T> {
   // Simulate network delay for realistic behavior
   await new Promise((resolve) => setTimeout(resolve, 100))
 
-  // Convert mock products to SDK format
-  const sdkProducts: SDKProduct[] = mockProducts.map((p) => ({
+  // Convert mock products to catalog format
+  const products: CatalogProduct[] = mockProducts.map((p) => ({
     id: p.id,
     orgId: 'demo-org',
     name: p.name,
@@ -100,7 +76,7 @@ async function fetchJson<T>(url: string): Promise<T> {
   if (productsIndex !== -1 && urlParts[productsIndex + 1]) {
     // Single product request: /store/{id}/products/{productId}
     const productId = urlParts[productsIndex + 1]
-    const product = sdkProducts.find((p) => p.id === productId)
+    const product = products.find((p) => p.id === productId)
     if (!product) {
       throw new Error(`Product not found: ${productId}`)
     }
@@ -108,12 +84,8 @@ async function fetchJson<T>(url: string): Promise<T> {
   }
 
   // All products request: /store/{id}/products
-  return sdkProducts as T
+  return products as T
 }
-
-// ┌───────────────────────────────────────────────────────────────────────────┐
-// │ STEP 3: DELETE TO HERE ──────────────────────────────────────────────────│
-// └───────────────────────────────────────────────────────────────────────────┘
 
 // UI Components
 import {
@@ -238,34 +210,36 @@ function AdminLoginForm() {
 
 /**
  * Wrapper for CatalogAdminApp that maps clientConfig to SDK config and handles auth
+ * NOTE: When SDK is available, uncomment CatalogAdminApp import and replace placeholder
  */
 function CatalogAdminWrapper() {
   const { isAuthenticated } = useAuth()
-  const apiBase = clientConfig.tenant.apiBaseUrl
-  const customerId = clientConfig.tenant.id
-  
+
   // Show login form if not authenticated
   if (!isAuthenticated) {
     return <AdminLoginForm />
   }
-  
-  // TODO: Integrate proper JWT token from backend authentication
-  // The SDK expects a Bearer token that will be sent in Authorization header
-  // For now, using a placeholder - in production, this should come from:
-  // 1. Backend login endpoint that returns JWT
-  // 2. Stored securely (httpOnly cookie or secure storage)
-  // 3. Refreshed when expired
-  const authToken = 'placeholder-token'
-  
+
+  // TODO: Replace with CatalogAdminApp when @signal-core/catalog-react-sdk is available
+  // Currently redirecting to the custom admin route in routes/admin.tsx
   return (
-    <div style={{ minHeight: '100vh' }}>
-      <CatalogAdminApp apiBase={apiBase} customerId={customerId} authToken={authToken} />
-    </div>
+    <Container>
+      <div className="py-16 text-center">
+        <div className="mb-4 text-6xl">🔧</div>
+        <h1 className="mb-2 text-2xl font-semibold text-neutral-900">Admin Dashboard</h1>
+        <p className="mb-6 text-neutral-600">
+          The admin interface is available at{' '}
+          <Link to="/admin" className="text-brand-primary hover:underline">
+            /admin
+          </Link>
+        </p>
+      </div>
+    </Container>
   )
 }
 
 // Convert SDK product to MockProduct format for UI component compatibility
-function adaptProduct(p: SDKProduct): MockProduct {
+function adaptProduct(p: CatalogProduct): MockProduct {
   const imageUrl = p.images?.[0]?.url || null
   const createdDate = new Date(p.createdAt)
   const now = new Date()
@@ -302,7 +276,7 @@ function useProducts() {
       try {
         setIsLoading(true)
         setError(null)
-        const data = await fetchJson<SDKProduct[]>(`${apiBase}/store/${customerId}/products`)
+        const data = await fetchProducts<CatalogProduct[]>(`${apiBase}/store/${customerId}/products`)
         setProducts(data.map(adaptProduct))
       } catch (err) {
         setError((err as Error).message)
@@ -332,7 +306,7 @@ function useProduct(id: string) {
         setIsLoading(true)
         setError(null)
         // Fetch single product by ID
-        const data = await fetchJson<SDKProduct>(`${apiBase}/store/${customerId}/products/${id}`)
+        const data = await fetchProducts<CatalogProduct>(`${apiBase}/store/${customerId}/products/${id}`)
         setProduct(adaptProduct(data))
       } catch (err) {
         setError((err as Error).message)

@@ -21,7 +21,9 @@ export interface AdminProduct {
   price: number
   stock: number
   status: 'active' | 'draft' | 'archived'
-  createdAt: string
+  imageUrl?: string
+  lastUpdated?: string
+  createdAt?: string
 }
 
 // =============================================================================

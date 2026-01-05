@@ -10,6 +10,9 @@
 export interface EnvConfig {
   VITE_API_BASE_URL: string
   VITE_ADMIN_PASSWORD?: string
+  // Gemini API configuration for image enhancement
+  VITE_GEMINI_API_KEY?: string
+  VITE_GEMINI_MODEL?: string
 }
 
 /**
@@ -20,6 +23,8 @@ export function getEnv(): EnvConfig {
   return {
     VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL ?? '/api',
     VITE_ADMIN_PASSWORD: import.meta.env.VITE_ADMIN_PASSWORD,
+    VITE_GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY,
+    VITE_GEMINI_MODEL: import.meta.env.VITE_GEMINI_MODEL ?? 'gemini-2.5-flash-preview-05-20',
   }
 }
 

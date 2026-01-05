@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { type ReactNode } from 'react'
 import { clientConfig } from '../client.config'
 import { Container, NewsletterForm } from '../ui'
+import { CompareBar } from '../ui/CompareBar'
 import { MobileNav } from './MobileNav'
 import { useFavorites } from '../hooks/useFavorites'
 
@@ -17,8 +18,9 @@ export function AppShell({ children, searchSlot }: AppShellProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <Header searchSlot={searchSlot} />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pb-20">{children}</main>
       <Footer />
+      <CompareBar />
     </div>
   )
 }
@@ -49,9 +51,10 @@ function Header({ searchSlot }: HeaderProps) {
           {searchSlot && <div className="hidden flex-1 justify-center md:flex">{searchSlot}</div>}
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 md:flex" aria-label="Main navigation">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/catalog">Shop</NavLink>
+            <NavLink to="/lookbooks">Lookbooks</NavLink>
             {clientConfig.features.enableAdmin && <NavLink to="/admin">Admin</NavLink>}
           </nav>
 
@@ -147,7 +150,7 @@ function Footer() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
             {/* Brand */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-neutral-900">{brand.name}</h3>
+              <p className="text-lg font-semibold text-neutral-900">{brand.name}</p>
               <p className="text-sm text-neutral-600">{brand.tagline}</p>
             </div>
 
@@ -156,12 +159,15 @@ function Footer() {
               <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-600">
                 Quick Links
               </h4>
-              <nav className="flex flex-col space-y-2 text-sm">
+              <nav className="flex flex-col space-y-2 text-sm" aria-label="Footer navigation">
                 <Link to="/" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Home
                 </Link>
                 <Link to="/catalog" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Shop
+                </Link>
+                <Link to="/lookbooks" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
+                  Lookbooks
                 </Link>
                 <Link to="/contact" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Contact
