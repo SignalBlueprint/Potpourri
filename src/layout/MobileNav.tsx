@@ -90,6 +90,9 @@ export function MobileNav() {
           <MobileNavLink to="/catalog" onClick={closeMenu}>
             Shop
           </MobileNavLink>
+          <MobileNavLink to="/lookbooks" onClick={closeMenu}>
+            Lookbooks
+          </MobileNavLink>
           <MobileNavLink to="/contact" onClick={closeMenu}>
             Contact
           </MobileNavLink>

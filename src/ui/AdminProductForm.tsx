@@ -1,6 +1,12 @@
-import { useState, useEffect, type FormEvent, useMemo } from 'react'
+import { useState, useEffect, type FormEvent, useMemo, useCallback } from 'react'
 import { Button, Input } from './index'
 import type { AdminProduct } from './AdminProductsTable'
+import { ImageUploader, ImagePreviewGrid, type UploadedImage } from './ImageUploader'
+import { EnhancementModal } from './EnhancementModal'
+import type { ProductImage } from '../types/images'
+import { generateImageId } from '../types/images'
+import { saveImage, getProductImages, deleteImage, setPrimaryImage as setStoredPrimaryImage } from '../api/imageStorage'
+import { createThumbnail } from '../lib/imageUtils'
 
 // =============================================================================
 // Types
@@ -12,6 +18,7 @@ export interface ProductFormData {
   price: string
   stock: string
   status: AdminProduct['status']
+  images?: ProductImage[]
 }
 
 interface AdminProductFormProps {
@@ -93,6 +100,9 @@ function ProductFormContent({
   onSave,
 }: ProductFormContentProps) {
   const isEditing = !!product
+  // Generate stable ID for new products - useState initializer only runs once
+  const [newProductId] = useState(() => `new_${Date.now()}`)
+  const productId = product?.id || newProductId
 
   // Compute initial form data based on product
   const initialFormData = useMemo<ProductFormData>(() => {
@@ -118,6 +128,115 @@ function ProductFormContent({
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Image management state
+  const [images, setImages] = useState<ProductImage[]>([])
+  const [isLoadingImages, setIsLoadingImages] = useState(false)
+  const [isSavingImages, setIsSavingImages] = useState(false)
+  const [saveProgress, setSaveProgress] = useState({ current: 0, total: 0 })
+  const [enhancementModalOpen, setEnhancementModalOpen] = useState(false)
+  const [selectedImageForEnhancement, setSelectedImageForEnhancement] = useState<ProductImage | null>(null)
+
+  // Load existing images for product
+  useEffect(() => {
+    if (isEditing && product?.id) {
+      // Loading state is set synchronously, then async data fetch updates it
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsLoadingImages(true)
+      getProductImages(product.id)
+        .then(setImages)
+        .catch(console.error)
+        .finally(() => setIsLoadingImages(false))
+    }
+  }, [isEditing, product?.id])
+
+  const handleImagesSelected = useCallback(async (uploadedImages: UploadedImage[]) => {
+    const newImages: ProductImage[] = []
+    setIsSavingImages(true)
+    setSaveProgress({ current: 0, total: uploadedImages.length })
+
+    for (let i = 0; i < uploadedImages.length; i++) {
+      const uploaded = uploadedImages[i]!
+      setSaveProgress({ current: i + 1, total: uploadedImages.length })
+
+      // Create thumbnail
+      let thumbnailUrl: string | undefined
+      try {
+        thumbnailUrl = await createThumbnail(uploaded.previewUrl, 200)
+      } catch {
+        // Continue without thumbnail
+      }
+
+      const newImage: ProductImage = {
+        id: generateImageId(),
+        productId,
+        url: uploaded.previewUrl,
+        thumbnailUrl,
+        type: 'original',
+        isPrimary: images.length === 0 && newImages.length === 0, // First image is primary
+        sortOrder: images.length + newImages.length,
+        width: uploaded.width,
+        height: uploaded.height,
+        createdAt: new Date(),
+      }
+
+      newImages.push(newImage)
+
+      // Save to IndexedDB
+      try {
+        await saveImage(newImage)
+      } catch (error) {
+        console.error('Failed to save image:', error)
+      }
+    }
+
+    setIsSavingImages(false)
+    setSaveProgress({ current: 0, total: 0 })
+    setImages((prev) => [...prev, ...newImages])
+  }, [productId, images.length])
+
+  const handleRemoveImage = useCallback(async (imageId: string) => {
+    try {
+      await deleteImage(imageId)
+      setImages((prev) => {
+        const filtered = prev.filter((img) => img.id !== imageId)
+        // If removed image was primary, make first remaining image primary
+        const firstImage = filtered[0]
+        if (firstImage && !filtered.some((img) => img.isPrimary)) {
+          firstImage.isPrimary = true
+        }
+        return filtered
+      })
+    } catch (error) {
+      console.error('Failed to delete image:', error)
+    }
+  }, [])
+
+  const handleSetPrimaryImage = useCallback(async (imageId: string) => {
+    try {
+      await setStoredPrimaryImage(productId, imageId)
+      setImages((prev) =>
+        prev.map((img) => ({
+          ...img,
+          isPrimary: img.id === imageId,
+        }))
+      )
+    } catch (error) {
+      console.error('Failed to set primary image:', error)
+    }
+  }, [productId])
+
+  const handleEnhanceImage = useCallback((imageId: string) => {
+    const image = images.find((img) => img.id === imageId)
+    if (image) {
+      setSelectedImageForEnhancement(image)
+      setEnhancementModalOpen(true)
+    }
+  }, [images])
+
+  const handleEnhancementComplete = useCallback((generatedImages: ProductImage[]) => {
+    setImages((prev) => [...prev, ...generatedImages])
+  }, [])
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
@@ -130,7 +249,7 @@ function ProductFormContent({
     setIsSubmitting(true)
     // Simulate async save
     await new Promise((resolve) => setTimeout(resolve, 500))
-    onSave(formData)
+    onSave({ ...formData, images })
     setIsSubmitting(false)
     onClose()
   }
@@ -220,6 +339,76 @@ function ProductFormContent({
           )}
         </div>
 
+        {/* Product Images */}
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-neutral-800">
+            Product Images
+          </label>
+
+          {/* Existing images grid */}
+          {isLoadingImages ? (
+            <div className="flex items-center justify-center py-8">
+              <svg className="h-6 w-6 animate-spin text-neutral-400" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+            </div>
+          ) : (
+            <>
+              {images.length > 0 && (
+                <ImagePreviewGrid
+                  images={images.map((img) => ({
+                    id: img.id,
+                    url: img.thumbnailUrl || img.url,
+                    isPrimary: img.isPrimary,
+                    type: img.type,
+                  }))}
+                  onRemove={handleRemoveImage}
+                  onSetPrimary={handleSetPrimaryImage}
+                  onEnhance={handleEnhanceImage}
+                />
+              )}
+
+              {/* Saving progress indicator */}
+              {isSavingImages && (
+                <div className="rounded-lg bg-blue-50 p-3">
+                  <div className="mb-2 flex items-center justify-between text-sm">
+                    <span className="font-medium text-blue-700">
+                      Saving images...
+                    </span>
+                    <span className="text-blue-600">
+                      {saveProgress.current} / {saveProgress.total}
+                    </span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-blue-200">
+                    <div
+                      className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                      style={{
+                        width: `${saveProgress.total > 0 ? (saveProgress.current / saveProgress.total) * 100 : 0}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Upload area */}
+              {!isSavingImages && (
+                <ImageUploader
+                  onImagesSelected={handleImagesSelected}
+                  existingCount={images.length}
+                />
+              )}
+
+              {/* AI Enhancement hint */}
+              {images.some((img) => img.type === 'original') && (
+                <p className="text-xs text-neutral-500">
+                  Tip: Click the sparkle icon on original images to generate AI-enhanced product shots
+                </p>
+              )}
+            </>
+          )}
+        </div>
+
         {/* Price and Stock row */}
         <div className="grid grid-cols-2 gap-4">
           <Input
@@ -285,6 +474,19 @@ function ProductFormContent({
           </Button>
         </div>
       </form>
+
+      {/* Enhancement Modal */}
+      <EnhancementModal
+        isOpen={enhancementModalOpen}
+        onClose={() => {
+          setEnhancementModalOpen(false)
+          setSelectedImageForEnhancement(null)
+        }}
+        sourceImage={selectedImageForEnhancement}
+        productName={formData.name || 'Product'}
+        productCategory={formData.category}
+        onComplete={handleEnhancementComplete}
+      />
     </>
   )
 }
@@ -327,7 +529,7 @@ export function AdminProductForm({
 
       {/* Modal */}
       <div
-        className="relative z-10 w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl"
+        className="relative z-10 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="product-form-title"

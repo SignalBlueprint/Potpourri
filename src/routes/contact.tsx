@@ -190,7 +190,9 @@ function ContactForm() {
         throw new Error('API request failed')
       }
     } catch {
-      // Fallback to localStorage for demo mode
+      // Fallback to localStorage for demo mode (network errors expected in demo)
+      // In production, you would want to distinguish between network errors
+      // and actual API rejections to show appropriate error messages
       saveContactLocally(formData)
       setIsSubmitted(true)
     } finally {

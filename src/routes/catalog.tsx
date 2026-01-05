@@ -1,4 +1,4 @@
-import { createRoute } from '@tanstack/react-router'
+import { createRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo, useEffect } from 'react'
 import { rootRoute } from '../app'
 import { Container, PageHeader, CatalogEmptyState } from '../ui'
@@ -22,6 +22,8 @@ export const catalogRoute = createRoute({
 })
 
 function CatalogPage() {
+  const navigate = useNavigate()
+
   // Simulate loading state
   const [isLoading, setIsLoading] = useState(true)
 
@@ -57,10 +59,9 @@ function CatalogPage() {
     return sortProducts(filtered, sort)
   }, [debouncedSearch, selectedCategory, sort])
 
-  // Handle quick action (placeholder)
+  // Handle quick action - navigates to product page (could integrate with cart when checkout enabled)
   const handleQuickAction = (product: Product) => {
-    // This would integrate with cart or modal in the future
-    console.log('Quick action on:', product.name)
+    navigate({ to: '/item/$id', params: { id: product.id } })
   }
 
   return (

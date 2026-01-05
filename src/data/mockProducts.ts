@@ -3,6 +3,8 @@
 // 30+ products with categories, prices, and metadata for catalog development
 // =============================================================================
 
+import type { ProductImage } from '../types/images'
+
 export type StockStatus = 'in_stock' | 'low_stock' | 'out_of_stock'
 
 export interface Product {
@@ -11,11 +13,40 @@ export interface Product {
   category: string
   price: number
   description: string
+  /** @deprecated Use images array instead */
   imageUrl: string | null
+  /** Array of product images with metadata */
+  images?: ProductImage[]
   isNew: boolean
   isFeatured: boolean
   stock: StockStatus
   createdAt: Date
+}
+
+/**
+ * Get the primary image URL for a product
+ * Falls back to imageUrl for backwards compatibility
+ */
+export function getPrimaryImageUrl(product: Product): string | null {
+  if (product.images && product.images.length > 0) {
+    const primary = product.images.find((img) => img.isPrimary)
+    const firstImage = product.images[0]
+    return primary?.url ?? firstImage?.url ?? null
+  }
+  return product.imageUrl
+}
+
+/**
+ * Get all image URLs for a product
+ * Falls back to imageUrl for backwards compatibility
+ */
+export function getProductImageUrls(product: Product): string[] {
+  if (product.images && product.images.length > 0) {
+    return product.images
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((img) => img.url)
+  }
+  return product.imageUrl ? [product.imageUrl] : []
 }
 
 export const categories = [

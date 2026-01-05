@@ -8,21 +8,37 @@ import { useCallback, useSyncExternalStore } from 'react'
 const STORAGE_KEY = 'potpourri_recently_viewed'
 const MAX_ITEMS = 8 // Maximum number of recently viewed items to store
 
+// Cached snapshot to avoid creating new array references on every call
+let cachedSnapshot: string[] = []
+let cachedStorageValue: string | null = null
+
 // Get the current list of recently viewed product IDs from localStorage
+// Returns a cached array reference unless the underlying data has changed
 function getRecentlyViewedSnapshot(): string[] {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (!stored) return []
-    const parsed = JSON.parse(stored)
-    return Array.isArray(parsed) ? parsed : []
+    // Only parse and create new array if storage value changed
+    if (stored !== cachedStorageValue) {
+      cachedStorageValue = stored
+      if (!stored) {
+        cachedSnapshot = []
+      } else {
+        const parsed = JSON.parse(stored)
+        cachedSnapshot = Array.isArray(parsed) ? parsed : []
+      }
+    }
+    return cachedSnapshot
   } catch {
-    return []
+    return cachedSnapshot
   }
 }
 
+// Empty array for server - stable reference
+const serverSnapshot: string[] = []
+
 // Server snapshot returns empty array (no localStorage on server)
 function getServerSnapshot(): string[] {
-  return []
+  return serverSnapshot
 }
 
 // Set of listeners for storage changes

@@ -10,10 +10,12 @@ import { RelatedProducts, RelatedProductsSkeleton } from '../ui/RelatedProducts'
 import { RecentlyViewed } from '../ui/RecentlyViewed'
 import { InquiryModal } from '../ui/InquiryModal'
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
-import { mockProducts, categoryIcons, type Category } from '../data/mockProducts'
+import { mockProducts, categoryIcons, type Category, type Product, type StockStatus, getProductImageUrls, getPrimaryImageUrl } from '../data/mockProducts'
 import { clientConfig } from '../client.config'
 import { Skeleton, SkeletonImage, SkeletonCard } from '../components/Skeleton'
 import { trackProductView } from '../lib/analytics'
+import { getStoredProducts } from '../api/productStorage'
+import { getProductImages } from '../api/imageStorage'
 
 export const itemRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -25,22 +27,62 @@ function ItemPage() {
   const { id } = itemRoute.useParams()
   const [isInquiryOpen, setIsInquiryOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [product, setProduct] = useState<Product | null>(null)
+  const [storedProductImages, setStoredProductImages] = useState<string[]>([])
   const { addViewed } = useRecentlyViewed()
-
-  // Find the product by ID
-  const product = mockProducts.find((p) => p.id === id)
 
   // Get config values
   const { enableCheckout, priceMode } = clientConfig.features
   const isQuoteMode = priceMode === 'quote'
 
-  // Simulate initial data fetch
+  // Load product from mockProducts or localStorage
   useEffect(() => {
-    const timer = setTimeout(() => {
+    async function loadProduct() {
+      // First check mockProducts
+      const mockProduct = mockProducts.find((p) => p.id === id)
+      if (mockProduct) {
+        setProduct(mockProduct)
+        setIsLoading(false)
+        return
+      }
+
+      // Check localStorage for admin-created products
+      const storedProducts = getStoredProducts()
+      const storedProduct = storedProducts.find((p) => p.id === id)
+      if (storedProduct) {
+        // Load images from IndexedDB
+        const images = await getProductImages(id)
+        const imageUrls = images.map((img) => img.url)
+        setStoredProductImages(imageUrls)
+
+        // Convert stock number to StockStatus
+        const stockStatus: StockStatus = storedProduct.stock <= 0
+          ? 'out_of_stock'
+          : storedProduct.stock < 10
+            ? 'low_stock'
+            : 'in_stock'
+
+        // Convert to Product type for display
+        const productFromStorage: Product = {
+          id: storedProduct.id,
+          name: storedProduct.name,
+          description: '', // Admin products don't have description yet
+          price: storedProduct.price,
+          category: storedProduct.category as Category,
+          stock: stockStatus,
+          imageUrl: imageUrls[0] || null,
+          images: images,
+          isNew: false,
+          isFeatured: false,
+          createdAt: new Date(storedProduct.createdAt),
+        }
+        setProduct(productFromStorage)
+      }
       setIsLoading(false)
-    }, 600)
-    return () => clearTimeout(timer)
-  }, [])
+    }
+
+    loadProduct()
+  }, [id])
 
   // Track product view when product loads
   useEffect(() => {
@@ -82,14 +124,14 @@ function ItemPage() {
 
   const categoryIcon = categoryIcons[product.category as Category] || '📦'
 
-  // Generate placeholder additional images for gallery demo
-  // In a real app, products would have an images array
-  const productImages = [
-    product.imageUrl,
-    product.imageUrl, // Duplicate for demo
-    product.imageUrl,
-    product.imageUrl,
-  ]
+  // Get product images - uses stored images for admin products, or images array/imageUrl for mock
+  const productImages = storedProductImages.length > 0
+    ? storedProductImages
+    : getProductImageUrls(product)
+  // If no images, use placeholder as fallback
+  const displayImages = productImages.length > 0
+    ? productImages
+    : [product.imageUrl].filter(Boolean) as string[]
 
   const handleAddToCart = () => {
     // Placeholder for cart functionality
@@ -102,7 +144,7 @@ function ItemPage() {
       <SEO
         title={product.name}
         description={product.description}
-        image={product.imageUrl ?? undefined}
+        image={getPrimaryImageUrl(product) ?? undefined}
         type="product"
       />
       <ProductSchema
@@ -110,7 +152,7 @@ function ItemPage() {
         name={product.name}
         description={product.description}
         price={product.price}
-        imageUrl={product.imageUrl}
+        imageUrl={getPrimaryImageUrl(product)}
         category={product.category}
       />
       <Container>
@@ -128,7 +170,7 @@ function ItemPage() {
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             {/* Image Gallery */}
             <ProductGallery
-              images={productImages}
+              images={displayImages}
               productName={product.name}
               category={product.category}
             />

@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { Product } from '../data/mockProducts'
-import { categoryIcons, type Category } from '../data/mockProducts'
+import { categoryIcons, type Category, getPrimaryImageUrl } from '../data/mockProducts'
 import { clientConfig } from '../client.config'
 import { Badge, Button } from './index'
 import { FavoriteButton } from './FavoriteButton'
+import { CompareButton } from './CompareButton'
 
 // =============================================================================
 // ProductCard - Reusable product card with hover effects
@@ -21,7 +22,8 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
   const categoryIcon = categoryIcons[product.category as Category] || '📦'
 
   const actionLabel = enableCheckout ? 'Add to Cart' : 'View Details'
-  const showFallback = !product.imageUrl || imageError
+  const primaryImageUrl = getPrimaryImageUrl(product)
+  const showFallback = !primaryImageUrl || imageError
 
   const handleQuickAction = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -40,7 +42,7 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
         <div className="relative aspect-square overflow-hidden bg-neutral-50">
           {!showFallback ? (
             <img
-              src={product.imageUrl!}
+              src={primaryImageUrl!}
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
@@ -78,9 +80,10 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
             )}
           </div>
 
-          {/* Favorite button overlay */}
-          <div className="absolute right-3 top-3">
+          {/* Action buttons overlay */}
+          <div className="absolute right-3 top-3 flex flex-col gap-2">
             <FavoriteButton productId={product.id} size="sm" />
+            <CompareButton productId={product.id} />
           </div>
 
           {/* Quick action overlay on hover */}
