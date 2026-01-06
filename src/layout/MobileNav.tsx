@@ -74,6 +74,7 @@ export function MobileNav() {
             className="
               rounded-lg p-2 text-neutral-600 transition-colors
               hover:bg-neutral-100 hover:text-neutral-900
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2
             "
             aria-label="Close menu"
           >
@@ -89,8 +90,14 @@ export function MobileNav() {
           <MobileNavLink to="/catalog" onClick={closeMenu}>
             Shop
           </MobileNavLink>
+          <MobileNavLink to="/lookbooks" onClick={closeMenu}>
+            Lookbooks
+          </MobileNavLink>
           <MobileNavLink to="/contact" onClick={closeMenu}>
             Contact
+          </MobileNavLink>
+          <MobileNavLink to="/favorites" onClick={closeMenu}>
+            My Favorites
           </MobileNavLink>
           {clientConfig.features.enableAdmin && (
             <MobileNavLink to="/admin" onClick={closeMenu}>
@@ -129,6 +136,7 @@ function MobileNavLink({ to, onClick, children }: MobileNavLinkProps) {
         rounded-lg px-4 py-3 text-base font-medium text-neutral-700
         transition-colors duration-200
         hover:bg-neutral-100 hover:text-neutral-900
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2
         [&.active]:bg-brand-primary/10 [&.active]:text-brand-primary
       "
     >

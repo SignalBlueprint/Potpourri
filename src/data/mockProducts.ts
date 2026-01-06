@@ -3,16 +3,50 @@
 // 30+ products with categories, prices, and metadata for catalog development
 // =============================================================================
 
+import type { ProductImage } from '../types/images'
+
+export type StockStatus = 'in_stock' | 'low_stock' | 'out_of_stock'
+
 export interface Product {
   id: string
   name: string
   category: string
   price: number
   description: string
+  /** @deprecated Use images array instead */
   imageUrl: string | null
+  /** Array of product images with metadata */
+  images?: ProductImage[]
   isNew: boolean
   isFeatured: boolean
+  stock: StockStatus
   createdAt: Date
+}
+
+/**
+ * Get the primary image URL for a product
+ * Falls back to imageUrl for backwards compatibility
+ */
+export function getPrimaryImageUrl(product: Product): string | null {
+  if (product.images && product.images.length > 0) {
+    const primary = product.images.find((img) => img.isPrimary)
+    const firstImage = product.images[0]
+    return primary?.url ?? firstImage?.url ?? null
+  }
+  return product.imageUrl
+}
+
+/**
+ * Get all image URLs for a product
+ * Falls back to imageUrl for backwards compatibility
+ */
+export function getProductImageUrls(product: Product): string[] {
+  if (product.images && product.images.length > 0) {
+    return product.images
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((img) => img.url)
+  }
+  return product.imageUrl ? [product.imageUrl] : []
 }
 
 export const categories = [
@@ -57,6 +91,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('1'),
     isNew: true,
     isFeatured: true,
+    stock: 'in_stock',
     createdAt: new Date('2024-12-15'),
   },
   {
@@ -68,6 +103,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('2'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-11-20'),
   },
   {
@@ -79,6 +115,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('3'),
     isNew: true,
     isFeatured: true,
+    stock: 'low_stock',
     createdAt: new Date('2024-12-20'),
   },
   {
@@ -90,6 +127,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('4'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-10-05'),
   },
   {
@@ -101,6 +139,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('5'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-09-12'),
   },
   {
@@ -112,6 +151,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('6'),
     isNew: true,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-12-18'),
   },
   {
@@ -123,6 +163,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('7'),
     isNew: false,
     isFeatured: true,
+    stock: 'low_stock',
     createdAt: new Date('2024-11-01'),
   },
   {
@@ -134,6 +175,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('8'),
     isNew: false,
     isFeatured: false,
+    stock: 'out_of_stock',
     createdAt: new Date('2024-08-22'),
   },
 
@@ -147,6 +189,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('9'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-10-15'),
   },
   {
@@ -158,6 +201,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('10'),
     isNew: true,
     isFeatured: true,
+    stock: 'low_stock',
     createdAt: new Date('2024-12-10'),
   },
   {
@@ -169,6 +213,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('11'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-09-28'),
   },
   {
@@ -180,6 +225,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('12'),
     isNew: true,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-12-05'),
   },
   {
@@ -191,6 +237,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('13'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-07-14'),
   },
   {
@@ -202,6 +249,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('14'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-08-30'),
   },
 
@@ -215,6 +263,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('15'),
     isNew: true,
     isFeatured: true,
+    stock: 'low_stock',
     createdAt: new Date('2024-12-01'),
   },
   {
@@ -226,6 +275,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('16'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-10-20'),
   },
   {
@@ -237,6 +287,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('17'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-09-05'),
   },
   {
@@ -248,6 +299,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('18'),
     isNew: true,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-12-12'),
   },
   {
@@ -259,6 +311,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('19'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-06-18'),
   },
 
@@ -272,6 +325,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('20'),
     isNew: false,
     isFeatured: true,
+    stock: 'in_stock',
     createdAt: new Date('2024-11-15'),
   },
   {
@@ -283,6 +337,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('21'),
     isNew: true,
     isFeatured: true,
+    stock: 'low_stock',
     createdAt: new Date('2024-12-22'),
   },
   {
@@ -294,6 +349,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('22'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-10-08'),
   },
   {
@@ -305,6 +361,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('23'),
     isNew: true,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-12-08'),
   },
   {
@@ -316,6 +373,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('24'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-09-20'),
   },
 
@@ -329,6 +387,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('25'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-08-12'),
   },
   {
@@ -340,6 +399,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('26'),
     isNew: true,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-12-14'),
   },
   {
@@ -351,6 +411,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('27'),
     isNew: false,
     isFeatured: false,
+    stock: 'low_stock',
     createdAt: new Date('2024-10-25'),
   },
   {
@@ -362,6 +423,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('28'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-07-30'),
   },
 
@@ -375,6 +437,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('29'),
     isNew: true,
     isFeatured: true,
+    stock: 'low_stock',
     createdAt: new Date('2024-11-28'),
   },
   {
@@ -386,6 +449,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('30'),
     isNew: true,
     isFeatured: false,
+    stock: 'out_of_stock',
     createdAt: new Date('2024-11-05'),
   },
   {
@@ -397,6 +461,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('31'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-10-30'),
   },
 
@@ -410,6 +475,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('32'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-09-15'),
   },
   {
@@ -421,6 +487,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('33'),
     isNew: true,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-12-16'),
   },
   {
@@ -432,6 +499,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('34'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-08-05'),
   },
 
@@ -445,6 +513,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('35'),
     isNew: false,
     isFeatured: false,
+    stock: 'in_stock',
     createdAt: new Date('2024-10-12'),
   },
   {
@@ -456,6 +525,7 @@ export const mockProducts: Product[] = [
     imageUrl: getPlaceholderImage('36'),
     isNew: true,
     isFeatured: true,
+    stock: 'low_stock',
     createdAt: new Date('2024-12-19'),
   },
 ]

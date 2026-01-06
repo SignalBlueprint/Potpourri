@@ -75,6 +75,18 @@ export interface TestimonialsConfig {
   items: Testimonial[]
 }
 
+export interface TrustBadge {
+  id: string
+  icon: 'shield' | 'truck' | 'refresh' | 'lock' | 'heart'
+  title: string
+  description: string
+}
+
+export interface TrustBadgesConfig {
+  enabled: boolean
+  items: TrustBadge[]
+}
+
 export interface ClientConfig {
   brand: BrandConfig
   tenant: TenantConfig
@@ -82,6 +94,7 @@ export interface ClientConfig {
   contact: ContactConfig
   catalog: CatalogConfig
   testimonials: TestimonialsConfig
+  trustBadges: TrustBadgesConfig
 }
 
 // =============================================================================
@@ -191,6 +204,36 @@ export const clientConfig: ClientConfig = {
         location: 'Vancouver, WA',
         text: 'I always come here for birthday gifts. Everything is so thoughtfully curated and the prices are fair.',
         rating: 5,
+      },
+    ],
+  },
+
+  trustBadges: {
+    enabled: true,
+    items: [
+      {
+        id: '1',
+        icon: 'shield',
+        title: 'Secure Checkout',
+        description: 'Your payment info is protected',
+      },
+      {
+        id: '2',
+        icon: 'truck',
+        title: 'Free Shipping',
+        description: 'On orders over $50',
+      },
+      {
+        id: '3',
+        icon: 'refresh',
+        title: 'Easy Returns',
+        description: '30-day hassle-free returns',
+      },
+      {
+        id: '4',
+        icon: 'heart',
+        title: 'Satisfaction Guaranteed',
+        description: '100% happiness promise',
       },
     ],
   },

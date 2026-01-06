@@ -18,9 +18,20 @@ export { AdminInquiriesTable, AdminInquiriesTableEmpty, AdminInquiriesTableSkele
 export type { AdminInquiry } from './AdminInquiriesTable'
 export { AdminProductForm } from './AdminProductForm'
 export type { ProductFormData } from './AdminProductForm'
+export { AdminLookbookForm } from './AdminLookbookForm'
+export { CSVImportModal } from './CSVImportModal'
+export { ImageUploader, ImagePreviewGrid } from './ImageUploader'
+export type { UploadedImage } from './ImageUploader'
+export { EnhancementModal } from './EnhancementModal'
 export { DeleteConfirmModal } from './DeleteConfirmModal'
 export { AdminCategoriesPanel, defaultCategories } from './AdminCategoriesPanel'
 export type { Category } from './AdminCategoriesPanel'
+export { InquiryDetailModal } from './InquiryDetailModal'
+export { NewsletterForm } from './NewsletterForm'
+export { ShareButtons } from './ShareButtons'
+export { FavoriteButton } from './FavoriteButton'
+export { ProductReviews, ProductReviewsSkeleton } from './ProductReviews'
+export type { Review } from './ProductReviews'
 
 // =============================================================================
 // Container - Consistent page wrapper with max-width and padding
@@ -140,6 +151,48 @@ export function Badge({ children, variant = 'default', className = '' }: BadgePr
       `}
     >
       {children}
+    </span>
+  )
+}
+
+// =============================================================================
+// InventoryBadge - Stock status indicator
+// =============================================================================
+import type { StockStatus } from '../data/mockProducts'
+
+interface InventoryBadgeProps {
+  stock: StockStatus
+  size?: 'sm' | 'md'
+  className?: string
+}
+
+const stockConfig: Record<StockStatus, { label: string; color: string; dotColor: string }> = {
+  in_stock: {
+    label: 'In Stock',
+    color: 'text-green-700',
+    dotColor: 'bg-green-500',
+  },
+  low_stock: {
+    label: 'Low Stock',
+    color: 'text-amber-700',
+    dotColor: 'bg-amber-500',
+  },
+  out_of_stock: {
+    label: 'Out of Stock',
+    color: 'text-red-700',
+    dotColor: 'bg-red-500',
+  },
+}
+
+export function InventoryBadge({ stock, size = 'md', className = '' }: InventoryBadgeProps) {
+  const config = stockConfig[stock]
+  const sizeClasses = size === 'sm' ? 'text-xs' : 'text-sm'
+  const dotSize = size === 'sm' ? 'h-1.5 w-1.5' : 'h-2 w-2'
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 font-medium ${config.color} ${sizeClasses} ${className}`}>
+      <span className={`${dotSize} rounded-full ${config.dotColor}`} />
+      {config.label}
     </span>
   )
 }

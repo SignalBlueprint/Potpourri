@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { Product } from '../data/mockProducts'
-import { categoryIcons, type Category } from '../data/mockProducts'
+import { categoryIcons, type Category, getPrimaryImageUrl } from '../data/mockProducts'
 import { clientConfig } from '../client.config'
 import { Badge, Button } from './index'
+import { FavoriteButton } from './FavoriteButton'
+import { CompareButton } from './CompareButton'
 
 // =============================================================================
 // ProductCard - Reusable product card with hover effects
@@ -20,7 +22,8 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
   const categoryIcon = categoryIcons[product.category as Category] || '📦'
 
   const actionLabel = enableCheckout ? 'Add to Cart' : 'View Details'
-  const showFallback = !product.imageUrl || imageError
+  const primaryImageUrl = getPrimaryImageUrl(product)
+  const showFallback = !primaryImageUrl || imageError
 
   const handleQuickAction = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -32,14 +35,14 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
     <Link
       to="/item/$id"
       params={{ id: product.id }}
-      className="group block"
+      className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
     >
       <article className="relative overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-card ring-brand-primary/0 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-primary/20 hover:shadow-elevated hover:ring-4 hover:ring-brand-primary/10">
         {/* Image Container with aspect ratio */}
         <div className="relative aspect-square overflow-hidden bg-neutral-50">
           {!showFallback ? (
             <img
-              src={product.imageUrl!}
+              src={primaryImageUrl!}
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
@@ -63,6 +66,24 @@ export function ProductCard({ product, onQuickAction }: ProductCardProps) {
                 Featured
               </Badge>
             )}
+            {product.stock === 'low_stock' && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 shadow-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                Low Stock
+              </span>
+            )}
+            {product.stock === 'out_of_stock' && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 shadow-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                Out of Stock
+              </span>
+            )}
+          </div>
+
+          {/* Action buttons overlay */}
+          <div className="absolute right-3 top-3 flex flex-col gap-2">
+            <FavoriteButton productId={product.id} size="sm" />
+            <CompareButton productId={product.id} />
           </div>
 
           {/* Quick action overlay on hover */}

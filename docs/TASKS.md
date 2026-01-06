@@ -71,19 +71,19 @@
 
 | ID | Title | Priority | Status | Blocked By | Area | Files | Acceptance Criteria | Notes |
 |----|-------|----------|--------|------------|------|-------|---------------------|-------|
-| POT-030 | Add env validation on startup | P1 | TODO | - | Ops | `src/lib/env.ts`, `src/main.tsx` | Missing VITE_API_BASE_URL shows actionable error in console | Fail fast |
-| POT-031 | Add analytics event placeholders | P1 | TODO | - | Analytics | `src/lib/analytics.ts`, `src/routes/item.tsx`, `src/ui/InquiryModal.tsx` | trackEvent('inquiry_submit') etc, logs in dev, no-op in prod | Ready for GA/Plausible |
-| POT-032 | Add error reporting placeholder | P1 | TODO | - | Ops | `src/lib/errorReporting.ts`, `src/components/ErrorBoundary.tsx` | captureException stub called on errors, ready for Sentry | Production visibility |
-| POT-033 | Add console logging config | P1 | TODO | - | Ops | `src/lib/logger.ts` | Logger respects NODE_ENV, debug in dev, errors only in prod | Clean production console |
-| POT-034 | Verify production build optimization | P1 | TODO | - | Performance | `vite.config.ts`, `package.json` | Bundle <500KB gzipped, no duplicate deps, tree shaking works | Run `npm run build && analyze` |
-| POT-035 | Add inquiry status management | P1 | TODO | - | Admin | `src/ui/AdminInquiriesTable.tsx` | Status dropdown (new/contacted/closed), persists to localStorage | Track lead follow-up |
-| POT-036 | Add admin inquiry detail modal | P1 | TODO | - | Admin | `src/ui/InquiryDetailModal.tsx`, `src/routes/admin.tsx` | Click row opens modal with full inquiry data | Read full messages |
-| POT-037 | Add trust badges to footer | P1 | TODO | - | Trust | `src/layout/AppShell.tsx`, `src/client.config.ts` | Payment security, shipping, guarantee badges visible | Increase confidence |
-| POT-038 | Add basic accessibility fixes | P1 | TODO | - | A11y | Multiple files | Focus states visible, alt text present, no critical axe violations | WCAG 2.1 AA basics |
-| POT-039 | Add keyboard navigation for gallery | P1 | TODO | - | A11y | `src/ui/ProductGallery.tsx` | Arrow keys navigate, Escape closes zoom, focus ring visible | Power users + a11y |
-| POT-040 | Prepare catalogCore swap instructions | P1 | TODO | - | Docs | `src/catalogCore.tsx` | Clear comments: "delete lines X-Y, uncomment line Z" | Smooth handoff |
-| POT-041 | Secure admin password handling | P1 | TODO | - | Security | `src/hooks/useAuth.ts` | Password from env var, not hardcoded in source | Currently "admin123" hardcoded |
-| POT-042 | Add rate limiting awareness to forms | P1 | TODO | - | Security | `src/ui/InquiryModal.tsx`, `src/routes/contact.tsx` | Disable submit for 2s after submit, show if rate limited | Prevent spam |
+| POT-030 | Add env validation on startup | P1 | DONE | - | Ops | `src/lib/env.ts`, `src/main.tsx`, `src/vite-env.d.ts` | Missing VITE_API_BASE_URL shows actionable error in console | Validates env vars at startup, logs warnings in dev |
+| POT-031 | Add analytics event placeholders | P1 | DONE | - | Analytics | `src/lib/analytics.ts`, `src/routes/item.tsx`, `src/ui/InquiryModal.tsx` | trackEvent('inquiry_submit') etc, logs in dev, no-op in prod | Tracks product_view, inquiry_start/success/error |
+| POT-032 | Add error reporting placeholder | P1 | DONE | - | Ops | `src/lib/errorReporting.ts`, `src/components/ErrorBoundary.tsx` | captureException stub called on errors, ready for Sentry | ErrorBoundary calls captureException |
+| POT-033 | Add console logging config | P1 | DONE | - | Ops | `src/lib/logger.ts` | Logger respects NODE_ENV, debug in dev, errors only in prod | Clean production console |
+| POT-034 | Verify production build optimization | P1 | DONE | - | Performance | `vite.config.ts`, `package.json` | Bundle <500KB gzipped, no duplicate deps, tree shaking works | Build verified: 118KB gzipped |
+| POT-035 | Add inquiry status management | P1 | DONE | - | Admin | `src/ui/AdminInquiriesTable.tsx`, `src/api/inquiries.ts` | Status dropdown (new/contacted/closed), persists to localStorage | Status dropdown in table, persists to localStorage |
+| POT-036 | Add admin inquiry detail modal | P1 | DONE | - | Admin | `src/ui/InquiryDetailModal.tsx`, `src/routes/admin.tsx` | Click row opens modal with full inquiry data | Full modal with status change and email reply |
+| POT-037 | Add trust badges to footer | P1 | DONE | - | Trust | `src/layout/AppShell.tsx` | Payment security, shipping, guarantee badges visible | 4 trust badges with icons in footer |
+| POT-038 | Add basic accessibility fixes | P1 | PARTIAL | - | A11y | Multiple files | Focus states visible, alt text present, no critical axe violations | Slice 1 DONE: focus-visible states. Slice 2 DONE: alt text audit (all img tags have alt), decorative SVGs hidden (aria-hidden in HeroSection.tsx, item.tsx). Remaining: axe violation scan |
+| POT-039 | Add keyboard navigation for gallery | P1 | DONE | - | A11y | `src/ui/ProductGallery.tsx` | Arrow keys navigate, Escape closes zoom, focus ring visible | Power users + a11y |
+| POT-040 | Prepare catalogCore swap instructions | P1 | DONE | - | Docs | `src/catalogCore.tsx` | Clear comments: "delete lines X-Y, uncomment line Z" | Swap box at top of file, DELETE markers around stub code |
+| POT-041 | Secure admin password handling | P1 | DONE | - | Security | `src/hooks/useAuth.ts`, `src/lib/env.ts` | Password from env var, not hardcoded in source | Uses VITE_ADMIN_PASSWORD with fallback |
+| POT-042 | Add rate limiting awareness to forms | P1 | DONE | - | Security | `src/ui/InquiryModal.tsx`, `src/routes/contact.tsx` | Disable submit for 2s after submit, show if rate limited | 2s cooldown with timer, shows "Please wait..." |
 | POT-043 | Add SEO robots.txt and sitemap | P1 | DONE | - | SEO | `public/robots.txt`, `public/sitemap.xml` | Both files exist and are valid | Basic SEO |
 | POT-044 | Add JSON-LD product schema | P1 | DONE | - | SEO | `src/components/ProductSchema.tsx`, `src/routes/item.tsx` | Valid JSON-LD in page source | Rich snippets |
 | POT-045 | Verify CI automerge flow works | P1 | DONE | - | CI | `.github/workflows/automerge.yml` | PR with automerge label merges after CI | Autopilot verified |
@@ -97,20 +97,20 @@
 
 | ID | Title | Priority | Status | Blocked By | Area | Files | Acceptance Criteria | Notes |
 |----|-------|----------|--------|------------|------|-------|---------------------|-------|
-| POT-050 | Add checkout flow skeleton | P2 | TODO | - | Commerce | `src/routes/checkout.tsx` | Route exists when enableCheckout=true, cart summary + form shell | Payment integration later |
-| POT-051 | Add quote request mode | P2 | TODO | - | Commerce | `src/ui/InquiryModal.tsx`, `src/routes/item.tsx` | priceMode='quote' shows "Request Quote" with quantity field | Variable pricing |
-| POT-052 | Add inventory badges | P2 | TODO | - | UX | `src/ui/ProductCard.tsx`, `src/routes/item.tsx` | "In Stock" / "Low Stock" / "Out of Stock" badge | Urgency signals |
-| POT-053 | Add product favorites/wishlist | P2 | TODO | - | UX | `src/hooks/useFavorites.ts` | Heart icon saves to localStorage, favorites page | Engagement feature |
+| POT-050 | Add checkout flow skeleton | P2 | DONE | - | Commerce | `src/routes/checkout.tsx`, `src/app.tsx` | Route exists when enableCheckout=true, cart summary + form shell | Shows disabled state when feature flag off, full form skeleton when enabled |
+| POT-051 | Add quote request mode | P2 | DONE | - | Commerce | `src/ui/InquiryModal.tsx`, `src/routes/item.tsx`, `src/api/inquiries.ts` | priceMode='quote' shows "Request Quote" with quantity field | Variable pricing. InquiryModal accepts mode prop, shows quantity field in quote mode, updated CTA text/icon |
+| POT-052 | Add inventory badges | P2 | DONE | - | UX | `src/data/mockProducts.ts`, `src/ui/index.tsx`, `src/ui/ProductCard.tsx`, `src/routes/item.tsx`, `src/catalogCore.tsx` | "In Stock" / "Low Stock" / "Out of Stock" badge | Urgency signals. Added StockStatus type, InventoryBadge component, stock field to all products |
+| POT-053 | Add product favorites/wishlist | P2 | DONE | - | UX | `src/hooks/useFavorites.ts`, `src/ui/FavoriteButton.tsx`, `src/routes/favorites.tsx`, `src/ui/ProductCard.tsx`, `src/routes/item.tsx`, `src/layout/AppShell.tsx`, `src/layout/MobileNav.tsx`, `src/app.tsx`, `src/ui/index.tsx` | Heart icon saves to localStorage, favorites page | Engagement feature. useFavorites hook with localStorage persistence + cross-tab sync, FavoriteButton component, /favorites page with empty state, heart icon in header with count badge |
 | POT-054 | Add product comparison | P2 | TODO | - | UX | `src/routes/compare.tsx` | Select 2-4 products, side-by-side table | Decision helper |
-| POT-055 | Add recently viewed products | P2 | TODO | - | UX | `src/hooks/useRecentlyViewed.ts`, `src/routes/item.tsx` | Show last 4 viewed products on item page | Cross-sell |
-| POT-056 | Add newsletter signup | P2 | TODO | - | Marketing | `src/ui/NewsletterForm.tsx`, `src/layout/AppShell.tsx` | Email input in footer, localStorage capture | Lead nurture |
-| POT-057 | Add social share buttons | P2 | TODO | - | Marketing | `src/ui/ShareButtons.tsx`, `src/routes/item.tsx` | Share to Twitter, Facebook, copy link | Viral growth |
+| POT-055 | Add recently viewed products | P2 | DONE | - | UX | `src/hooks/useRecentlyViewed.ts`, `src/ui/RecentlyViewed.tsx`, `src/routes/item.tsx` | Show last 4 viewed products on item page | Cross-sell. localStorage persistence, syncs across tabs |
+| POT-056 | Add newsletter signup | P2 | DONE | - | Marketing | `src/ui/NewsletterForm.tsx`, `src/layout/AppShell.tsx`, `src/ui/index.tsx`, `src/lib/analytics.ts` | Email input in footer, localStorage capture | Lead nurture. Centered form above trust badges, analytics tracking, success state |
+| POT-057 | Add social share buttons | P2 | DONE | - | Marketing | `src/ui/ShareButtons.tsx`, `src/ui/index.tsx`, `src/routes/item.tsx` | Share to Twitter, Facebook, copy link | Viral growth. ShareButtons with X/Twitter, Facebook share popups, copy link with confirmation |
 | POT-058 | Add admin product import CSV | P2 | TODO | - | Admin | `src/ui/AdminImportCSV.tsx` | Upload CSV, parse, preview, import | Bulk operations |
-| POT-059 | Add admin export data | P2 | TODO | - | Admin | `src/routes/admin.tsx` | Download products/inquiries as CSV | Data portability |
+| POT-059 | Add admin export data | P2 | DONE | - | Admin | `src/lib/exportData.ts`, `src/ui/AdminQuickActions.tsx`, `src/routes/admin.tsx` | Download products/inquiries as CSV | Data portability. Export Products/Export Inquiries buttons in Quick Actions download CSV files |
 | POT-060 | Add admin dashboard charts | P2 | TODO | - | Admin | `src/ui/AdminCharts.tsx` | Inquiry trends, category distribution | Visual analytics |
 | POT-061 | Add AI media pipeline placeholder | P2 | TODO | POT-001 | AI | `src/lib/mediaPipeline.ts` | Stub for image optimization, embedding generation | Phase 3 prep |
 | POT-062 | Add embeddings search UX | P2 | TODO | POT-061 | AI | `src/ui/SemanticSearch.tsx` | Natural language search with embedding matching | Phase 3 feature |
-| POT-063 | Add product reviews/ratings | P2 | TODO | - | Trust | `src/ui/ProductReviews.tsx`, `src/routes/item.tsx` | Star rating display, review list | Social proof |
+| POT-063 | Add product reviews/ratings | P2 | DONE | - | Trust | `src/ui/ProductReviews.tsx`, `src/ui/index.tsx`, `src/routes/item.tsx` | Star rating display, review list | Social proof. ProductReviews with StarRating, ReviewCard, rating distribution bars, show more/less, skeleton. Mock data seeded by product ID. |
 | POT-064 | Add multi-image product upload | P2 | TODO | - | Admin | `src/ui/ImageUploader.tsx` | Drag-drop multiple images, reorder, delete | Rich product media |
 | POT-065 | Add inventory management | P2 | TODO | - | Admin | `src/ui/AdminInventory.tsx` | Stock counts, low stock alerts, reorder points | Ops visibility |
 | POT-066 | Add order management (when checkout enabled) | P2 | TODO | POT-050 | Admin | `src/routes/admin.tsx` | Orders list, status updates, fulfillment | Post-checkout ops |
@@ -126,9 +126,9 @@
 |----------|-------|------|------|---------|
 | BLOCKED Epic | 5 | 0 | 0 | 5 |
 | P0 | 20 | 20 | 0 | 0 |
-| P1 | 17 | 4 | 13 | 0 |
-| P2 | 20 | 0 | 20 | 0 |
-| **Total** | **62** | **24** | **33** | **5** |
+| P1 | 17 | 15 | 2 | 0 |
+| P2 | 20 | 9 | 11 | 0 |
+| **Total** | **62** | **44** | **13** | **5** |
 
 ---
 
@@ -148,4 +148,4 @@
 
 ---
 
-*Last updated: 2026-01-03*
+*Last updated: 2026-01-04 (POT-059 - admin export data)*

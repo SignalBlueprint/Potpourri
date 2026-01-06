@@ -1,8 +1,10 @@
 import { Link } from '@tanstack/react-router'
 import { type ReactNode } from 'react'
 import { clientConfig } from '../client.config'
-import { Container } from '../ui'
+import { Container, NewsletterForm } from '../ui'
+import { CompareBar } from '../ui/CompareBar'
 import { MobileNav } from './MobileNav'
+import { useFavorites } from '../hooks/useFavorites'
 
 // =============================================================================
 // AppShell - Main layout wrapper with header, content area, and footer
@@ -16,8 +18,9 @@ export function AppShell({ children, searchSlot }: AppShellProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <Header searchSlot={searchSlot} />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pb-20">{children}</main>
       <Footer />
+      <CompareBar />
     </div>
   )
 }
@@ -35,7 +38,7 @@ function Header({ searchSlot }: HeaderProps) {
       <Container>
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo & Tagline */}
-          <Link to="/" className="group flex items-baseline gap-2">
+          <Link to="/" className="group flex items-baseline gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
             <span className="text-xl font-semibold text-neutral-900 transition-colors group-hover:text-brand-primary">
               {clientConfig.brand.name}
             </span>
@@ -48,11 +51,15 @@ function Header({ searchSlot }: HeaderProps) {
           {searchSlot && <div className="hidden flex-1 justify-center md:flex">{searchSlot}</div>}
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 md:flex" aria-label="Main navigation">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/catalog">Shop</NavLink>
+            <NavLink to="/lookbooks">Lookbooks</NavLink>
             {clientConfig.features.enableAdmin && <NavLink to="/admin">Admin</NavLink>}
           </nav>
+
+          {/* Favorites Link */}
+          <FavoritesNavLink />
 
           {/* Mobile Navigation */}
           <MobileNav />
@@ -78,10 +85,53 @@ function NavLink({ to, children }: NavLinkProps) {
         rounded-lg px-3 py-2 text-sm font-medium text-neutral-600
         transition-colors duration-200
         hover:bg-neutral-100 hover:text-neutral-900
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2
         [&.active]:bg-brand-primary/10 [&.active]:text-brand-primary
       "
     >
       {children}
+    </Link>
+  )
+}
+
+// =============================================================================
+// FavoritesNavLink - Heart icon with count badge
+// =============================================================================
+function FavoritesNavLink() {
+  const { count } = useFavorites()
+
+  return (
+    <Link
+      to="/favorites"
+      className="
+        relative rounded-lg p-2 text-neutral-600
+        transition-colors duration-200
+        hover:bg-neutral-100 hover:text-red-500
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2
+        [&.active]:text-red-500
+      "
+      aria-label={`Favorites${count > 0 ? ` (${count} items)` : ''}`}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+        />
+      </svg>
+      {count > 0 && (
+        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+          {count > 9 ? '9+' : count}
+        </span>
+      )}
     </Link>
   )
 }
@@ -100,7 +150,7 @@ function Footer() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
             {/* Brand */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-neutral-900">{brand.name}</h3>
+              <p className="text-lg font-semibold text-neutral-900">{brand.name}</p>
               <p className="text-sm text-neutral-600">{brand.tagline}</p>
             </div>
 
@@ -109,18 +159,24 @@ function Footer() {
               <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-600">
                 Quick Links
               </h4>
-              <nav className="flex flex-col space-y-2 text-sm">
-                <Link to="/" className="text-neutral-600 transition-colors hover:text-brand-primary">
+              <nav className="flex flex-col space-y-2 text-sm" aria-label="Footer navigation">
+                <Link to="/" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Home
                 </Link>
-                <Link to="/catalog" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                <Link to="/catalog" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Shop
                 </Link>
-                <Link to="/contact" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                <Link to="/lookbooks" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
+                  Lookbooks
+                </Link>
+                <Link to="/contact" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                   Contact
                 </Link>
+                <Link to="/favorites" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
+                  My Favorites
+                </Link>
                 {clientConfig.features.enableAdmin && (
-                  <Link to="/admin" className="text-neutral-600 transition-colors hover:text-brand-primary">
+                  <Link to="/admin" className="rounded text-neutral-600 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2">
                     Admin
                   </Link>
                 )}
@@ -136,7 +192,7 @@ function Footer() {
                 <p>
                   <a
                     href={`mailto:${contact.email}`}
-                    className="transition-colors hover:text-brand-primary"
+                    className="rounded transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                   >
                     {contact.email}
                   </a>
@@ -144,7 +200,7 @@ function Footer() {
                 <p>
                   <a
                     href={`tel:${contact.phone.replace(/[^0-9]/g, '')}`}
-                    className="transition-colors hover:text-brand-primary"
+                    className="rounded transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                   >
                     {contact.phone}
                   </a>
@@ -178,8 +234,33 @@ function Footer() {
             </div>
           </div>
 
-          {/* Copyright */}
+          {/* Newsletter Signup */}
           <div className="mt-8 border-t border-neutral-200 pt-6">
+            <div className="mx-auto max-w-md text-center">
+              <h4 className="text-sm font-semibold uppercase tracking-wider text-neutral-600">
+                Stay Updated
+              </h4>
+              <p className="mt-2 text-sm text-neutral-600">
+                Get the latest arrivals and exclusive offers.
+              </p>
+              <div className="mt-3">
+                <NewsletterForm />
+              </div>
+            </div>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="mt-6 border-t border-neutral-200 pt-6">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-neutral-500">
+              <TrustBadge icon="shield" label="Secure Checkout" />
+              <TrustBadge icon="truck" label="Free Shipping $50+" />
+              <TrustBadge icon="refresh" label="Easy Returns" />
+              <TrustBadge icon="heart" label="Satisfaction Guaranteed" />
+            </div>
+          </div>
+
+          {/* Copyright */}
+          <div className="mt-6 pt-4">
             <p className="text-center text-sm text-neutral-600">
               &copy; {new Date().getFullYear()} {brand.name}. All rights reserved.
             </p>
@@ -187,5 +268,41 @@ function Footer() {
         </div>
       </Container>
     </footer>
+  )
+}
+
+// =============================================================================
+// TrustBadge - Small icon + label for trust indicators
+// =============================================================================
+interface TrustBadgeProps {
+  icon: 'shield' | 'truck' | 'refresh' | 'heart'
+  label: string
+}
+
+function TrustBadge({ icon, label }: TrustBadgeProps) {
+  const iconPaths: Record<TrustBadgeProps['icon'], string> = {
+    shield:
+      'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+    truck:
+      'M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12',
+    refresh:
+      'M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99',
+    heart:
+      'M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z',
+  }
+
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d={iconPaths[icon]} />
+      </svg>
+      <span>{label}</span>
+    </div>
   )
 }

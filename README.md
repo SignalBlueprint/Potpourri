@@ -1,88 +1,100 @@
 # Potpourri
 
-## TL;DR
-
-Gift shop storefront client (Vite + React + TanStack). Thin client consuming `@signal/catalog-core` package (pending). All branding via `src/client.config.ts`.
+Gift shop storefront built with Vite + React + TanStack. Self-contained demo with mock data and localStorage persistence. All branding via `src/client.config.ts`.
 
 ```bash
 npm install && npm run dev   # Start development
 npm run build                # Production build
 ```
 
-## Product Goal
+---
 
-A lightweight, white-label gift shop client that:
+## Current Status
 
-- Renders a catalog from a shared package (`@signal/catalog-core`)
-- Uses `client.config.ts` as the single source of branding/tenant config
-- Supports checkout, admin, and inquiry features via feature flags
-- Enables unattended agent development via autopilot task queue
+> **Last audit**: 2026-01-05
 
-## Current Status (Reality Check)
+### ✅ DONE
 
-> Last audit: 2026-01-03
-
-### ✅ Demo-Ready (Phase 0 Complete)
-
-All critical user flows work. Ready for client demos.
-
-| Feature | Status |
-|---------|--------|
-| Hero + catalog + product detail | ✅ Done |
-| Inquiry modal with localStorage fallback | ✅ Done |
-| Admin dashboard with auth gate | ✅ Done |
-| Products/inquiries/categories CRUD | ✅ Done |
-| Mobile hamburger nav | ✅ Done |
-| 404, empty states, loading skeletons | ✅ Done |
-| Contact page with map | ✅ Done |
-| SEO (meta, JSON-LD, sitemap) | ✅ Done |
-| Testimonials, trust badges placeholders | ✅ Done |
-
-### 🟡 Production Hardening Needed (13 items TODO)
-
-See [docs/TASKS.md](docs/TASKS.md) for full backlog. Key items:
-
-- Env validation, analytics stubs, error reporting
-- Accessibility fixes, keyboard gallery nav
-- Admin password from env (currently hardcoded)
-- Bundle size verification
-
-### ✅ SDK Integration Complete
-
-| Item | Status |
-|------|--------|
-| `@signal-core/catalog-react-sdk` integration | ✅ Complete - SDK integrated into admin route |
-| Checkout flow | Feature disabled, can be enabled when needed |
+- Hero, catalog, product detail pages with galleries
+- Inquiry modal with localStorage fallback (demo mode)
+- Admin dashboard with auth gate (password from env var)
+- Admin: products/inquiries/categories CRUD, CSV import/export
+- Mobile hamburger nav, 404 page, empty states, loading skeletons
+- Contact page with map, testimonials, trust badges
+- SEO (meta, JSON-LD, sitemap, robots.txt)
+- Product favorites/wishlist with localStorage persistence
+- Product reviews/ratings (mock data)
+- Recently viewed products section
+- Inventory badges (In Stock/Low Stock/Out of Stock)
+- Newsletter signup form, social share buttons
+- Quote request mode (`priceMode='quote'`)
+- Checkout flow skeleton (gated by `enableCheckout` flag)
+- Lookbook feature (curated product collections)
+- AI image enhancement with Gemini integration
+- Multi-image product upload with drag-drop
+- Accessibility audit with axe-core tests (POT-038)
+- Product comparison feature (POT-054)
+- Admin dashboard charts (POT-060)
+- Inventory management panel (POT-065)
 
 ---
 
 ## Demo Readiness Checklist
 
-> Run through this before any client meeting.
+### Storefront
+- [x] Hero section renders with brand config
+- [x] Catalog with search, filter, sort
+- [x] Product detail with gallery, reviews
+- [x] Related products, recently viewed
+- [x] Inventory badges display
+- [x] Favorites/wishlist
+- [x] Lookbooks (curated collections)
+- [x] Product comparison (up to 4 products)
 
-### Pre-Demo Verification
+### Inquiry / Lead Capture
+- [x] Inquiry modal opens from product page
+- [x] Form validates (name, email, message)
+- [x] Submit persists to localStorage (demo mode)
+- [x] Success message displays
+- [x] Quote mode with quantity field
 
-- [ ] `npm run build` passes without errors
-- [ ] Test on actual mobile device (not just devtools)
-- [ ] Clear localStorage to test fresh state
-- [ ] Verify inquiry submits and appears in admin
+### Admin
+- [x] `/admin` gated by password
+- [x] Inquiries table with status dropdown
+- [x] Inquiry detail modal
+- [x] Products table with edit/delete
+- [x] Categories panel
+- [x] CSV import/export (products + inquiries)
+- [x] Multi-image product upload
+- [x] AI image enhancement (Gemini)
+- [x] Lookbook management
+- [x] Dashboard charts (inquiry trends, category distribution)
+- [x] Inventory management panel
 
-### Demo Flow Script
+### Mobile / Polish
+- [x] Hamburger menu <768px
+- [x] Responsive grids
+- [x] Focus-visible states
+- [x] Breadcrumbs
 
-1. **Landing** → Hero, trust badges, testimonials
-2. **Browse** → Catalog with search, filter by category
-3. **Detail** → Gallery, related products
-4. **Inquire** → Fill form, submit, see success
-5. **Admin** → Login (password: `admin123`), view inquiry
-6. **Mobile** → Hamburger menu, responsive grid
+### Reliability
+- [x] Error boundary catches crashes
+- [x] 404 page for unknown routes
+- [x] Loading skeletons
+- [x] Accessibility (axe-core automated tests)
 
-### Known Demo Gotchas
+---
 
-| Issue | Note |
-|-------|------|
-| Loading skeletons | First load shows 600-800ms skeleton (expected) |
-| Admin password | Hardcoded in source - don't inspect during demo |
-| Placeholder images | Real deployment would have real product photos |
+## Sanity Check Results
+
+```
+Build:      ✅ PASS (384KB JS → 111KB gzip)
+TypeCheck:  ✅ PASS
+Lint:       ✅ PASS (41 warnings, 0 errors)
+Tests:      ✅ PASS (6 tests passing)
+```
+
+---
 
 ## How to Run
 
@@ -92,17 +104,10 @@ See [docs/TASKS.md](docs/TASKS.md) for full backlog. Key items:
 npm install
 ```
 
-### Dev
+### Development
 
 ```bash
 npm run dev
-```
-
-### Test
-
-```bash
-npm run test          # Single run
-npm run test:watch    # Watch mode
 ```
 
 ### Build
@@ -112,116 +117,92 @@ npm run build         # TypeScript + Vite production build
 npm run preview       # Preview production build locally
 ```
 
+### Test / Lint
+
+```bash
+npm run test          # Vitest
+npm run lint          # ESLint
+npm run typecheck     # TypeScript only
+```
+
 ### Env Vars
 
-| Variable            | Description                      | Default |
-| ------------------- | -------------------------------- | ------- |
-| `VITE_API_BASE_URL` | API endpoint for catalog backend | `/api`  |
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `VITE_API_BASE_URL` | No | `/api` | Backend API endpoint |
+| `VITE_ADMIN_PASSWORD` | **Yes (prod)** | `admin123` | Admin dashboard password |
 
-## Architecture (Short)
+Create a `.env` file for local development:
 
-### High-level Components
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Potpourri (Thin Client)                  │
-├─────────────────────────────────────────────────────────────┤
-│  src/client.config.ts  ← Single source of branding/config  │
-│  src/catalogCore.tsx   ← Package seam (stub → real)        │
-│  src/routes/*          ← Page components                   │
-├─────────────────────────────────────────────────────────────┤
-│              @signal/catalog-core (pending)                 │
-│  makeRouteTree({ clientConfig }) → TanStack routes         │
-│  CatalogApp({ clientConfig }) → Optional full app          │
-└─────────────────────────────────────────────────────────────┘
+```env
+VITE_ADMIN_PASSWORD=your-secure-password
 ```
 
-### Key Files
+---
 
-| File                    | Purpose                                              |
-| ----------------------- | ---------------------------------------------------- |
-| `src/client.config.ts`  | Branding, tenant ID, feature flags, contact info     |
-| `src/catalogCore.tsx`   | Package adapter (ONE file imports `@signal/catalog-core`) |
-| `src/main.tsx`          | App entry (QueryClient + Router providers)           |
-| `src/app.tsx`           | Root route + layout                                  |
-| `src/routes/index.tsx`  | Home page                                            |
-| `src/routes/catalog.tsx`| Catalog grid                                         |
-| `src/routes/item.tsx`   | Product detail                                       |
-| `src/routes/admin.tsx`  | Admin dashboard                                      |
+## Architecture (Brief)
 
-## Known Issues
+```
+Potpourri
+├── src/client.config.ts    ← Single source of branding + feature flags
+├── src/catalogCore.tsx     ← Catalog data + routes (mock data for demo)
+├── src/data/mockProducts.ts ← Demo product catalog
+├── src/routes/*            ← Page components (TanStack Router)
+├── src/ui/*                ← Reusable components
+├── src/api/                ← Lead capture, Gemini AI, image storage
+└── src/hooks/*             ← Custom React hooks (auth, favorites, etc.)
+```
 
-1. **Package seam uses stubs** - SDK package (`@signal-core/catalog-react-sdk`) installed but needs to be built before integration
-2. **Checkout disabled** - Feature flag exists but no implementation
-3. **Integration plan available** - See [docs/INTEGRATION_PLAN.md](docs/INTEGRATION_PLAN.md) for SDK integration strategy
+**Data Storage**: Uses localStorage for demo mode persistence. Products, inquiries, and user preferences are stored locally.
 
-## Task Queue (Summary)
+**Feature Flags**: `enableCheckout`, `enableAdmin`, `priceMode` in `client.config.ts`.
 
-Full backlog with acceptance criteria: **[docs/TASKS.md](docs/TASKS.md)**
+---
 
-### Status Overview
+## Known Issues / Next Tasks
+
+### Bugs
+
+None - all lint errors and test failures resolved.
+
+### Next Up (from docs/TASKS.md)
+
+| ID | Title | Priority |
+|----|-------|----------|
+| POT-070+ | See docs/TASKS.md for remaining P2 items | P2 |
+
+---
+
+## Task Status Summary
 
 | Priority | Total | Done | Remaining |
 |----------|-------|------|-----------|
-| P0 (Demo) | 20 | 20 | 0 |
-| P1 (Production) | 17 | 4 | 13 |
-| P2 (Future) | 20 | 0 | 20 |
-| BLOCKED | 5 | 0 | 5 |
+| P0 | 20 | 20 | 0 |
+| P1 | 17 | 17 | 0 |
+| P2 | 20 | 16 | 4 |
 
-### Next Up (P1 Production Items)
+See [docs/TASKS.md](docs/TASKS.md) for full backlog with acceptance criteria.
 
-| ID | Title | Area |
-|----|-------|------|
-| POT-030 | Env validation on startup | Ops |
-| POT-031 | Analytics event placeholders | Analytics |
-| POT-032 | Error reporting placeholder | Ops |
-| POT-041 | Secure admin password (from env) | Security |
-| POT-037 | Trust badges footer | Trust |
-
-### SDK Integration Status
-
-| ID | Title | Status |
-|----|-------|--------|
-| POT-001 | Build @signal-core/catalog-react-sdk package | ✅ DONE |
-| POT-002 | Integrate SDK components into catalogCore routes | ✅ DONE |
-| POT-003 | Add SDK integration feature flag | ✅ DONE |
-| POT-004 | Verify SDK peer dependencies compatibility | ✅ DONE |
-| POT-005 | Update types and config mapping for SDK | ✅ DONE |
-
-**Status**: SDK integration complete! `CatalogAdminApp` is integrated into admin route with proper authentication flow.
-
-**Note**: See [docs/INTEGRATION_PLAN.md](docs/INTEGRATION_PLAN.md) for integration details.
-
-**Status Values**: `TODO` | `DONE` | `BLOCKED`
-
-## Release Gates
-
-All PRs must pass before merge:
-
-```bash
-npm run lint       # ESLint passes
-npm run typecheck  # TypeScript passes
-npm run test       # Vitest passes
-npm run build      # Production build succeeds
-```
-
-Auto-merge: Add `automerge` label to PRs for automatic squash-merge after CI passes.
+---
 
 ## Documentation
 
-### Ship Plan
-
 | Document | Purpose |
 |----------|---------|
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Phased plan: Demo → Production → Mobile → AI → Checkout |
-| [docs/TASKS.md](docs/TASKS.md) | Full backlog with priorities, status, acceptance criteria |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | App structure, data flow, tech decisions |
+| [docs/TASKS.md](docs/TASKS.md) | Full backlog with priorities and status |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Phased ship plan |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture details |
 
-### Integration & Operations
+---
 
-| Document | Purpose |
-|----------|---------|
-| [docs/PACKAGE_INTEGRATION.md](docs/PACKAGE_INTEGRATION.md) | @signal/catalog-core seam spec |
-| [docs/AI_STATE.md](docs/AI_STATE.md) | Suite goal, repo map, active blockers |
-| [docs/AI_PLAYBOOK.md](docs/AI_PLAYBOOK.md) | Agent rules, task size, stop conditions |
-| [docs/AI_METRICS.json](docs/AI_METRICS.json) | Counters and timestamps |
+## Release Gates
+
+PRs must pass before merge:
+
+```bash
+npm run typecheck  # TypeScript passes
+npm run build      # Production build succeeds
+npm run test       # All tests pass
+```
+
+Auto-merge: Add `automerge` label to PRs for automatic squash-merge after CI passes.

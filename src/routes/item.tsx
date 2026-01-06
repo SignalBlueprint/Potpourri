@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react'
 import { createRoute, Link } from '@tanstack/react-router'
 import { rootRoute } from '../app'
-import { Card, Container, Button, Badge } from '../ui'
+import { Card, Container, Button, Badge, InventoryBadge, ShareButtons, FavoriteButton, ProductReviews, ProductReviewsSkeleton } from '../ui'
 import { SEO } from '../components/SEO'
 import { Breadcrumbs, BreadcrumbsSkeleton } from '../components/Breadcrumbs'
 import { ProductSchema } from '../components/ProductSchema'
 import { ProductGallery } from '../ui/ProductGallery'
 import { RelatedProducts, RelatedProductsSkeleton } from '../ui/RelatedProducts'
+import { RecentlyViewed } from '../ui/RecentlyViewed'
 import { InquiryModal } from '../ui/InquiryModal'
-import { mockProducts, categoryIcons, type Category } from '../data/mockProducts'
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed'
+import { mockProducts, categoryIcons, type Category, type Product, type StockStatus, getProductImageUrls, getPrimaryImageUrl } from '../data/mockProducts'
 import { clientConfig } from '../client.config'
 import { Skeleton, SkeletonImage, SkeletonCard } from '../components/Skeleton'
+import { trackProductView } from '../lib/analytics'
+import { getStoredProducts } from '../api/productStorage'
+import { getProductImages } from '../api/imageStorage'
 
 export const itemRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -22,20 +27,70 @@ function ItemPage() {
   const { id } = itemRoute.useParams()
   const [isInquiryOpen, setIsInquiryOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-
-  // Simulate initial data fetch
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 600)
-    return () => clearTimeout(timer)
-  }, [])
-
-  // Find the product by ID
-  const product = mockProducts.find((p) => p.id === id)
+  const [product, setProduct] = useState<Product | null>(null)
+  const [storedProductImages, setStoredProductImages] = useState<string[]>([])
+  const { addViewed } = useRecentlyViewed()
 
   // Get config values
-  const { enableCheckout } = clientConfig.features
+  const { enableCheckout, priceMode } = clientConfig.features
+  const isQuoteMode = priceMode === 'quote'
+
+  // Load product from mockProducts or localStorage
+  useEffect(() => {
+    async function loadProduct() {
+      // First check mockProducts
+      const mockProduct = mockProducts.find((p) => p.id === id)
+      if (mockProduct) {
+        setProduct(mockProduct)
+        setIsLoading(false)
+        return
+      }
+
+      // Check localStorage for admin-created products
+      const storedProducts = getStoredProducts()
+      const storedProduct = storedProducts.find((p) => p.id === id)
+      if (storedProduct) {
+        // Load images from IndexedDB
+        const images = await getProductImages(id)
+        const imageUrls = images.map((img) => img.url)
+        setStoredProductImages(imageUrls)
+
+        // Convert stock number to StockStatus
+        const stockStatus: StockStatus = storedProduct.stock <= 0
+          ? 'out_of_stock'
+          : storedProduct.stock < 10
+            ? 'low_stock'
+            : 'in_stock'
+
+        // Convert to Product type for display
+        const productFromStorage: Product = {
+          id: storedProduct.id,
+          name: storedProduct.name,
+          description: '', // Admin products don't have description yet
+          price: storedProduct.price,
+          category: storedProduct.category as Category,
+          stock: stockStatus,
+          imageUrl: imageUrls[0] || null,
+          images: images,
+          isNew: false,
+          isFeatured: false,
+          createdAt: new Date(storedProduct.createdAt),
+        }
+        setProduct(productFromStorage)
+      }
+      setIsLoading(false)
+    }
+
+    loadProduct()
+  }, [id])
+
+  // Track product view when product loads
+  useEffect(() => {
+    if (!isLoading && product) {
+      trackProductView(product.id, product.name, product.category)
+      addViewed(product.id)
+    }
+  }, [isLoading, product, addViewed])
 
   // Show loading skeleton
   if (isLoading) {
@@ -69,14 +124,14 @@ function ItemPage() {
 
   const categoryIcon = categoryIcons[product.category as Category] || '📦'
 
-  // Generate placeholder additional images for gallery demo
-  // In a real app, products would have an images array
-  const productImages = [
-    product.imageUrl,
-    product.imageUrl, // Duplicate for demo
-    product.imageUrl,
-    product.imageUrl,
-  ]
+  // Get product images - uses stored images for admin products, or images array/imageUrl for mock
+  const productImages = storedProductImages.length > 0
+    ? storedProductImages
+    : getProductImageUrls(product)
+  // If no images, use placeholder as fallback
+  const displayImages = productImages.length > 0
+    ? productImages
+    : [product.imageUrl].filter(Boolean) as string[]
 
   const handleAddToCart = () => {
     // Placeholder for cart functionality
@@ -89,7 +144,7 @@ function ItemPage() {
       <SEO
         title={product.name}
         description={product.description}
-        image={product.imageUrl ?? undefined}
+        image={getPrimaryImageUrl(product) ?? undefined}
         type="product"
       />
       <ProductSchema
@@ -97,7 +152,7 @@ function ItemPage() {
         name={product.name}
         description={product.description}
         price={product.price}
-        imageUrl={product.imageUrl}
+        imageUrl={getPrimaryImageUrl(product)}
         category={product.category}
       />
       <Container>
@@ -115,7 +170,7 @@ function ItemPage() {
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             {/* Image Gallery */}
             <ProductGallery
-              images={productImages}
+              images={displayImages}
               productName={product.name}
               category={product.category}
             />
@@ -151,10 +206,7 @@ function ItemPage() {
               <Card className="space-y-3 bg-neutral-50/80">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-neutral-600">Availability</span>
-                  <span className="flex items-center gap-1.5 font-medium text-green-700">
-                    <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                    In Stock
-                  </span>
+                  <InventoryBadge stock={product.stock} />
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-neutral-600">Item ID</span>
@@ -177,6 +229,7 @@ function ItemPage() {
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -189,40 +242,48 @@ function ItemPage() {
                   </Button>
                 ) : (
                   <Button size="lg" className="flex-1 sm:flex-initial" onClick={() => setIsInquiryOpen(true)}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="mr-2 h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                      />
-                    </svg>
-                    Inquire About This Item
+                    {isQuoteMode ? (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="mr-2 h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                          />
+                        </svg>
+                        Request a Quote
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="mr-2 h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                          />
+                        </svg>
+                        Inquire About This Item
+                      </>
+                    )}
                   </Button>
                 )}
-                <Button size="lg" variant="secondary">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2 h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                  Save
-                </Button>
+                <FavoriteButton productId={product.id} size="lg" showLabel />
               </div>
 
               {/* Trust indicators */}
@@ -234,6 +295,7 @@ function ItemPage() {
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -251,6 +313,7 @@ function ItemPage() {
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -268,15 +331,24 @@ function ItemPage() {
                   Local Pickup Available
                 </div>
               </div>
+
+              {/* Share buttons */}
+              <ShareButtons title={product.name} className="border-t border-neutral-200 pt-4" />
             </div>
           </div>
         </section>
+
+        {/* Customer Reviews */}
+        <ProductReviews productId={product.id} />
 
         {/* Related Products */}
         <RelatedProducts
           currentProductId={product.id}
           category={product.category}
         />
+
+        {/* Recently Viewed */}
+        <RecentlyViewed excludeProductId={product.id} />
 
         {/* Bottom spacing */}
         <div className="pb-16" />
@@ -288,6 +360,7 @@ function ItemPage() {
         onClose={() => setIsInquiryOpen(false)}
         productName={product.name}
         productId={product.id}
+        mode={isQuoteMode ? 'quote' : 'inquiry'}
       />
     </>
   )
@@ -368,6 +441,9 @@ function ItemDetailSkeleton() {
           </div>
         </div>
       </section>
+
+      {/* Reviews skeleton */}
+      <ProductReviewsSkeleton />
 
       {/* Related Products skeleton */}
       <RelatedProductsSkeleton />

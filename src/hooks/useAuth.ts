@@ -1,4 +1,5 @@
 import { useState, useCallback, useSyncExternalStore } from 'react'
+import { getEnv } from '../lib/env'
 
 // =============================================================================
 // Admin Authentication Hook
@@ -6,8 +7,16 @@ import { useState, useCallback, useSyncExternalStore } from 'react'
 
 const AUTH_STORAGE_KEY = 'potpourri_admin_auth'
 
-// Simple admin password - in production, this would be an env var or API check
-const ADMIN_PASSWORD = 'admin123'
+// Admin password from environment variable, with fallback for development
+// IMPORTANT: Set VITE_ADMIN_PASSWORD in production .env file
+const ADMIN_PASSWORD = getEnv().VITE_ADMIN_PASSWORD ?? 'admin123'
+
+// Listeners for same-tab auth changes
+const authListeners = new Set<() => void>()
+
+function notifyAuthChange() {
+  authListeners.forEach((listener) => listener())
+}
 
 // External store for sessionStorage sync
 function getAuthSnapshot(): boolean {
@@ -19,9 +28,14 @@ function getServerSnapshot(): boolean {
 }
 
 function subscribeToAuth(callback: () => void): () => void {
+  // Track listener for same-tab notifications
+  authListeners.add(callback)
   // Listen for storage events from other tabs
   window.addEventListener('storage', callback)
-  return () => window.removeEventListener('storage', callback)
+  return () => {
+    authListeners.delete(callback)
+    window.removeEventListener('storage', callback)
+  }
 }
 
 export interface UseAuthResult {
@@ -43,15 +57,13 @@ export function useAuth(): UseAuthResult {
     getServerSnapshot
   )
   const [error, setError] = useState<string | null>(null)
-  // Track if we're forcing a re-render after auth changes
-  const [, forceUpdate] = useState(0)
 
   const login = useCallback((password: string): boolean => {
     setError(null)
 
     if (password === ADMIN_PASSWORD) {
       sessionStorage.setItem(AUTH_STORAGE_KEY, 'true')
-      forceUpdate((n) => n + 1)
+      notifyAuthChange()
       return true
     } else {
       setError('Invalid password')
@@ -62,7 +74,7 @@ export function useAuth(): UseAuthResult {
   const logout = useCallback(() => {
     sessionStorage.removeItem(AUTH_STORAGE_KEY)
     setError(null)
-    forceUpdate((n) => n + 1)
+    notifyAuthChange()
   }, [])
 
   return {

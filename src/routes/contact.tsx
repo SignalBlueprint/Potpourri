@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { createRoute } from '@tanstack/react-router'
 import { rootRoute } from '../app'
 import { Container, PageHeader, Card, Button, Input } from '../ui'
@@ -134,6 +134,9 @@ function ContactPage() {
 // Contact Form Component
 // =============================================================================
 
+// Rate limit cooldown duration in milliseconds
+const SUBMIT_COOLDOWN_MS = 2000
+
 function ContactForm() {
   const [formData, setFormData] = useState({
     name: '',
@@ -144,9 +147,25 @@ function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isCooldown, setIsCooldown] = useState(false)
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Clean up cooldown timer on unmount
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current)
+    }
+  }, [])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+
+    // Rate limit check - prevent rapid submissions
+    if (isCooldown) {
+      setError('Please wait a moment before submitting again.')
+      return
+    }
+
     setIsSubmitting(true)
     setError(null)
 
@@ -171,11 +190,17 @@ function ContactForm() {
         throw new Error('API request failed')
       }
     } catch {
-      // Fallback to localStorage for demo mode
+      // Fallback to localStorage for demo mode (network errors expected in demo)
+      // In production, you would want to distinguish between network errors
+      // and actual API rejections to show appropriate error messages
       saveContactLocally(formData)
       setIsSubmitted(true)
     } finally {
       setIsSubmitting(false)
+      // Start cooldown after any submission attempt
+      setIsCooldown(true)
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current)
+      cooldownTimerRef.current = setTimeout(() => setIsCooldown(false), SUBMIT_COOLDOWN_MS)
     }
   }
 
@@ -279,12 +304,14 @@ function ContactForm() {
           </div>
         )}
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
+        <Button type="submit" disabled={isSubmitting || isCooldown} className="w-full">
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <SpinnerIcon />
               Sending...
             </span>
+          ) : isCooldown ? (
+            'Please wait...'
           ) : (
             'Send Message'
           )}

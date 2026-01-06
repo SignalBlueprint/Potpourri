@@ -27,8 +27,8 @@ function renderWithProviders(initialPath: string) {
 describe('Home route', () => {
   it('renders the home page', async () => {
     renderWithProviders('/')
-    // Home page displays brand name as the main h1 in HeroSection (multiple headings use this name)
-    const headings = await screen.findAllByRole('heading', { name: clientConfig.brand.name })
+    // Home page displays brand name in h1 - "Welcome to Potpourri"
+    const headings = await screen.findAllByRole('heading', { name: new RegExp(clientConfig.brand.name) })
     expect(headings.length).toBeGreaterThan(0)
   })
 
